@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Overlay System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="file"], textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .preview-image {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin-top: 1rem;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Overlay Styles */
+        .overlay-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .message-item {
+            position: absolute;
+            right: -500px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            animation: slideIn 1s ease-out forwards;
+        }
+
+        .message-item.fade-out {
+            animation: fadeOut 2s ease-out forwards;
+        }
+
+        .message-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+            background: #ccc;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .message-text {
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        @keyframes slideIn {
+            0% {
+                right: -500px;
+                opacity: 0;
+            }
+            100% {
+                right: 20px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+        }
+
+        .toggle-overlay {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 ส่งข้อความขึ้นจอ</h1>
+        
+        <form id="messageForm">
+            <div class="form-group">
+                <label for="profilePic">รูปโปรไฟล์ (ไม่บังคับ):</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="profilePic" accept="image/*">
+                    <label for="profilePic" class="file-input-label">
+                        📷 เลือกรูปโปรไฟล์
+                    </label>
+                </div>
+                <img id="preview" class="preview-image" alt="Preview">
+            </div>
+
+            <div class="form-group">
+                <label for="userName">ชื่อผู้ส่ง:</label>
+                <input type="text" id="userName" placeholder="กรอกชื่อของคุณ" required>
+            </div>
+
+            <div class="form-group">
+                <label for="message">ข้อความ:</label>
+                <textarea id="message" placeholder="กรอกข้อความที่ต้องการส่ง" required></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">🚀 ส่งข้อความ</button>
+        </form>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <!-- Overlay Container -->
+    <div class="overlay-container" id="overlayContainer"></div>
+    <button class="toggle-overlay" onclick="toggleOverlay()">Toggle Overlay</button>
+
+    <script>
+        // Configuration
+        const SHEET_ID = '10HqP6t9VAkciryJ06_1uYkuoAIuBt-fKG-qboQGqJek';
+        const APPS_SCRIPT_URL = `https://script.google.com/macros/s/AKfycbw-uIoUG1nW3eItF5IX7C3rrTWqO8C5zbwRjLuxclSlz1dZKTB_m0yJjazS8Ghq8BUoag/exec`; // จะต้องใส่ URL ของ Apps Script
+        
+        let overlayEnabled = true;
+        let lastProcessedRow = 0;
+
+        // File preview functionality
+        document.getElementById('profilePic').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('preview');
+            const label = document.querySelector('.file-input-label');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    label.textContent = file.name;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+                label.textContent = '📷 เลือกรูปโปรไฟล์';
+            }
+        });
+
+        // Form submission
+        document.getElementById('messageForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            const status = document.getElementById('status');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ กำลังส่ง...';
+            
+            try {
+                const formData = new FormData();
+                const profilePic = document.getElementById('profilePic').files[0];
+                
+                // Convert image to base64 if exists
+                let profilePicBase64 = '';
+                if (profilePic) {
+                    profilePicBase64 = await fileToBase64(profilePic);
+                }
+                
+                const data = {
+                    name: document.getElementById('userName').value,
+                    message: document.getElementById('message').value,
+                    profilePic: profilePicBase64,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Send to Google Sheets via Apps Script
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                showStatus('✅ ส่งข้อความสำเร็จแล้ว!', 'success');
+                document.getElementById('messageForm').reset();
+                document.getElementById('preview').style.display = 'none';
+                document.querySelector('.file-input-label').textContent = '📷 เลือกรูปโปรไฟล์';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = '🚀 ส่งข้อความ';
+        });
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        // Overlay functionality
+        function createMessageOverlay(data) {
+            if (!overlayEnabled) return;
+            
+            const container = document.getElementById('overlayContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-item';
+            
+            // Random vertical position
+            const randomTop = Math.random() * (window.innerHeight - 200) + 50;
+            messageDiv.style.top = randomTop + 'px';
+            
+            let profilePicHtml = '';
+            if (data.profilePic && data.profilePic !== '') {
+                profilePicHtml = `<img src="${data.profilePic}" class="profile-pic" alt="Profile">`;
+            } else {
+                profilePicHtml = `<div class="profile-pic" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${data.name.charAt(0).toUpperCase()}</div>`;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-profile">
+                    ${profilePicHtml}
+                    <div class="profile-name">${data.name}</div>
+                </div>
+                <div class="message-text">${data.message}</div>
+            `;
+            
+            container.appendChild(messageDiv);
+            
+            // Remove after 100 seconds with fade out
+            setTimeout(() => {
+                messageDiv.classList.add('fade-out');
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.parentNode.removeChild(messageDiv);
+                    }
+                }, 2000);
+            }, 100000); // 100 seconds
+        }
+
+        // Simulate fetching data from Google Sheets
+        async function fetchMessages() {
+            try {
+                // This would be replaced with actual Google Sheets API call
+                // For demo purposes, we'll simulate data
+                const mockData = [
+                    {
+                        name: 'สมชาย',
+                        message: 'สวัสดีครับ! ขอบคุณสำหรับการสตรีม',
+                        profilePic: '',
+                        timestamp: new Date().toISOString()
+                    }
+                ];
+                
+                // In real implementation, you would fetch from Google Sheets API
+                // and compare with lastProcessedRow to show only new messages
+                
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        }
+
+        function toggleOverlay() {
+            overlayEnabled = !overlayEnabled;
+            const button = document.querySelector('.toggle-overlay');
+            button.textContent = overlayEnabled ? 'Disable Overlay' : 'Enable Overlay';
+        }
+
+        // Demo: Create sample messages every 30 seconds
+        let demoCounter = 0;
+        const demoMessages = [
+            { name: 'อลิซ', message: 'สวัสดีค่ะ! รายการนี้สนุกมากเลย' },
+            { name: 'บ๊อบ', message: 'เก่งมากครับ ติดตามตลอดเลย' },
+            { name: 'ชาลี', message: '555 ตลกดีนะครับ' },
+            { name: 'ดอนน่า', message: 'ขอให้โชคดีนะคะ' }
+        ];
+
+        setInterval(() => {
+            if (overlayEnabled && demoMessages.length > 0) {
+                const message = demoMessages[demoCounter % demoMessages.length];
+                createMessageOverlay(message);
+                demoCounter++;
+            }
+        }, 30000);
+
+        // Initial demo message
+        setTimeout(() => {
+            createMessageOverlay({
+                name: 'ระบบ',
+                message: 'ยินดีต้อนรับสู่ระบบข้อความ! ข้อความจะแสดงที่นี่',
+                profilePic: ''
+            });
+        }, 2000);
+    </script>
+</body>
+</html>
