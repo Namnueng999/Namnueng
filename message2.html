@@ -283,8 +283,8 @@
                     return;
                 }
 
-                if (file.size > 2 * 1024 * 1024) { // จำกัด 2MB
-                    showStatus('ไฟล์ใหญ่เกินไป (สูงสุด 2MB)', 'error');
+                if (file.size > 10 * 1024 * 1024) { // จำกัด 10MB
+                    showStatus('ไฟล์ใหญ่เกินไป (สูงสุด 10MB)', 'error');
                     profileFile.value = '';
                     return;
                 }
@@ -292,14 +292,17 @@
                 const reader = new FileReader();
                 
                 reader.onload = function(event) {
-                    selectedImage = event.target.result;
-                    fileName.textContent = file.name;
-                    fileLabel.classList.add('has-file');
-                    
-                    preview.innerHTML = `
-                        <img src="${selectedImage}" alt="Preview">
-                        <div class="remove-image" onclick="removeImage()">ลบรูป</div>
-                    `;
+                    // บีบอัดรูปภาพก่อนส่ง
+                    compressImage(event.target.result, function(compressedImage) {
+                        selectedImage = compressedImage;
+                        fileName.textContent = file.name;
+                        fileLabel.classList.add('has-file');
+                        
+                        preview.innerHTML = `
+                            <img src="${selectedImage}" alt="Preview">
+                            <div class="remove-image" onclick="removeImage()">ลบรูป</div>
+                        `;
+                    });
                 };
                 
                 reader.readAsDataURL(file);
