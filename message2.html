@@ -51,7 +51,7 @@
             font-size: 14px;
         }
 
-        input, textarea {
+        input[type="text"], textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
@@ -76,6 +76,43 @@
             color: #999;
             font-size: 12px;
             font-weight: normal;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .file-upload-label:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+            color: #667eea;
+        }
+
+        .file-upload-label.has-file {
+            border-color: #667eea;
+            background: #f0f2ff;
+            color: #667eea;
         }
 
         button {
@@ -128,17 +165,33 @@
         }
 
         .preview {
-            margin-top: 10px;
+            margin-top: 15px;
             text-align: center;
         }
 
         .preview img {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid #667eea;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .remove-image {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 15px;
+            background: #dc3545;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease;
+        }
+
+        .remove-image:hover {
+            background: #c82333;
         }
     </style>
 </head>
@@ -149,7 +202,13 @@
         <form id="messageForm">
             <div class="form-group">
                 <label>รูปโปรไฟล์ <span class="optional">(ไม่จำเป็น)</span></label>
-                <input type="url" id="profileUrl" placeholder="วาง URL รูปภาพที่นี่">
+                <div class="file-upload">
+                    <input type="file" id="profileFile" accept="image/*">
+                    <label for="profileFile" class="file-upload-label" id="fileLabel">
+                        <span>📷</span>
+                        <span id="fileName">เลือกรูปภาพ</span>
+                    </label>
+                </div>
                 <div class="preview" id="preview"></div>
             </div>
 
@@ -174,26 +233,61 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyk5Z5gVnqc5ALM6M52crV5gRfHjYI1G3WljU9xaqVjcPcw2Qd5llJGn8FgcjWZq0m8/exec';
 
         const form = document.getElementById('messageForm');
-        const profileUrl = document.getElementById('profileUrl');
+        const profileFile = document.getElementById('profileFile');
+        const fileLabel = document.getElementById('fileLabel');
+        const fileName = document.getElementById('fileName');
         const preview = document.getElementById('preview');
         const status = document.getElementById('status');
         const submitBtn = document.getElementById('submitBtn');
 
-        // แสดงตัวอย่างรูป
-        profileUrl.addEventListener('input', function() {
-            if (this.value) {
-                preview.innerHTML = `<img src="${this.value}" alt="Preview" onerror="this.style.display='none'">`;
-            } else {
-                preview.innerHTML = '';
+        let selectedImage = null;
+
+        // จัดการเลือกไฟล์
+        profileFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                if (!file.type.startsWith('image/')) {
+                    showStatus('กรุณาเลือกไฟล์รูปภาพเท่านั้น', 'error');
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) { // จำกัด 5MB
+                    showStatus('ไฟล์ใหญ่เกินไป (สูงสุด 5MB)', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    selectedImage = event.target.result;
+                    fileName.textContent = file.name;
+                    fileLabel.classList.add('has-file');
+                    
+                    preview.innerHTML = `
+                        <img src="${selectedImage}" alt="Preview">
+                        <div class="remove-image" onclick="removeImage()">ลบรูป</div>
+                    `;
+                };
+                
+                reader.readAsDataURL(file);
             }
         });
+
+        // ลบรูปภาพ
+        window.removeImage = function() {
+            selectedImage = null;
+            profileFile.value = '';
+            fileName.textContent = 'เลือกรูปภาพ';
+            fileLabel.classList.remove('has-file');
+            preview.innerHTML = '';
+        };
 
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const name = document.getElementById('name').value.trim();
             const message = document.getElementById('message').value.trim();
-            const profile = profileUrl.value.trim();
 
             if (!name || !message) {
                 showStatus('กรุณากรอกชื่อและข้อความ', 'error');
@@ -212,7 +306,7 @@
                     body: JSON.stringify({
                         name: name,
                         message: message,
-                        profileUrl: profile
+                        profileUrl: selectedImage || ''
                     })
                 });
 
@@ -221,7 +315,7 @@
                 if (result.status === 'success') {
                     showStatus('ส่งข้อความสำเร็จ! ✨', 'success');
                     form.reset();
-                    preview.innerHTML = '';
+                    removeImage();
                 } else {
                     showStatus('เกิดข้อผิดพลาด: ' + result.message, 'error');
                 }
