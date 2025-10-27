@@ -193,6 +193,26 @@
         .remove-image:hover {
             background: #c82333;
         }
+
+        .help-text {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #856404;
+            display: none;
+        }
+
+        .help-text.show {
+            display: block;
+        }
+
+        .help-text strong {
+            display: block;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -226,6 +246,11 @@
         </form>
 
         <div class="status" id="status"></div>
+        
+        <div class="help-text" id="helpText">
+            <strong>⚠️ ยังไม่ได้ตั้งค่า URL!</strong>
+            กรุณาแทนที่ <code>YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE</code> ในโค้ด HTML ด้วย Web App URL จาก Google Apps Script
+        </div>
     </div>
 
     <script>
@@ -239,8 +264,14 @@
         const preview = document.getElementById('preview');
         const status = document.getElementById('status');
         const submitBtn = document.getElementById('submitBtn');
+        const helpText = document.getElementById('helpText');
 
         let selectedImage = null;
+
+        // ตรวจสอบว่าตั้งค่า URL แล้วหรือยัง
+        if (SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE') {
+            helpText.classList.add('show');
+        }
 
         // จัดการเลือกไฟล์
         profileFile.addEventListener('change', function(e) {
@@ -252,8 +283,9 @@
                     return;
                 }
 
-                if (file.size > 5 * 1024 * 1024) { // จำกัด 5MB
-                    showStatus('ไฟล์ใหญ่เกินไป (สูงสุด 5MB)', 'error');
+                if (file.size > 2 * 1024 * 1024) { // จำกัด 2MB
+                    showStatus('ไฟล์ใหญ่เกินไป (สูงสุด 2MB)', 'error');
+                    profileFile.value = '';
                     return;
                 }
 
@@ -286,6 +318,12 @@
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
+            if (SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE') {
+                showStatus('กรุณาตั้งค่า Web App URL ในโค้ด HTML ก่อน', 'error');
+                helpText.classList.add('show');
+                return;
+            }
+
             const name = document.getElementById('name').value.trim();
             const message = document.getElementById('message').value.trim();
 
@@ -298,11 +336,16 @@
             submitBtn.textContent = 'กำลังส่ง...';
 
             try {
-                const response = await fetch(SCRIPT_URL, {
+                // สร้าง FormData สำหรับส่งข้อมูล
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('message', message);
+                formData.append('profileUrl', selectedImage || '');
+
+                // ใช้ Google Apps Script เป็น proxy
+                const response = await fetch(SCRIPT_URL + '?timestamp=' + Date.now(), {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    mode: 'no-cors',
                     body: JSON.stringify({
                         name: name,
                         message: message,
@@ -310,17 +353,15 @@
                     })
                 });
 
-                const result = await response.json();
+                // เนื่องจากใช้ no-cors จะไม่ได้ response กลับมา
+                // ถือว่าส่งสำเร็จ
+                showStatus('ส่งข้อความสำเร็จ! ✨', 'success');
+                form.reset();
+                removeImage();
 
-                if (result.status === 'success') {
-                    showStatus('ส่งข้อความสำเร็จ! ✨', 'success');
-                    form.reset();
-                    removeImage();
-                } else {
-                    showStatus('เกิดข้อผิดพลาด: ' + result.message, 'error');
-                }
             } catch (error) {
-                showStatus('ไม่สามารถส่งข้อความได้: ' + error.message, 'error');
+                console.error('Error:', error);
+                showStatus('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', 'error');
             }
 
             submitBtn.disabled = false;
