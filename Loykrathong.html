@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลอยกระทงออนไลน์</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Sarabun', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+        
+        input[type="text"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .krathong-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .krathong-option {
+            position: relative;
+            cursor: pointer;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .krathong-option:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+        
+        .krathong-option input[type="radio"] {
+            display: none;
+        }
+        
+        .krathong-option input[type="radio"]:checked + img {
+            border: 3px solid #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .krathong-option img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .profile-preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .profile-preview img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 50%;
+            border: 3px solid #667eea;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ลอยกระทงออนไลน์</h1>
+        <p class="subtitle">ส่งความปรารถนาดีของคุณ</p>
+        
+        <form id="krathongForm">
+            <div class="form-group">
+                <label>รูปโปรไฟล์ (ไม่บังคับ)</label>
+                <input type="file" id="profileImage" accept="image/*">
+                <div class="profile-preview" id="profilePreview"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>ชื่อของคุณ *</label>
+                <input type="text" id="userName" required placeholder="กรอกชื่อ-นามสกุล">
+            </div>
+            
+            <div class="form-group">
+                <label>คำอวยพร *</label>
+                <textarea id="wishMessage" required placeholder="เขียนคำอวยพร"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>เลือกกระทง *</label>
+                <div class="krathong-selector">
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="1" required>
+                        <img src="https://drive.google.com/thumbnail?id=17Dis8x5WPZwo7lOjbXlt2RNv_BSmknUB&sz=w200" alt="กระทง 1">
+                    </label>
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="2">
+                        <img src="https://drive.google.com/thumbnail?id=1NQU2nNqEgV3k3ggIaLW7lI6nnWYjWIi8&sz=w200" alt="กระทง 2">
+                    </label>
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="3">
+                        <img src="https://drive.google.com/thumbnail?id=1j6nkk6XlS5VmNVx-5B1oJ2B3Xh3GYZAa&sz=w200" alt="กระทง 3">
+                    </label>
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="4">
+                        <img src="https://drive.google.com/thumbnail?id=1KTADbCPtMt0lcilkGXZRsBiOhRCVqYqb&sz=w200" alt="กระทง 4">
+                    </label>
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="5">
+                        <img src="https://drive.google.com/thumbnail?id=12ggx-Y2UdHnL0zDNMlZjrK0YGgXSyEcs&sz=w200" alt="กระทง 5">
+                    </label>
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="6">
+                        <img src="https://drive.google.com/thumbnail?id=1CJQUjnVj9K2swFXKlMR2dvI4th06IrCA&sz=w200" alt="กระทง 6">
+                    </label>
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="7">
+                        <img src="https://drive.google.com/thumbnail?id=1ncV7M9MQ0JXTseqIagFrE0yToGgb0uDR&sz=w200" alt="กระทง 7">
+                    </label>
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="8">
+                        <img src="https://drive.google.com/thumbnail?id=1GadQNNNZdCaWICen6HbyJxcrsuZjmI6N&sz=w200" alt="กระทง 8">
+                    </label>
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="9">
+                        <img src="https://drive.google.com/thumbnail?id=1G1hXuXySyjs75PCc8FX7wHzAlGzlyb_u&sz=w200" alt="กระทง 9">
+                    </label>
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="10">
+                        <img src="https://drive.google.com/thumbnail?id=1HPSdC_8z4DET23YXiiHMTmgSisG6T_2x&sz=w200" alt="กระทง 10">
+                    </label>
+                    <label class="krathong-option">
+                        <input type="radio" name="krathong" value="11">
+                        <img src="https://drive.google.com/thumbnail?id=15ufiYrHvE3wUwpIBuqwdLVLEtw3KuXzO&sz=w200" alt="กระทง 11">
+                    </label>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn">🪔 ลอยกระทง 🪔</button>
+            
+            <div class="status-message" id="statusMessage"></div>
+        </form>
+    </div>
+
+    <script>
+        // Preview profile image
+        document.getElementById('profileImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('profilePreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Profile Preview">`;
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('krathongForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const statusMsg = document.getElementById('statusMessage');
+            const submitBtn = e.target.querySelector('.submit-btn');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'กำลังส่ง...';
+            
+            // Get form data
+            const formData = {
+                name: document.getElementById('userName').value,
+                wish: document.getElementById('wishMessage').value,
+                krathong: document.querySelector('input[name="krathong"]:checked').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Get profile image as base64 if uploaded
+            const profileFile = document.getElementById('profileImage').files[0];
+            if (profileFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    formData.profileImage = e.target.result;
+                    sendData(formData);
+                }
+                reader.readAsDataURL(profileFile);
+            } else {
+                formData.profileImage = '';
+                sendData(formData);
+            }
+            
+            async function sendData(data) {
+                try {
+                    // แทนที่ URL นี้ด้วย URL ของ Google Apps Script ที่คุณ Deploy
+                    const scriptURL = 'https://script.google.com/macros/s/AKfycbybXwpizvOuttrHbKcwkWVN7hB20muUmJ1pqWo5QSBQRWY3w16drF-NVDfa2kEU156gjQ/exec';
+                    
+                    const response = await fetch(scriptURL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    statusMsg.className = 'status-message success';
+                    statusMsg.textContent = '✨ ลอยกระทงสำเร็จ! ขอให้คุณโชคดีตลอดปี';
+                    statusMsg.style.display = 'block';
+                    
+                    // Reset form
+                    document.getElementById('krathongForm').reset();
+                    document.getElementById('profilePreview').innerHTML = '';
+                    
+                } catch (error) {
+                    statusMsg.className = 'status-message error';
+                    statusMsg.textContent = 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+                    statusMsg.style.display = 'block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '🪔 ลอยกระทง 🪔';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
