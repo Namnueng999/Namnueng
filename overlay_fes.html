@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Overlay - Slide Left</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            background: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .messages-container {
+            position: fixed;
+            left: 30px;
+            bottom: 30px;
+            width: 450px;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 15px;
+            pointer-events: none;
+        }
+        
+        .message-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 25px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transform: translateX(-500px);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .message-item.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .message-item.slide-up {
+            animation: slideUp 0.6s ease-out forwards;
+        }
+        
+        @keyframes slideUp {
+            to {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+        }
+        
+        .profile-pic {
+            flex-shrink: 0;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe) border-box;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        .profile-pic.default {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        @keyframes glow {
+            0%, 100% {
+                filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.5));
+            }
+            50% {
+                filter: drop-shadow(0 0 15px rgba(118, 75, 162, 0.7));
+            }
+        }
+        
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .message-name {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-text {
+            color: #333;
+            font-size: 16px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .message-time {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            font-size: 11px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="messages-container" id="messagesContainer"></div>
+
+    <script>
+        // ⚠️ แก้ไข URL นี้เป็น Web app URL ของคุณจาก Google Apps Script
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQ3IhX-esHzdYhPb_wayoojQgDk6L4XVypRvEtZ36TvWibsn3VxQSl1Y1NVe3DbC4s/exec';
+        
+        const DISPLAY_TIME = 60000; // 60 วินาที
+        const CHECK_INTERVAL = 5000; // ตรวจสอบทุก 5 วินาที
+        const MAX_MESSAGES = 5; // แสดงสูงสุด 5 ข้อความพร้อมกัน
+        
+        let displayedMessages = new Set();
+        let messageElements = [];
+        const container = document.getElementById('messagesContainer');
+        
+        // ดึงข้อความจาก Google Sheet
+        async function fetchMessages() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                
+                if (data.success && data.messages) {
+                    return data.messages;
+                }
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+            return [];
+        }
+        
+        // ฟอร์แมตเวลา
+        function formatTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+        
+        // สร้างข้อความแสดงบนหน้าจอ
+        function createMessage(msg) {
+            const messageId = `${msg.name}-${msg.message}-${msg.timestamp}`;
+            
+            // ถ้าแสดงไปแล้วไม่ต้องแสดงซ้ำ
+            if (displayedMessages.has(messageId)) {
+                return;
+            }
+            
+            displayedMessages.add(messageId);
+            
+            // ถ้ามีข้อความเกิน MAX_MESSAGES ให้ลบข้อความเก่าสุด
+            if (messageElements.length >= MAX_MESSAGES) {
+                const oldestElement = messageElements.shift();
+                oldestElement.classList.add('slide-up');
+                setTimeout(() => {
+                    if (oldestElement.parentNode) {
+                        oldestElement.remove();
+                    }
+                }, 600);
+            }
+            
+            const messageItem = document.createElement('div');
+            messageItem.className = 'message-item';
+            
+            // สร้างรูปโปรไฟล์
+            const profileDiv = document.createElement('div');
+            if (msg.profileImage) {
+                const img = document.createElement('img');
+                img.src = msg.profileImage;
+                img.className = 'profile-pic';
+                profileDiv.appendChild(img);
+            } else {
+                const defaultPic = document.createElement('div');
+                defaultPic.className = 'profile-pic default';
+                defaultPic.textContent = msg.name.charAt(0).toUpperCase();
+                profileDiv.appendChild(defaultPic);
+            }
+            
+            // สร้างเนื้อหาข้อความ
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.style.position = 'relative';
+            content.style.paddingBottom = '15px';
+            
+            const name = document.createElement('div');
+            name.className = 'message-name';
+            name.textContent = msg.name;
+            
+            const text = document.createElement('div');
+            text.className = 'message-text';
+            text.textContent = msg.message;
+            
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = formatTime();
+            
+            content.appendChild(name);
+            content.appendChild(text);
+            content.appendChild(time);
+            
+            messageItem.appendChild(profileDiv);
+            messageItem.appendChild(content);
+            
+            container.appendChild(messageItem);
+            messageElements.push(messageItem);
+            
+            // แสดงข้อความด้วย animation
+            setTimeout(() => {
+                messageItem.classList.add('show');
+            }, 50);
+            
+            // ลบข้อความหลังจาก 60 วินาที
+            setTimeout(() => {
+                const index = messageElements.indexOf(messageItem);
+                if (index > -1) {
+                    messageElements.splice(index, 1);
+                }
+                
+                messageItem.classList.add('slide-up');
+                setTimeout(() => {
+                    if (messageItem.parentNode) {
+                        messageItem.remove();
+                    }
+                    displayedMessages.delete(messageId);
+                }, 600);
+            }, DISPLAY_TIME);
+        }
+        
+        // ตรวจสอบข้อความใหม่
+        let lastCheck = new Date(0);
+        
+        async function checkNewMessages() {
+            const messages = await fetchMessages();
+            
+            // เรียงข้อความจากเก่าไปใหม่
+            const newMessages = messages
+                .filter(msg => new Date(msg.timestamp) > lastCheck)
+                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            
+            newMessages.forEach(msg => {
+                createMessage(msg);
+            });
+            
+            lastCheck = new Date();
+        }
+        
+        // เริ่มต้นระบบ
+        checkNewMessages();
+        setInterval(checkNewMessages, CHECK_INTERVAL);
+    </script>
+</body>
+</html>
