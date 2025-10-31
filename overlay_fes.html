@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กระทงลอย Overlay</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: transparent;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .krathong-container {
+            position: fixed;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+            z-index: 100;
+        }
+        
+        .krathong-container.floating {
+            animation: float-left 50s linear forwards;
+        }
+        
+        @keyframes float-left {
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+            25% {
+                transform: translateX(-25vw) translateY(-10px);
+            }
+            50% {
+                transform: translateX(-50vw) translateY(5px);
+            }
+            75% {
+                transform: translateX(-75vw) translateY(-8px);
+            }
+            100% {
+                transform: translateX(-110vw) translateY(0);
+            }
+        }
+        
+        .krathong-img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            animation: bob 3s ease-in-out infinite;
+        }
+        
+        @keyframes bob {
+            0%, 100% {
+                transform: translateY(0) rotate(-2deg);
+            }
+            50% {
+                transform: translateY(-8px) rotate(2deg);
+            }
+        }
+        
+        .krathong-info {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-radius: 15px;
+            max-width: 300px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid #667eea;
+            object-fit: cover;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .krathong-name {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            font-family: 'Sarabun', Arial, sans-serif;
+        }
+        
+        .krathong-wish {
+            color: #333;
+            font-size: 0.9em;
+            line-height: 1.4;
+            font-family: 'Sarabun', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const krathongImages = [
+            'https://drive.google.com/thumbnail?id=17Dis8x5WPZwo7lOjbXlt2RNv_BSmknUB&sz=w200',
+            'https://drive.google.com/thumbnail?id=1NQU2nNqEgV3k3ggIaLW7lI6nnWYjWIi8&sz=w200',
+            'https://drive.google.com/thumbnail?id=1j6nkk6XlS5VmNVx-5B1oJ2B3Xh3GYZAa&sz=w200',
+            'https://drive.google.com/thumbnail?id=1KTADbCPtMt0lcilkGXZRsBiOhRCVqYqb&sz=w200',
+            'https://drive.google.com/thumbnail?id=12ggx-Y2UdHnL0zDNMlZjrK0YGgXSyEcs&sz=w200',
+            'https://drive.google.com/thumbnail?id=1CJQUjnVj9K2swFXKlMR2dvI4th06IrCA&sz=w200',
+            'https://drive.google.com/thumbnail?id=1ncV7M9MQ0JXTseqIagFrE0yToGgb0uDR&sz=w200',
+            'https://drive.google.com/thumbnail?id=1GadQNNNZdCaWICen6HbyJxcrsuZjmI6N&sz=w200',
+            'https://drive.google.com/thumbnail?id=1G1hXuXySyjs75PCc8FX7wHzAlGzlyb_u&sz=w200',
+            'https://drive.google.com/thumbnail?id=1HPSdC_8z4DET23YXiiHMTmgSisG6T_2x&sz=w200',
+            'https://drive.google.com/thumbnail?id=15ufiYrHvE3wUwpIBuqwdLVLEtw3KuXzO&sz=w200'
+        ];
+        
+        let krathongData = [];
+        let lastLoadedCount = 0;
+        
+        // ดึงข้อมูลจาก Google Sheets
+        async function loadKrathongs() {
+            try {
+                // แทนที่ด้วย URL ของ Google Apps Script (doGet)
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbybXwpizvOuttrHbKcwkWVN7hB20muUmJ1pqWo5QSBQRWY3w16drF-NVDfa2kEU156gjQ/exec';
+                
+                const response = await fetch(scriptURL);
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data) {
+                    const newData = result.data;
+                    
+                    // แสดงเฉพาะกระทงใหม่ที่ยังไม่ได้แสดง
+                    if (newData.length > lastLoadedCount) {
+                        const newKrathongs = newData.slice(lastLoadedCount);
+                        newKrathongs.forEach((krathong, index) => {
+                            setTimeout(() => {
+                                createKrathong(krathong);
+                            }, index * 2000);
+                        });
+                        lastLoadedCount = newData.length;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading krathongs:', error);
+            }
+        }
+        
+        // สร้างกระทงแต่ละใบ
+        function createKrathong(data) {
+            const container = document.createElement('div');
+            container.className = 'krathong-container';
+            
+            // ตำแหน่งสุ่มในแนวตั้ง (20-80% ของหน้าจอ)
+            const randomTop = Math.random() * 60 + 20;
+            container.style.top = `${randomTop}%`;
+            container.style.right = '-500px';
+            
+            // ความเร็วสุ่ม
+            const randomDuration = Math.random() * 20 + 40; // 40-60 วินาที
+            container.style.animationDuration = `${randomDuration}s`;
+            
+            // สร้างภาพกระทง
+            const krathongImg = document.createElement('img');
+            krathongImg.className = 'krathong-img';
+            const krathongIndex = parseInt(data.Krathong) - 1;
+            krathongImg.src = krathongImages[krathongIndex] || krathongImages[0];
+            krathongImg.alt = 'กระทง';
+            
+            // สร้างกล่องข้อมูล
+            const infoBox = document.createElement('div');
+            infoBox.className = 'krathong-info';
+            
+            // รูปโปรไฟล์ (ถ้ามี)
+            if (data['Profile Image'] && data['Profile Image'].trim() !== '') {
+                const profilePic = document.createElement('img');
+                profilePic.className = 'profile-pic';
+                profilePic.src = data['Profile Image'];
+                profilePic.alt = 'Profile';
+                profilePic.onerror = function() {
+                    this.style.display = 'none';
+                };
+                infoBox.appendChild(profilePic);
+            }
+            
+            // ชื่อ
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'krathong-name';
+            nameDiv.textContent = data.Name || 'ไม่ระบุชื่อ';
+            infoBox.appendChild(nameDiv);
+            
+            // คำอวยพร
+            const wishDiv = document.createElement('div');
+            wishDiv.className = 'krathong-wish';
+            wishDiv.textContent = data.Wish || '';
+            infoBox.appendChild(wishDiv);
+            
+            // รวมทุกอย่างเข้าด้วยกัน
+            container.appendChild(krathongImg);
+            container.appendChild(infoBox);
+            
+            // เพิ่มเข้าไปในหน้าจอ
+            document.body.appendChild(container);
+            
+            // เริ่มแอนิเมชัน
+            setTimeout(() => {
+                container.classList.add('floating');
+            }, 100);
+            
+            // ลบกระทงออกเมื่อลอยออกจากหน้าจอแล้ว
+            setTimeout(() => {
+                container.remove();
+            }, (randomDuration + 2) * 1000);
+        }
+        
+        // ใช้ข้อมูลตัวอย่างสำหรับทดสอบ
+        function useSampleData() {
+            const sampleData = [
+                {
+                    Name: 'สมชาย',
+                    Wish: 'ขอให้ทุกคนมีความสุขและสุขภาพแข็งแรง',
+                    Krathong: '1',
+                    'Profile Image': ''
+                },
+                {
+                    Name: 'สมหญิง',
+                    Wish: 'ขอให้ปีหน้าประสบความสำเร็จในทุกเรื่อง',
+                    Krathong: '3',
+                    'Profile Image': ''
+                },
+                {
+                    Name: 'นายตัวอย่าง',
+                    Wish: 'ขอให้โลกใบนี้เต็มไปด้วยความรักและสันติสุข',
+                    Krathong: '5',
+                    'Profile Image': ''
+                }
+            ];
+            
+            sampleData.forEach((krathong, index) => {
+                setTimeout(() => {
+                    createKrathong(krathong);
+                }, index * 3000);
+            });
+        }
+        
+        // เริ่มต้นเมื่อโหลดหน้า
+        window.onload = function() {
+            console.log('Krathong Overlay loaded');
+            
+            // ทดสอบด้วยข้อมูลตัวอย่าง
+            useSampleData();
+            
+            // ตรวจสอบข้อมูลใหม่ทุก 10 วินาที
+            setInterval(loadKrathongs, 10000);
+        };
+    </script>
+</body>
+</html>
