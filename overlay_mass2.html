@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Overlay</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            background: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .message-container {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .message-container.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .message-container.hide {
+            opacity: 0;
+            transform: scale(0.5);
+        }
+        
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe) border-box;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        .profile-pic.default {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+        
+        @keyframes glow {
+            0%, 100% {
+                filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.6));
+            }
+            50% {
+                filter: drop-shadow(0 0 20px rgba(118, 75, 162, 0.8));
+            }
+        }
+        
+        .message-content {
+            max-width: 400px;
+        }
+        
+        .message-name {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        
+        .message-text {
+            color: #333;
+            font-size: 18px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // ⚠️ แก้ไข URL นี้เป็น Web app URL ของคุณจาก Google Apps Script
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQ3IhX-esHzdYhPb_wayoojQgDk6L4XVypRvEtZ36TvWibsn3VxQSl1Y1NVe3DbC4s/exec';
+        
+        const DISPLAY_TIME = 60000; // 1 นาที
+        const CHECK_INTERVAL = 5000; // ตรวจสอบทุก 5 วินาที
+        
+        let displayedMessages = new Set();
+        
+        // ดึงข้อความจาก Google Sheet
+        async function fetchMessages() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                
+                if (data.success && data.messages) {
+                    return data.messages;
+                }
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+            return [];
+        }
+        
+        // สร้างข้อความแสดงบนหน้าจอ
+        function createMessage(msg) {
+            const messageId = `${msg.name}-${msg.message}-${msg.timestamp}`;
+            
+            // ถ้าแสดงไปแล้วไม่ต้องแสดงซ้ำ
+            if (displayedMessages.has(messageId)) {
+                return;
+            }
+            
+            displayedMessages.add(messageId);
+            
+            const container = document.createElement('div');
+            container.className = 'message-container';
+            
+            // สุ่มตำแหน่ง
+            const x = Math.random() * (1920 - 500) + 50;
+            const y = Math.random() * (1080 - 150) + 50;
+            container.style.left = x + 'px';
+            container.style.top = y + 'px';
+            
+            // สร้างรูปโปรไฟล์
+            const profileDiv = document.createElement('div');
+            if (msg.profileImage) {
+                const img = document.createElement('img');
+                img.src = msg.profileImage;
+                img.className = 'profile-pic';
+                profileDiv.appendChild(img);
+            } else {
+                const defaultPic = document.createElement('div');
+                defaultPic.className = 'profile-pic default';
+                defaultPic.textContent = msg.name.charAt(0).toUpperCase();
+                profileDiv.appendChild(defaultPic);
+            }
+            
+            // สร้างเนื้อหาข้อความ
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            
+            const name = document.createElement('div');
+            name.className = 'message-name';
+            name.textContent = msg.name;
+            
+            const text = document.createElement('div');
+            text.className = 'message-text';
+            text.textContent = msg.message;
+            
+            content.appendChild(name);
+            content.appendChild(text);
+            
+            container.appendChild(profileDiv);
+            container.appendChild(content);
+            
+            document.body.appendChild(container);
+            
+            // แสดงข้อความด้วย animation
+            setTimeout(() => {
+                container.classList.add('show');
+            }, 100);
+            
+            // ซ่อนและลบข้อความหลังจาก 1 นาที
+            setTimeout(() => {
+                container.classList.remove('show');
+                container.classList.add('hide');
+                setTimeout(() => {
+                    container.remove();
+                    displayedMessages.delete(messageId);
+                }, 500);
+            }, DISPLAY_TIME);
+        }
+        
+        // ตรวจสอบข้อความใหม่
+        let lastCheck = new Date(0);
+        
+        async function checkNewMessages() {
+            const messages = await fetchMessages();
+            
+            messages.forEach(msg => {
+                const msgTime = new Date(msg.timestamp);
+                if (msgTime > lastCheck) {
+                    createMessage(msg);
+                }
+            });
+            
+            lastCheck = new Date();
+        }
+        
+        // เริ่มต้นระบบ
+        checkNewMessages();
+        setInterval(checkNewMessages, CHECK_INTERVAL);
+    </script>
+</body>
+</html>
