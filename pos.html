@@ -277,7 +277,7 @@
                         body: JSON.stringify(discordMessage)
                     });
 
-                    alert(`✅ ชำระเงินสำเร็จ!\nยอดรวม: ฿${total.toFixed(2)}`);
+                    alert(`✅ บันทึกรายการสำเร็จ!\nยอดรวม: ฿${total.toFixed(2)}`);
                     setCart([]);
                 } catch (error) {
                     console.error('Error:', error);
@@ -456,7 +456,7 @@
                                                     className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-lg shadow transition flex items-center justify-center gap-2"
                                                 >
                                                     <span className="text-2xl">💳</span>
-                                                    <span>ชำระเงิน</span>
+                                                    <span>บันทึกรายการ</span>
                                                 </button>
                                             </div>
                                         </>
