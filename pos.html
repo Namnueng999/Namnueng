@@ -248,7 +248,8 @@
                     const discordMessage = {
                         embeds: [{
                             title: '🛒 รายการขายใหม่',
-                            color: 0x3498db,
+                            //color: 0x3498db,
+                            color: Math.floor(Math.random() * 16777215), // สุ่มสี
                             fields: [
                                 {
                                     name: '📅 เวลา',
