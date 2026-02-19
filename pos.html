@@ -96,21 +96,27 @@
             };
 
             const saveProductsToGoogleSheets = (data) => {
-                const params = new URLSearchParams({
-                    action: 'saveProducts',
-                    data: JSON.stringify(data)
-                });
-                fetch(`${GOOGLE_SCRIPT}?${params.toString()}`, { method: 'GET', mode: 'no-cors' })
-                    .catch(err => console.log('save products error:', err));
+                fetch(GOOGLE_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'saveProducts',
+                        data: JSON.stringify(data)
+                    })
+                }).catch(err => console.log('save products error:', err));
             };
 
             const saveCategoriesToGoogleSheets = (data) => {
-                const params = new URLSearchParams({
-                    action: 'saveCategories',
-                    data: JSON.stringify(data)
-                });
-                fetch(`${GOOGLE_SCRIPT}?${params.toString()}`, { method: 'GET', mode: 'no-cors' })
-                    .catch(err => console.log('save categories error:', err));
+                fetch(GOOGLE_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'saveCategories',
+                        data: JSON.stringify(data)
+                    })
+                }).catch(err => console.log('save categories error:', err));
             };
 
             const categories = ['ทั้งหมด', ...customCategories];
@@ -218,8 +224,12 @@
                 const itemsList = cart.map(item => `${item.emoji} ${item.name} x${item.quantity}`).join(', ');
 
                 // บันทึกยอดขายลง Sheets
-                const params = new URLSearchParams({ action: 'saveSale', timestamp, items: itemsList, total: total.toFixed(2) });
-                fetch(`${GOOGLE_SCRIPT}?${params.toString()}`, { method: 'GET', mode: 'no-cors' });
+                fetch(GOOGLE_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ action: 'saveSale', timestamp, items: itemsList, total: total.toFixed(2) })
+                }).catch(err => console.log('save sale error:', err));
 
                 // ส่ง Discord
                 try {
