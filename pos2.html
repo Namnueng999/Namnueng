@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ปังเย็น</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        .product-item { transition: transform 0.2s; }
+        .product-item:hover { transform: scale(1.05); }
+        .emoji-display { font-size: 3rem; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1473911909894848584/bcyU_YKRpovZ50ZICQ5nKDcHyNn4X0Mbrz5Sz7J71DMicK9b_cCULu_BGn2jpmpys45S';
+        const GOOGLE_SCRIPT = 'https://script.google.com/macros/s/AKfycbwMvf7DihTDBJC0QziMCb4Um5K5znXZuq4isDylZlPmcaHJqCYJowKZiGIFfHH7mB_m/exec';
+
+        const DEFAULT_PRODUCTS = [
+            { id: 1, name: 'กาแฟ', emoji: '☕', price: 45, category: 'เครื่องดื่ม' },
+            { id: 2, name: 'ชาเขียว', emoji: '🍵', price: 40, category: 'เครื่องดื่ม' },
+            { id: 3, name: 'แฮมเบอร์เกอร์', emoji: '🍔', price: 85, category: 'อาหาร' },
+            { id: 4, name: 'พิซซ่า', emoji: '🍕', price: 120, category: 'อาหาร' },
+            { id: 5, name: 'ไอศกรีม', emoji: '🍦', price: 35, category: 'ของหวาน' },
+        ];
+        const DEFAULT_CATEGORIES = ['เครื่องดื่ม', 'อาหาร', 'ของหวาน'];
+
+        function POSSystem() {
+            // state เริ่มต้นเป็น empty — รอโหลดจาก Sheets
+            const [products, setProducts] = useState([]);
+            const [customCategories, setCustomCategories] = useState([]);
+            const [cart, setCart] = useState([]);
+            const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด');
+            const [showAddProduct, setShowAddProduct] = useState(false);
+            const [showEditProduct, setShowEditProduct] = useState(false);
+            const [showCategoryManager, setShowCategoryManager] = useState(false);
+            const [editingProduct, setEditingProduct] = useState(null);
+            const [newCategoryName, setNewCategoryName] = useState('');
+            const [editingCategory, setEditingCategory] = useState(null);
+            const [editingCategoryName, setEditingCategoryName] = useState('');
+            const [isLoading, setIsLoading] = useState(true);
+            const [formData, setFormData] = useState({ name: '', emoji: '', price: '', category: '' });
+
+            // ✅ KEY FIX: useRef ไม่ถูก reset ตอน re-render
+            // จะเป็น true ก็ต่อเมื่อ load จาก Sheets เสร็จแล้วเท่านั้น
+            const isLoaded = useRef(false);
+
+            // โหลดครั้งแรก
+            useEffect(() => {
+                loadFromGoogleSheets();
+            }, []);
+
+            // Save products — ทำงานเฉพาะเมื่อ isLoaded.current === true
+            useEffect(() => {
+                if (!isLoaded.current) return;
+                saveProductsToGoogleSheets(products);
+            }, [products]);
+
+            // Save categories — ทำงานเฉพาะเมื่อ isLoaded.current === true
+            useEffect(() => {
+                if (!isLoaded.current) return;
+                saveCategoriesToGoogleSheets(customCategories);
+            }, [customCategories]);
+
+            const loadFromGoogleSheets = async () => {
+                try {
+                    const response = await fetch(`${GOOGLE_SCRIPT}?action=load`);
+                    const data = await response.json();
+                    const loadedProducts = (data.products && data.products.length > 0) ? data.products : DEFAULT_PRODUCTS;
+                    const loadedCategories = (data.categories && data.categories.length > 0) ? data.categories : DEFAULT_CATEGORIES;
+
+                    // set state ก่อน...
+                    setProducts(loadedProducts);
+                    setCustomCategories(loadedCategories);
+                    setFormData({ name: '', emoji: '', price: '', category: loadedCategories[0] || '' });
+                } catch (error) {
+                    console.log('โหลดจาก Google Sheets ไม่ได้ ใช้ค่า default:', error);
+                    setProducts(DEFAULT_PRODUCTS);
+                    setCustomCategories(DEFAULT_CATEGORIES);
+                    setFormData({ name: '', emoji: '', price: '', category: DEFAULT_CATEGORIES[0] });
+                } finally {
+                    // ✅ เปิด flag หลังจาก set state เสร็จหมดแล้ว
+                    // useEffect ของ save จะยิงได้ตั้งแต่การเปลี่ยนแปลงครั้งถัดไปเท่านั้น
+                    setTimeout(() => {
+                        isLoaded.current = true;
+                        setIsLoading(false);
+                    }, 100);
+                }
+            };
+
+            const saveProductsToGoogleSheets = (data) => {
+                fetch(GOOGLE_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'saveProducts',
+                        data: JSON.stringify(data)
+                    })
+                }).catch(err => console.log('save products error:', err));
+            };
+
+            const saveCategoriesToGoogleSheets = (data) => {
+                fetch(GOOGLE_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'saveCategories',
+                        data: JSON.stringify(data)
+                    })
+                }).catch(err => console.log('save categories error:', err));
+            };
+
+            const categories = ['ทั้งหมด', ...customCategories];
+            const filteredProducts = selectedCategory === 'ทั้งหมด'
+                ? products
+                : products.filter(p => p.category === selectedCategory);
+
+            const addToCart = (product) => {
+                const existing = cart.find(item => item.id === product.id);
+                if (existing) {
+                    setCart(cart.map(item =>
+                        item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+                    ));
+                } else {
+                    setCart([...cart, { ...product, quantity: 1 }]);
+                }
+            };
+
+            const updateCartQuantity = (id, delta) => {
+                setCart(cart.map(item => {
+                    if (item.id === id) {
+                        const q = item.quantity + delta;
+                        return q > 0 ? { ...item, quantity: q } : item;
+                    }
+                    return item;
+                }).filter(item => item.quantity > 0));
+            };
+
+            const removeFromCart = (id) => setCart(cart.filter(item => item.id !== id));
+            const getTotal = () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            const handleAddProduct = () => {
+                if (!formData.name || !formData.emoji || !formData.price) return;
+                const newProduct = {
+                    id: Date.now(),
+                    name: formData.name,
+                    emoji: formData.emoji,
+                    price: parseFloat(formData.price),
+                    category: formData.category
+                };
+                setProducts([...products, newProduct]);
+                setFormData({ name: '', emoji: '', price: '', category: customCategories[0] || '' });
+                setShowAddProduct(false);
+            };
+
+            const handleEditProduct = () => {
+                if (!formData.name || !formData.emoji || !formData.price) return;
+                setProducts(products.map(p =>
+                    p.id === editingProduct.id
+                        ? { ...p, name: formData.name, emoji: formData.emoji, price: parseFloat(formData.price), category: formData.category }
+                        : p
+                ));
+                setShowEditProduct(false);
+                setEditingProduct(null);
+                setFormData({ name: '', emoji: '', price: '', category: customCategories[0] || '' });
+            };
+
+            const deleteProduct = (id) => {
+                if (!confirm('ต้องการลบสินค้านี้หรือไม่?')) return;
+                setProducts(products.filter(p => p.id !== id));
+                setCart(cart.filter(item => item.id !== id));
+            };
+
+            const openEditModal = (product) => {
+                setEditingProduct(product);
+                setFormData({ name: product.name, emoji: product.emoji, price: product.price.toString(), category: product.category });
+                setShowEditProduct(true);
+            };
+
+            const addCategory = () => {
+                const name = newCategoryName.trim();
+                if (name && !customCategories.includes(name)) {
+                    setCustomCategories([...customCategories, name]);
+                    setNewCategoryName('');
+                }
+            };
+
+            const deleteCategory = (cat) => {
+                if (!confirm(`ต้องการลบหมวดหมู่ "${cat}" หรือไม่?`)) return;
+                setCustomCategories(customCategories.filter(c => c !== cat));
+                if (selectedCategory === cat) setSelectedCategory('ทั้งหมด');
+            };
+
+            const renameCategory = (oldName) => {
+                const newName = editingCategoryName.trim();
+                if (!newName || newName === oldName) {
+                    setEditingCategory(null);
+                    setEditingCategoryName('');
+                    return;
+                }
+                if (customCategories.includes(newName)) {
+                    alert('มีหมวดหมู่ชื่อนี้อยู่แล้ว');
+                    return;
+                }
+                setCustomCategories(customCategories.map(c => c === oldName ? newName : c));
+                setProducts(products.map(p => p.category === oldName ? { ...p, category: newName } : p));
+                if (selectedCategory === oldName) setSelectedCategory(newName);
+                setEditingCategory(null);
+                setEditingCategoryName('');
+            };
+
+            const processPayment = async () => {
+                const total = getTotal();
+                const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+                const itemsList = cart.map(item => `${item.emoji} ${item.name} x${item.quantity}`).join(', ');
+
+                // บันทึกยอดขายลง Sheets
+                fetch(GOOGLE_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ action: 'saveSale', timestamp, items: itemsList, total: total.toFixed(2) })
+                }).catch(err => console.log('save sale error:', err));
+
+                // ส่ง Discord
+                try {
+                    await fetch(DISCORD_WEBHOOK, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            embeds: [{
+                                title: '🛒 รายการขายใหม่',
+                                // color: 0x3498db,
+                                color: Math.floor(Math.random() * 16777215), // สุ่มสี
+                                fields: [
+                                    { name: '📅 เวลา', value: timestamp },
+                                    { name: '🛍️ รายการสินค้า', value: cart.map(item => `${item.emoji} ${item.name} x${item.quantity} = ฿${(item.price * item.quantity).toFixed(2)}`).join('\n') },
+                                    { name: '💰 ยอดรวม', value: `฿${total.toFixed(2)}` }
+                                ],
+                                timestamp: new Date().toISOString()
+                            }]
+                        })
+                    });
+                } catch (e) { console.log('Discord error:', e); }
+
+                alert(`✅ บันทึกรายการสำเร็จ!\nยอดรวม: ฿${total.toFixed(2)}`);
+                setCart([]);
+            };
+
+            if (isLoading) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center">
+                        <div className="text-center">
+                            <div className="text-5xl mb-4">⏳</div>
+                            <div className="text-xl text-gray-600">กำลังโหลดข้อมูล...</div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen p-4">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Header */}
+                        <div className="flex justify-between items-center mb-6">
+                            <h1 className="text-4xl font-bold text-gray-800">🏪 ปังเย็นหนองหัวยาง</h1>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setShowAddProduct(true)}
+                                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow transition"
+                                >
+                                    ➕ เพิ่มสินค้าใหม่
+                                </button>
+                                <button
+                                    onClick={() => setShowCategoryManager(true)}
+                                    className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg shadow transition"
+                                >
+                                    📁 จัดการหมวดหมู่
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        if (!document.fullscreenElement) {
+                                            document.documentElement.requestFullscreen();
+                                        } else {
+                                            document.exitFullscreen();
+                                        }
+                                    }}
+                                    className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow transition"
+                                >
+                                    🖥️ เต็มจอ
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Left - Products */}
+                            <div className="lg:col-span-2 space-y-4">
+                                {/* Category tabs */}
+                                <div className="bg-white rounded-lg shadow p-4">
+                                    <div className="flex flex-wrap gap-2">
+                                        {categories.map(cat => (
+                                            <button
+                                                key={cat}
+                                                onClick={() => setSelectedCategory(cat)}
+                                                className={`px-4 py-2 rounded-lg font-medium transition ${
+                                                    selectedCategory === cat
+                                                        ? 'bg-blue-500 text-white'
+                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                }`}
+                                            >
+                                                {cat}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Products grid */}
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {filteredProducts.map(product => (
+                                        <div
+                                            key={product.id}
+                                            className="bg-white rounded-lg shadow p-4 product-item cursor-pointer relative group"
+                                        >
+                                            <div onClick={() => addToCart(product)}>
+                                                <div className="emoji-display text-center mb-2">{product.emoji}</div>
+                                                <h3 className="font-bold text-center text-gray-800 mb-1">{product.name}</h3>
+                                                <p className="text-center text-blue-600 font-semibold">฿{product.price}</p>
+                                                <p className="text-center text-xs text-gray-500 mt-1">{product.category}</p>
+                                            </div>
+                                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition flex gap-1">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); openEditModal(product); }}
+                                                    className="bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded text-xs"
+                                                >✏️</button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); deleteProduct(product.id); }}
+                                                    className="bg-red-500 hover:bg-red-600 text-white p-1 rounded text-xs"
+                                                >🗑️</button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Right - Cart */}
+                            <div className="lg:col-span-1">
+                                <div className="bg-white rounded-lg shadow p-4 sticky top-4">
+                                    <h2 className="text-2xl font-bold mb-4 text-gray-800">🛒 ตะกร้า</h2>
+                                    {cart.length === 0 ? (
+                                        <p className="text-gray-500 text-center py-8">ไม่มีสินค้าในตะกร้า</p>
+                                    ) : (
+                                        <>
+                                            <div className="space-y-3 mb-4 max-h-96 overflow-y-auto">
+                                                {cart.map(item => (
+                                                    <div key={item.id} className="flex items-center justify-between border-b pb-3">
+                                                        <div className="flex items-center gap-2 flex-1">
+                                                            <span className="text-2xl">{item.emoji}</span>
+                                                            <div className="flex-1">
+                                                                <p className="font-medium text-gray-800">{item.name}</p>
+                                                                <p className="text-sm text-gray-600">฿{item.price}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-1">
+                                                            <button onClick={() => updateCartQuantity(item.id, -1)} className="bg-gray-200 hover:bg-gray-300 w-7 h-7 rounded">-</button>
+                                                            <span className="w-8 text-center font-bold">{item.quantity}</span>
+                                                            <button onClick={() => updateCartQuantity(item.id, 1)} className="bg-gray-200 hover:bg-gray-300 w-7 h-7 rounded">+</button>
+                                                            <button onClick={() => removeFromCart(item.id)} className="bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded ml-1">×</button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="border-t pt-4">
+                                                <div className="flex justify-between items-center mb-4">
+                                                    <span className="text-xl font-bold text-gray-800">ยอดรวม:</span>
+                                                    <span className="text-2xl font-bold text-blue-600">฿{getTotal().toFixed(2)}</span>
+                                                </div>
+                                                <button
+                                                    onClick={processPayment}
+                                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-lg shadow transition flex items-center justify-center gap-2"
+                                                >
+                                                    <span className="text-2xl">💳</span>
+                                                    <span>บันทึกรายการ</span>
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Category Manager Modal */}
+                    {showCategoryManager && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                                <h2 className="text-2xl font-bold mb-4">📁 จัดการหมวดหมู่</h2>
+                                <div className="flex gap-2 mb-4">
+                                    <input
+                                        type="text"
+                                        placeholder="ชื่อหมวดหมู่ใหม่"
+                                        value={newCategoryName}
+                                        onChange={(e) => setNewCategoryName(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && addCategory()}
+                                        className="flex-1 px-4 py-2 border rounded-lg"
+                                    />
+                                    <button onClick={addCategory} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">เพิ่ม</button>
+                                </div>
+                                <div className="space-y-2 mb-4 max-h-64 overflow-y-auto">
+                                    {customCategories.map(cat => (
+                                        <div key={cat} className="bg-gray-50 p-3 rounded-lg">
+                                            {editingCategory === cat ? (
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={editingCategoryName}
+                                                        onChange={(e) => setEditingCategoryName(e.target.value)}
+                                                        onKeyPress={(e) => e.key === 'Enter' && renameCategory(cat)}
+                                                        autoFocus
+                                                        className="flex-1 px-3 py-1 border rounded-lg text-sm"
+                                                    />
+                                                    <button onClick={() => renameCategory(cat)} className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">บันทึก</button>
+                                                    <button onClick={() => { setEditingCategory(null); setEditingCategoryName(''); }} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1 rounded text-sm">ยกเลิก</button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-medium">{cat}</span>
+                                                    <div className="flex gap-2">
+                                                        <button onClick={() => { setEditingCategory(cat); setEditingCategoryName(cat); }} className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm">แก้ไข</button>
+                                                        <button onClick={() => deleteCategory(cat)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">ลบ</button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                                <button onClick={() => setShowCategoryManager(false)} className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-lg">ปิด</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Add Product Modal */}
+                    {showAddProduct && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                                <h2 className="text-2xl font-bold mb-4">➕ เพิ่มสินค้าใหม่</h2>
+                                <div className="space-y-4">
+                                    <input type="text" placeholder="ชื่อสินค้า" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
+                                    <input type="text" placeholder="อิโมจิ (เช่น 🍕)" value={formData.emoji} onChange={(e) => setFormData({ ...formData, emoji: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
+                                    <input type="number" placeholder="ราคา" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
+                                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 border rounded-lg">
+                                        {customCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                    </select>
+                                    <div className="flex gap-2">
+                                        <button onClick={handleAddProduct} className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg">เพิ่ม</button>
+                                        <button onClick={() => { setShowAddProduct(false); setFormData({ name: '', emoji: '', price: '', category: customCategories[0] || '' }); }} className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-lg">ยกเลิก</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Edit Product Modal */}
+                    {showEditProduct && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                                <h2 className="text-2xl font-bold mb-4">✏️ แก้ไขสินค้า</h2>
+                                <div className="space-y-4">
+                                    <input type="text" placeholder="ชื่อสินค้า" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
+                                    <input type="text" placeholder="อิโมจิ" value={formData.emoji} onChange={(e) => setFormData({ ...formData, emoji: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
+                                    <input type="number" placeholder="ราคา" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
+                                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 border rounded-lg">
+                                        {customCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                    </select>
+                                    <div className="flex gap-2">
+                                        <button onClick={handleEditProduct} className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 rounded-lg">บันทึก</button>
+                                        <button onClick={() => { setShowEditProduct(false); setEditingProduct(null); setFormData({ name: '', emoji: '', price: '', category: customCategories[0] || '' }); }} className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-lg">ยกเลิก</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<POSSystem />);
+    </script>
+</body>
+</html>
