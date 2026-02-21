@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ส่งข้อความ</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #06C755;
+      --green-dark: #049A41;
+      --bg: #F0F4F0;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #7a8c7a;
+      --border: #d8e8d8;
+      --radius: 18px;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Background decoration */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -120px; right: -120px;
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(6,199,85,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -100px; left: -100px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(6,199,85,0.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+      width: 100%;
+      max-width: 420px;
+      overflow: hidden;
+      animation: slideUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .header {
+      background: var(--green);
+      padding: 28px 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; right: -30px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+    .header-title {
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .header-sub {
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    /* Profile section */
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 22px 28px 18px;
+      border-bottom: 1px solid var(--border);
+      min-height: 80px;
+    }
+    .avatar {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--green);
+      flex-shrink: 0;
+      background: var(--border);
+    }
+    .avatar-placeholder {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 22px;
+    }
+    .profile-info .name {
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--text);
+    }
+    .profile-info .uid {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      font-weight: 300;
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #e8f0e8 25%, #d8ead8 50%, #e8f0e8 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+    .skeleton-name { width: 120px; height: 16px; }
+    .skeleton-uid  { width: 80px;  height: 12px; margin-top: 5px; }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Message form */
+    .form-area {
+      padding: 24px 28px 28px;
+    }
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      resize: none;
+      min-height: 130px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      line-height: 1.6;
+    }
+    textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(6,199,85,0.12);
+    }
+    textarea::placeholder { color: #b0c4b0; }
+
+    .char-count {
+      text-align: right;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .char-count.warn { color: #e05c00; }
+
+    .btn {
+      width: 100%;
+      margin-top: 18px;
+      padding: 15px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 16px rgba(6,199,85,0.30);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--green-dark);
+      box-shadow: 0 6px 20px rgba(6,199,85,0.38);
+    }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Toast */
+    .toast-wrap {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+    .toast {
+      background: #1a2e1a;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-family: 'Sarabun', sans-serif;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      animation: toastIn 0.35s cubic-bezier(0.22,1,0.36,1) both, toastOut 0.35s 2.5s ease forwards;
+      white-space: nowrap;
+    }
+    .toast.error { background: #8b0000; }
+    @keyframes toastIn  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes toastOut { to   { opacity:0; transform:translateY(14px); } }
+
+    /* Login overlay */
+    #login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 28px;
+      gap: 20px;
+    }
+    .line-logo {
+      width: 72px; height: 72px;
+      background: var(--green);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      box-shadow: 0 8px 24px rgba(6,199,85,0.30);
+    }
+    #login-screen h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    #login-screen p {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+    .btn-login {
+      width: 100%;
+      max-width: 260px;
+      padding: 14px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(6,199,85,0.30);
+    }
+    .btn-login:hover { background: var(--green-dark); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <!-- Login screen -->
+  <div id="login-screen" class="hidden">
+    <div class="line-logo">💬</div>
+    <h2>ระบบส่งข้อความ</h2>
+    <p>กรุณาเข้าสู่ระบบด้วย LINE<br>เพื่อใช้งานการส่งข้อความ</p>
+    <button class="btn-login" onclick="lineLogin()">เข้าสู่ระบบด้วย LINE</button>
+  </div>
+
+  <!-- Main app -->
+  <div id="app-screen" class="hidden">
+    <div class="header">
+      <div class="header-title">📢 ส่งข้อความ</div>
+      <div class="header-sub">ข้อความของคุณจะถูกบันทึกและแสดงบนจอ</div>
+    </div>
+
+    <div class="profile" id="profile-area">
+      <div class="avatar-placeholder skeleton" id="avatar-placeholder"></div>
+      <div class="profile-info">
+        <div class="skeleton skeleton-name" id="skeleton-name"></div>
+        <div class="skeleton skeleton-uid"  id="skeleton-uid"></div>
+      </div>
+    </div>
+
+    <div class="form-area">
+      <label class="label" for="msg">ข้อความ</label>
+      <textarea id="msg" placeholder="พิมพ์ข้อความของคุณที่นี่..." maxlength="500" oninput="updateCount()"></textarea>
+      <div class="char-count" id="char-count">0 / 500</div>
+      <button class="btn" id="send-btn" onclick="sendMessage()" disabled>ส่งข้อความ</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+  // ===== CONFIG =====
+  const LIFF_ID = '2007719419-zo9DgWwP';
+  const SHEET_ID = '109cZGS6QIjl7N2Xox7TaMjb3SG6RSphX7PGOsIvUxYE';
+  // Google Apps Script Web App URL — ต้องสร้าง GAS แล้วใส่ URL ที่นี่
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbx9Wlv7PEQzK8aHt_8l8YgHAOweg4tO4kSqGnlGu_KCWxcS_kLbuYwlFM1ncn-bK7TJ/exec';
+
+  let userProfile = null;
+
+  // ===== INIT =====
+  async function init() {
+    try {
+      await liff.init({ liffId: LIFF_ID });
+
+      if (!liff.isLoggedIn()) {
+        show('login-screen');
+      } else {
+        show('app-screen');
+        loadProfile();
+      }
+    } catch (e) {
+      toast('เกิดข้อผิดพลาดในการเชื่อมต่อ LINE', true);
+      show('login-screen');
+    }
+  }
+
+  function lineLogin() {
+    liff.login();
+  }
+
+  async function loadProfile() {
+    try {
+      userProfile = await liff.getProfile();
+      renderProfile(userProfile);
+      document.getElementById('send-btn').disabled = false;
+    } catch (e) {
+      toast('ไม่สามารถดึงข้อมูลโปรไฟล์ได้', true);
+    }
+  }
+
+  function renderProfile(p) {
+    const area = document.getElementById('profile-area');
+    area.innerHTML = `
+      <img class="avatar" src="${p.pictureUrl || ''}" alt="avatar"
+           onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><circle cx=%2226%22 cy=%2226%22 r=%2226%22 fill=%22%23d8e8d8%22/></svg>'" />
+      <div class="profile-info">
+        <div class="name">${escHtml(p.displayName)}</div>
+        <div class="uid">UID: ${p.userId.slice(0, 16)}…</div>
+      </div>`;
+  }
+
+  // ===== TEXTAREA =====
+  function updateCount() {
+    const val = document.getElementById('msg').value;
+    const cc = document.getElementById('char-count');
+    cc.textContent = `${val.length} / 500`;
+    cc.className = 'char-count' + (val.length > 450 ? ' warn' : '');
+  }
+
+  // ===== SEND =====
+  async function sendMessage() {
+    const msg = document.getElementById('msg').value.trim();
+    if (!msg) { toast('กรุณาพิมพ์ข้อความก่อนส่ง'); return; }
+    if (!userProfile) { toast('ยังไม่ได้โหลดโปรไฟล์', true); return; }
+
+    const btn = document.getElementById('send-btn');
+    btn.disabled = true;
+    btn.textContent = 'กำลังส่ง...';
+
+    const payload = {
+      timestamp: new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' }),
+      userId: userProfile.userId,
+      displayName: userProfile.displayName,
+      pictureUrl: userProfile.pictureUrl || '',
+      message: msg
+    };
+
+    try {
+      if (GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+        // Demo mode — แสดง toast แจ้งเตือน
+        console.log('Payload (demo):', payload);
+        await sleep(800);
+        toast('✅ ส่งข้อความสำเร็จ (Demo mode — ยังไม่ได้ตั้ง GAS URL)');
+      } else {
+        const res = await fetch(GAS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        toast('✅ ส่งข้อความสำเร็จ!');
+      }
+      document.getElementById('msg').value = '';
+      updateCount();
+    } catch (e) {
+      toast('ส่งไม่สำเร็จ กรุณาลองใหม่', true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'ส่งข้อความ';
+    }
+  }
+
+  // ===== UTILS =====
+  function show(id) {
+    document.querySelectorAll('#login-screen, #app-screen').forEach(el => el.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+  }
+
+  function toast(msg, isError = false) {
+    const wrap = document.getElementById('toast-wrap');
+    const el = document.createElement('div');
+    el.className = 'toast' + (isError ? ' error' : '');
+    el.textContent = msg;
+    wrap.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  init();
+</script>
+</body>
+</html>
