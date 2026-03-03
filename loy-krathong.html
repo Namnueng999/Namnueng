@@ -876,34 +876,12 @@ async function initLiff() {
 
   } catch (err) {
     console.error('LIFF init error:', err);
-    // Demo mode fallback
-    userProfile = {
-      userId: 'demo_' + Date.now(),
-      displayName: 'ผู้ใช้ทดสอบ',
-      pictureUrl: 'https://via.placeholder.com/46x46/1a3a5c/FFD700?text=%F0%9F%AA%B7',
-    };
-    document.getElementById('user-display-name').textContent = userProfile.displayName;
-    document.getElementById('user-avatar').src = userProfile.pictureUrl;
-    document.getElementById('login-screen').style.display = 'none';
-    showToast('⚠️ โหมดทดสอบ (LIFF)');
+    document.getElementById('login-screen').style.display = 'flex';
   }
 }
 
 function loginWithLine() {
-  try {
-    liff.login();
-  } catch(e) {
-    // Demo fallback
-    userProfile = {
-      userId: 'demo_' + Date.now(),
-      displayName: 'ผู้ใช้ทดสอบ',
-      pictureUrl: 'https://via.placeholder.com/46x46/1a3a5c/FFD700?text=%F0%9F%AA%B7',
-    };
-    document.getElementById('user-display-name').textContent = userProfile.displayName;
-    document.getElementById('user-avatar').src = userProfile.pictureUrl;
-    document.getElementById('login-screen').style.display = 'none';
-    showToast('⚠️ โหมดทดสอบ');
-  }
+  liff.login();
 }
 
 // ===== LOAD KRATHONGS FROM SHEET =====
