@@ -372,10 +372,10 @@
   }
 
   .style-picker {
-    display: flex;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
     margin-bottom: 14px;
-    justify-content: center;
   }
 
   .style-option {
@@ -693,6 +693,22 @@
         <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#FFD700"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#FFC200"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
         <span>ทอง</span>
       </div>
+      <div class="style-option" data-style="4" onclick="selectStyle(4)">
+        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#E74C3C"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#C0392B"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
+        <span>แดง</span>
+      </div>
+      <div class="style-option" data-style="5" onclick="selectStyle(5)">
+        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#1ABC9C"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#16A085"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
+        <span>เขียวมรกต</span>
+      </div>
+      <div class="style-option" data-style="6" onclick="selectStyle(6)">
+        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#F39C12"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#E67E22"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
+        <span>ส้ม</span>
+      </div>
+      <div class="style-option" data-style="7" onclick="selectStyle(7)">
+        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#5DADE2"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#2E86C1"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
+        <span>ฟ้า</span>
+      </div>
     </div>
 
     <div class="input-group">
@@ -755,6 +771,10 @@ const KRATHONG_COLORS = [
   { petals: ['#FF69B4','#FF1493','#c01070'], name: 'ชมพู' },
   { petals: ['#9B59B6','#8E44AD','#6c3483'], name: 'ม่วง' },
   { petals: ['#FFD700','#FFC200','#e6a800'], name: 'ทอง' },
+  { petals: ['#E74C3C','#C0392B','#922b21'], name: 'แดง' },
+  { petals: ['#1ABC9C','#16A085','#0e6655'], name: 'เขียวมรกต' },
+  { petals: ['#F39C12','#E67E22','#ca6f1e'], name: 'ส้ม' },
+  { petals: ['#5DADE2','#2E86C1','#1a5276'], name: 'ฟ้า' },
 ];
 
 // ===== STATE =====
