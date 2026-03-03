@@ -973,19 +973,23 @@ async function floatKrathong() {
   btn.innerHTML = '🪷 &nbsp;ลอยกระทง';
 }
 
-// ===== SAVE TO SHEET =====
+// ===== SAVE TO SHEET (GET + no-cors เพื่อแก้ CORS ของ GAS) =====
 async function saveToSheet(k) {
-  const payload = {
+  const params = new URLSearchParams({
     action: 'append',
     sheetId: SHEET_ID,
-    row: [k.userId, k.displayName, k.pictureUrl, k.wish, k.style, k.timestamp],
-  };
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    userId: k.userId,
+    displayName: k.displayName,
+    pictureUrl: k.pictureUrl,
+    wish: k.wish,
+    style: String(k.style),
+    timestamp: k.timestamp,
   });
-  return res.json();
+  await fetch(GAS_URL + '?' + params.toString(), {
+    method: 'GET',
+    mode: 'no-cors',
+  });
+  return { success: true };
 }
 
 // ===== DISCORD NOTIFICATION =====
@@ -1170,30 +1174,35 @@ setTimeout(() => {
 === Google Apps Script (deploy เป็น Web App) ===
 
 function doGet(e) {
+  var action = e.parameter.action;
   var sheetId = e.parameter.sheetId;
   var ss = SpreadsheetApp.openById(sheetId);
   var sheet = ss.getSheets()[0];
-  var data = sheet.getDataRange().getValues();
-  var rows = data.slice(1); // skip header
-  return ContentService
-    .createTextOutput(JSON.stringify({ rows: rows }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
 
-function doPost(e) {
-  var payload = JSON.parse(e.postData.contents);
-  if (payload.action === 'append') {
-    var ss = SpreadsheetApp.openById(payload.sheetId);
-    var sheet = ss.getSheets()[0];
-    // Ensure header exists
+  if (action === 'append') {
+    // Ensure header row exists
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['userId', 'displayName', 'pictureUrl', 'wish', 'style', 'timestamp']);
+      sheet.appendRow(['userId','displayName','pictureUrl','wish','style','timestamp']);
     }
-    sheet.appendRow(payload.row);
+    sheet.appendRow([
+      e.parameter.userId || '',
+      e.parameter.displayName || '',
+      e.parameter.pictureUrl || '',
+      e.parameter.wish || '',
+      e.parameter.style || '0',
+      e.parameter.timestamp || new Date().toLocaleString('th-TH'),
+    ]);
     return ContentService
       .createTextOutput(JSON.stringify({ success: true }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+
+  // Default: return all rows
+  var data = sheet.getDataRange().getValues();
+  var rows = data.slice(1);
+  return ContentService
+    .createTextOutput(JSON.stringify({ rows: rows }))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 -->
 
