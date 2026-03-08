@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>โคมลอยดิจิทัล ✨</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #f5c842;
+      --deep-gold: #c9922a;
+      --amber: #ff9a1a;
+      --flame: #ff5c1a;
+      --sky-deep: #0a0420;
+      --sky-mid: #12063a;
+      --sky-light: #1e0f52;
+      --glow: rgba(245, 200, 66, 0.6);
+      --lantern-body: #f5c842;
+      --lantern-shadow: #c97d1a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow-x: hidden;
+      font-family: 'Sarabun', sans-serif;
+      background: var(--sky-deep);
+      color: #fff;
+    }
+
+    /* ===== STARS ===== */
+    #stars-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ===== FLOATING LANTERNS BG ===== */
+    .bg-lanterns {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 1;
+      overflow: hidden;
+    }
+    .bg-lantern {
+      position: absolute;
+      bottom: -120px;
+      animation: floatUp linear infinite;
+      opacity: 0.15;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.15; }
+      90%  { opacity: 0.1; }
+      100% { transform: translateY(-110vh) translateX(30px) rotate(8deg); opacity: 0; }
+    }
+
+    /* ===== LAYOUT ===== */
+    #app {
+      position: relative; z-index: 2;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      width: 100%; text-align: center;
+      padding: 40px 20px 20px;
+    }
+    header h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.4rem, 5vw, 2.4rem);
+      background: linear-gradient(135deg, #fff5cc, var(--gold), var(--amber));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-shadow: none;
+      letter-spacing: 0.05em;
+      line-height: 1.3;
+    }
+    header p.sub {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.95rem;
+      margin-top: 6px;
+      letter-spacing: 0.1em;
+    }
+
+    /* ===== PROFILE BAR ===== */
+    #profile-bar {
+      display: none;
+      align-items: center; gap: 12px;
+      background: rgba(245,200,66,0.08);
+      border: 1px solid rgba(245,200,66,0.2);
+      border-radius: 50px;
+      padding: 8px 16px;
+      margin: 10px 20px 20px;
+      backdrop-filter: blur(8px);
+    }
+    #profile-bar img {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      object-fit: cover;
+    }
+    #profile-bar .name {
+      font-weight: 600; font-size: 0.95rem;
+      color: #fff5cc;
+    }
+    #profile-bar .badge {
+      font-size: 0.75rem;
+      color: var(--gold);
+      background: rgba(245,200,66,0.1);
+      padding: 2px 8px; border-radius: 10px;
+    }
+
+    /* ===== LOGIN SECTION ===== */
+    #login-section {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; padding: 20px;
+    }
+    .lantern-icon-big {
+      font-size: 80px;
+      filter: drop-shadow(0 0 30px var(--gold));
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+      0%,100% { filter: drop-shadow(0 0 20px var(--gold)); }
+      50%      { filter: drop-shadow(0 0 50px var(--amber)) drop-shadow(0 0 80px var(--gold)); }
+    }
+    #login-section h2 {
+      font-size: 1.3rem; font-weight: 700;
+      color: #fff5cc;
+      text-align: center;
+    }
+    #login-section p {
+      font-size: 0.9rem; color: rgba(255,255,255,0.5);
+      text-align: center; max-width: 260px; line-height: 1.6;
+    }
+    .btn-line {
+      display: flex; align-items: center; gap: 10px;
+      background: #06C755;
+      color: #fff; font-family: 'Sarabun', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      border: none; border-radius: 50px;
+      padding: 14px 32px; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(6,199,85,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-line:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(6,199,85,0.5); }
+    .btn-line svg { width: 24px; height: 24px; }
+
+    /* ===== MAIN FORM ===== */
+    #main-section {
+      display: none;
+      width: 100%; max-width: 500px;
+      padding: 0 20px 60px;
+    }
+
+    /* ===== LANTERN PREVIEW ===== */
+    .lantern-preview-wrap {
+      display: flex; justify-content: center;
+      margin: 10px 0 24px;
+    }
+    .lantern-svg-wrap {
+      position: relative;
+      filter: drop-shadow(0 0 30px var(--gold));
+      animation: floatPreview 3s ease-in-out infinite;
+    }
+    @keyframes floatPreview {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-12px); }
+    }
+
+    /* ===== FORM CARD ===== */
+    .form-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(245,200,66,0.15);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+    }
+    .form-card label {
+      display: block;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+    .form-card textarea, .form-card input[type=text] {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(245,200,66,0.2);
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1rem;
+      padding: 12px 14px;
+      transition: border-color 0.2s, background 0.2s;
+      resize: none;
+    }
+    .form-card textarea:focus, .form-card input:focus {
+      outline: none;
+      border-color: var(--gold);
+      background: rgba(245,200,66,0.05);
+    }
+    .form-card textarea { height: 100px; }
+    .char-count {
+      text-align: right; font-size: 0.78rem;
+      color: rgba(255,255,255,0.3); margin-top: 4px;
+    }
+
+    /* COLOR PICKER */
+    .color-row {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .color-opt {
+      width: 36px; height: 36px; border-radius: 50%;
+      cursor: pointer; border: 2px solid transparent;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .color-opt.selected {
+      border-color: #fff;
+      transform: scale(1.2);
+    }
+
+    /* SUBMIT BTN */
+    .btn-release {
+      width: 100%; margin-top: 20px;
+      background: linear-gradient(135deg, var(--deep-gold), var(--amber));
+      color: #1a0a00; font-family: 'Sarabun', sans-serif;
+      font-size: 1.1rem; font-weight: 700;
+      border: none; border-radius: 50px;
+      padding: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(245,200,66,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.05em;
+    }
+    .btn-release:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,200,66,0.5); }
+    .btn-release:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ===== FLYING LANTERN ANIMATION ===== */
+    #fly-overlay {
+      display: none;
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 100;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .fly-lantern {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: flyAway 3.5s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+      filter: drop-shadow(0 0 40px var(--gold));
+    }
+    @keyframes flyAway {
+      0%   { bottom: 10%; opacity: 1; transform: translateX(-50%) scale(1); }
+      100% { bottom: 110%; opacity: 0; transform: translateX(calc(-50% + 40px)) scale(0.4); }
+    }
+
+    /* ===== SUCCESS TOAST ===== */
+    #toast {
+      display: none;
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      background: rgba(245,200,66,0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 14px 24px; border-radius: 50px;
+      font-size: 0.95rem; font-weight: 600;
+      backdrop-filter: blur(12px);
+      white-space: nowrap;
+      animation: toastIn 0.4s ease;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ===== GALLERY ===== */
+    #gallery-section {
+      width: 100%; max-width: 500px;
+      padding: 0 20px 60px;
+    }
+    .gallery-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1rem;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 16px;
+      letter-spacing: 0.08em;
+    }
+    .lantern-list {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .lantern-item {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(245,200,66,0.12);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex; gap: 14px; align-items: center;
+      backdrop-filter: blur(8px);
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .lantern-item img.avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(245,200,66,0.3);
+      flex-shrink: 0;
+    }
+    .lantern-item .info { flex: 1; min-width: 0; }
+    .lantern-item .sender {
+      font-size: 0.82rem; color: var(--gold);
+      font-weight: 600; margin-bottom: 3px;
+    }
+    .lantern-item .wish {
+      font-size: 0.9rem; color: rgba(255,255,255,0.85);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+    .lantern-item .time {
+      font-size: 0.72rem; color: rgba(255,255,255,0.3);
+      margin-top: 4px;
+    }
+    .mini-lantern { font-size: 28px; flex-shrink: 0; }
+
+    /* ===== LOADING ===== */
+    .loading-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 60px 20px; gap: 16px;
+    }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 3px solid rgba(245,200,66,0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* divider */
+    .divider {
+      width: 80%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(245,200,66,0.3), transparent);
+      margin: 10px auto 24px;
+    }
+
+    /* Form section gap */
+    .field-gap { margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+<div class="bg-lanterns" id="bgLanterns"></div>
+
+<div id="app">
+  <header>
+    <h1>🏮 โคมลอยดิจิทัล</h1>
+    <p class="sub">Yi Peng · Loy Krathong · Digital Lantern</p>
+  </header>
+
+  <!-- Profile Bar -->
+  <div id="profile-bar">
+    <img id="profile-pic" src="" alt="profile" />
+    <div>
+      <div class="name" id="profile-name"></div>
+      <div class="badge">✨ ผู้ปล่อยโคม</div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading-section" class="loading-wrap">
+    <div class="spinner"></div>
+    <div style="color:rgba(255,255,255,0.4);font-size:0.9rem;">กำลังโหลด...</div>
+  </div>
+
+  <!-- Login Section -->
+  <div id="login-section">
+    <div class="lantern-icon-big">🏮</div>
+    <h2>ปล่อยโคมส่งความปรารถนา</h2>
+    <p>เข้าสู่ระบบด้วย LINE เพื่อปล่อยโคมลอยและส่งคำอวยพรของคุณ</p>
+    <button class="btn-line" onclick="loginWithLine()">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.105.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      เข้าสู่ระบบด้วย LINE
+    </button>
+  </div>
+
+  <!-- Main Form -->
+  <div id="main-section">
+    <div class="lantern-preview-wrap">
+      <div class="lantern-svg-wrap" id="lanternPreview">
+        <!-- SVG Lantern -->
+        <svg width="120" height="160" viewBox="0 0 120 160" id="lanternSvg">
+          <!-- glow -->
+          <ellipse cx="60" cy="80" rx="50" ry="60" fill="rgba(245,200,66,0.12)"/>
+          <!-- string top -->
+          <line x1="60" y1="0" x2="60" y2="20" stroke="#c9922a" stroke-width="2"/>
+          <!-- cap top -->
+          <ellipse cx="60" cy="22" rx="18" ry="6" fill="#c97d1a"/>
+          <!-- body -->
+          <ellipse cx="60" cy="80" rx="42" ry="55" fill="url(#lg1)"/>
+          <!-- ribs -->
+          <ellipse cx="60" cy="80" rx="42" ry="55" fill="none" stroke="rgba(180,100,0,0.3)" stroke-width="1.5"/>
+          <line x1="60" y1="25" x2="60" y2="135" stroke="rgba(180,100,0,0.2)" stroke-width="1"/>
+          <line x1="20" y1="55" x2="100" y2="105" stroke="rgba(180,100,0,0.15)" stroke-width="1"/>
+          <line x1="20" y1="105" x2="100" y2="55" stroke="rgba(180,100,0,0.15)" stroke-width="1"/>
+          <!-- cap bottom -->
+          <ellipse cx="60" cy="135" rx="18" ry="6" fill="#c97d1a"/>
+          <!-- tassel -->
+          <line x1="52" y1="140" x2="50" y2="160" stroke="#c9922a" stroke-width="1.5"/>
+          <line x1="56" y1="141" x2="55" y2="162" stroke="#c9922a" stroke-width="1.5"/>
+          <line x1="60" y1="141" x2="60" y2="163" stroke="#c9922a" stroke-width="1.5"/>
+          <line x1="64" y1="141" x2="65" y2="162" stroke="#c9922a" stroke-width="1.5"/>
+          <line x1="68" y1="140" x2="70" y2="160" stroke="#c9922a" stroke-width="1.5"/>
+          <!-- flame glow -->
+          <ellipse cx="60" cy="100" rx="16" ry="16" fill="rgba(255,180,0,0.25)" id="flameGlow"/>
+          <!-- flame -->
+          <path d="M60 88 Q65 98 60 108 Q55 98 60 88Z" fill="url(#flameLg)" id="flame"/>
+          <defs>
+            <radialGradient id="lg1" cx="50%" cy="45%">
+              <stop offset="0%" stop-color="#ffe280" id="gStop1"/>
+              <stop offset="100%" stop-color="#c97d1a" id="gStop2"/>
+            </radialGradient>
+            <linearGradient id="flameLg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fff5aa"/>
+              <stop offset="100%" stop-color="#ff6600"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <label>🎨 เลือกสีโคม</label>
+      <div class="color-row" id="colorRow">
+        <div class="color-opt selected" data-color="gold" style="background:linear-gradient(135deg,#ffe280,#c97d1a)" onclick="selectColor(this,'#ffe280','#c97d1a','rgba(255,200,0,0.3)')"></div>
+        <div class="color-opt" data-color="red" style="background:linear-gradient(135deg,#ff8a80,#c0180a)" onclick="selectColor(this,'#ff9a80','#c0180a','rgba(255,80,0,0.3)')"></div>
+        <div class="color-opt" data-color="orange" style="background:linear-gradient(135deg,#ffcc80,#e65100)" onclick="selectColor(this,'#ffcc80','#e65100','rgba(255,140,0,0.3)')"></div>
+        <div class="color-opt" data-color="pink" style="background:linear-gradient(135deg,#ffc0e0,#c2185b)" onclick="selectColor(this,'#ffc0e0','#c2185b','rgba(200,50,150,0.3)')"></div>
+        <div class="color-opt" data-color="blue" style="background:linear-gradient(135deg,#80d0ff,#0d47a1)" onclick="selectColor(this,'#a0d8ff','#0d47a1','rgba(0,100,255,0.3)')"></div>
+        <div class="color-opt" data-color="purple" style="background:linear-gradient(135deg,#ce93d8,#6a1b9a)" onclick="selectColor(this,'#ce93d8','#6a1b9a','rgba(150,0,200,0.3)')"></div>
+        <div class="color-opt" data-color="green" style="background:linear-gradient(135deg,#a5d6a7,#1b5e20)" onclick="selectColor(this,'#a5d6a7','#1b5e20','rgba(0,180,0,0.3)')"></div>
+        <div class="color-opt" data-color="white" style="background:linear-gradient(135deg,#ffffff,#cfd8dc)" onclick="selectColor(this,'#f0f4f8','#90a4ae','rgba(200,220,240,0.3)')"></div>
+      </div>
+
+      <div class="field-gap">
+        <label>📝 ชื่อผู้ปล่อยโคม</label>
+        <input type="text" id="senderName" placeholder="ชื่อของคุณ..." maxlength="40" />
+      </div>
+
+      <div class="field-gap">
+        <label>🙏 คำอธิษฐาน / คำอวยพร</label>
+        <textarea id="wishText" placeholder="เขียนความปรารถนาของคุณที่นี่..." maxlength="200" oninput="updateCount()"></textarea>
+        <div class="char-count"><span id="charCount">0</span>/200</div>
+      </div>
+
+      <button class="btn-release" id="releaseBtn" onclick="releaseLantern()">
+        🏮 ปล่อยโคมลอย
+      </button>
+    </div>
+  </div>
+
+  <!-- Gallery -->
+  <div id="gallery-section" style="display:none;">
+    <div class="divider"></div>
+    <div class="gallery-title">🏮 โคมที่ถูกปล่อยแล้ว</div>
+    <div class="lantern-list" id="lanternList"></div>
+  </div>
+</div>
+
+<!-- Flying lantern overlay -->
+<div id="fly-overlay">
+  <svg class="fly-lantern" id="flyLanternSvg" width="100" height="140" viewBox="0 0 120 160">
+    <ellipse cx="60" cy="80" rx="50" ry="60" fill="rgba(245,200,66,0.2)"/>
+    <line x1="60" y1="0" x2="60" y2="20" stroke="#c9922a" stroke-width="2"/>
+    <ellipse cx="60" cy="22" rx="18" ry="6" fill="#c97d1a"/>
+    <ellipse cx="60" cy="80" rx="42" ry="55" fill="url(#flyLg)"/>
+    <ellipse cx="60" cy="135" rx="18" ry="6" fill="#c97d1a"/>
+    <line x1="52" y1="140" x2="50" y2="155" stroke="#c9922a" stroke-width="1.5"/>
+    <line x1="60" y1="141" x2="60" y2="157" stroke="#c9922a" stroke-width="1.5"/>
+    <line x1="68" y1="140" x2="70" y2="155" stroke="#c9922a" stroke-width="1.5"/>
+    <ellipse cx="60" cy="100" rx="16" ry="16" fill="rgba(255,180,0,0.3)"/>
+    <path d="M60 88 Q65 98 60 108 Q55 98 60 88Z" fill="url(#flameLg2)"/>
+    <defs>
+      <radialGradient id="flyLg" cx="50%" cy="45%">
+        <stop offset="0%" stop-color="#ffe280" id="flyStop1"/>
+        <stop offset="100%" stop-color="#c97d1a" id="flyStop2"/>
+      </radialGradient>
+      <linearGradient id="flameLg2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fff5aa"/><stop offset="100%" stop-color="#ff6600"/>
+      </linearGradient>
+    </defs>
+  </svg>
+</div>
+
+<!-- Toast -->
+<div id="toast">🏮 โคมของคุณลอยขึ้นสู่ท้องฟ้าแล้ว!</div>
+
+<script>
+// ===== CONFIG =====
+const LIFF_ID = "2007719419-v5Z27Rnt";
+const SHEET_ID = "1wHjzTYu903EgicRIvRm5hd-0RhrmSBOvZ9HPXCG4N7M";
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1480053397582516294/XMdy3Kwg5qZ4OnHvxPjpRUQ5NdRhxGnjFisooZt5W6v6BPbj5xt_uSiPskmfq1jyJvJj";
+const SHEET_API = `https://opensheet.elk.sh/${SHEET_ID}/Sheet1`;
+
+// ===== STARS =====
+(function initStars(){
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+  function createStars(){
+    stars=[];
+    for(let i=0;i<180;i++) stars.push({
+      x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+      r:Math.random()*1.5+0.3, a:Math.random(), da:(Math.random()-0.5)*0.008
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(s=>{
+      s.a=Math.max(0.1,Math.min(1,s.a+s.da));
+      if(s.a<=0.1||s.a>=1) s.da*=-1;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,255,220,${s.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>{ resize(); createStars(); });
+  resize(); createStars(); draw();
+})();
+
+// ===== BG LANTERNS =====
+(function initBgLanterns(){
+  const cont = document.getElementById('bgLanterns');
+  const emojis = ['🏮','🏮','🏮','✨'];
+  for(let i=0;i<8;i++){
+    const el = document.createElement('div');
+    el.className='bg-lantern';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.cssText=`
+      left:${Math.random()*100}%;
+      font-size:${30+Math.random()*40}px;
+      animation-duration:${12+Math.random()*18}s;
+      animation-delay:${Math.random()*12}s;
+    `;
+    cont.appendChild(el);
+  }
+})();
+
+// ===== STATE =====
+let userProfile = null;
+let selectedColor = { c1:'#ffe280', c2:'#c97d1a', glow:'rgba(255,200,0,0.3)' };
+
+// ===== LIFF INIT =====
+async function initLiff(){
+  document.getElementById('loading-section').style.display='flex';
+  document.getElementById('login-section').style.display='none';
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if(liff.isLoggedIn()){
+      const profile = await liff.getProfile();
+      userProfile = profile;
+      showLoggedIn(profile);
+    } else {
+      showLogin();
+    }
+  } catch(e){
+    console.error('LIFF error:', e);
+    showLogin();
+  }
+}
+
+function showLogin(){
+  document.getElementById('loading-section').style.display='none';
+  document.getElementById('login-section').style.display='flex';
+}
+
+function showLoggedIn(profile){
+  document.getElementById('loading-section').style.display='none';
+  document.getElementById('login-section').style.display='none';
+
+  const bar = document.getElementById('profile-bar');
+  bar.style.display='flex';
+  document.getElementById('profile-pic').src = profile.pictureUrl || '';
+  document.getElementById('profile-name').textContent = profile.displayName;
+  document.getElementById('senderName').value = profile.displayName;
+
+  document.getElementById('main-section').style.display='block';
+  document.getElementById('gallery-section').style.display='block';
+  loadGallery();
+}
+
+function loginWithLine(){
+  if(liff.isInClient()){
+    liff.login();
+  } else {
+    liff.login({ redirectUri: location.href });
+  }
+}
+
+// ===== COLOR SELECT =====
+function selectColor(el, c1, c2, glow){
+  document.querySelectorAll('.color-opt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedColor = { c1, c2, glow };
+  // Update SVG
+  document.getElementById('gStop1').setAttribute('stop-color', c1);
+  document.getElementById('gStop2').setAttribute('stop-color', c2);
+  document.querySelector('.lantern-svg-wrap').style.filter = `drop-shadow(0 0 30px ${glow})`;
+}
+
+function updateCount(){
+  const t = document.getElementById('wishText').value;
+  document.getElementById('charCount').textContent = t.length;
+}
+
+// ===== RELEASE LANTERN =====
+async function releaseLantern(){
+  const name = document.getElementById('senderName').value.trim();
+  const wish = document.getElementById('wishText').value.trim();
+  if(!wish){ alert('กรุณาเขียนคำอธิษฐาน'); return; }
+  if(!name){ alert('กรุณาใส่ชื่อ'); return; }
+
+  const btn = document.getElementById('releaseBtn');
+  btn.disabled = true;
+  btn.textContent = '🏮 กำลังปล่อย...';
+
+  // Update fly lantern color
+  document.getElementById('flyStop1').setAttribute('stop-color', selectedColor.c1);
+  document.getElementById('flyStop2').setAttribute('stop-color', selectedColor.c2);
+
+  // Fly animation
+  const flyOverlay = document.getElementById('fly-overlay');
+  flyOverlay.style.display='block';
+  setTimeout(()=>{ flyOverlay.style.display='none'; }, 3600);
+
+  const now = new Date();
+  const timestamp = now.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+  const avatarUrl = userProfile?.pictureUrl || '';
+
+  // Save to Google Sheets via Apps Script (opensheet is read-only, use form approach)
+  const rowData = {
+    timestamp,
+    name,
+    wish,
+    color: selectedColor.c1,
+    userId: userProfile?.userId || 'guest',
+    avatar: avatarUrl
+  };
+  await saveToSheet(rowData);
+
+  // Discord notification
+  await sendDiscord({ name, wish, avatarUrl, timestamp, color: selectedColor.c1 });
+
+  // Show toast
+  const toast = document.getElementById('toast');
+  toast.style.display='block';
+  setTimeout(()=>{ toast.style.display='none'; }, 3000);
+
+  btn.disabled = false;
+  btn.textContent = '🏮 ปล่อยโคมลอย';
+  document.getElementById('wishText').value = '';
+  document.getElementById('charCount').textContent = '0';
+
+  // Reload gallery
+  setTimeout(loadGallery, 1500);
+}
+
+// ===== SAVE TO GOOGLE SHEET =====
+// Using Google Forms / public write endpoint workaround via fetch to Apps Script
+// Since direct Sheets API needs OAuth, we use a Google Apps Script Web App as proxy
+// For now, store locally + try opensheet write (user should set up Apps Script)
+async function saveToSheet(data){
+  // Method: POST to Google Apps Script Web App (user needs to set up)
+  // Fallback: store in localStorage for demo
+  try {
+    // Try to post to a Google Apps Script endpoint
+    // Replace this URL with your deployed Apps Script Web App URL
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxlzA8_VvaQNzWvRD5kqJPJ24GIE8CHd8GjUtsq17jwAMwhmvDlan8g11qIDs1LVmpC1Q/exec';
+    if(GAS_URL){
+      await fetch(GAS_URL, {
+        method:'POST',
+        mode:'no-cors',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+    } else {
+      // Fallback: save locally
+      const stored = JSON.parse(localStorage.getItem('lanterns')||'[]');
+      stored.unshift({ ...data, id: Date.now() });
+      localStorage.setItem('lanterns', JSON.stringify(stored.slice(0,50)));
+    }
+  } catch(e){ console.warn('Sheet save error:', e); }
+}
+
+// ===== DISCORD WEBHOOK =====
+async function sendDiscord({ name, wish, avatarUrl, timestamp, color }){
+  const colorHex = parseInt(color.replace('#',''), 16) || 0xFFD700;
+  const payload = {
+    username: "โคมลอยดิจิทัล 🏮",
+    avatar_url: "https://em-content.zobj.net/source/apple/354/red-paper-lantern_1f3ee.png",
+    embeds: [{
+      title: "🏮 โคมลอยใหม่ถูกปล่อยแล้ว!",
+      color: colorHex,
+      fields: [
+        { name: "👤 ผู้ปล่อยโคม", value: name, inline: true },
+        { name: "⏰ เวลา", value: timestamp, inline: true },
+        { name: "🙏 คำอธิษฐาน", value: wish, inline: false }
+      ],
+      thumbnail: avatarUrl ? { url: avatarUrl } : undefined,
+      footer: { text: "Digital Lantern System · Yi Peng 🏮" }
+    }]
+  };
+  try {
+    await fetch(DISCORD_WEBHOOK, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+  } catch(e){ console.warn('Discord error:', e); }
+}
+
+// ===== LOAD GALLERY =====
+async function loadGallery(){
+  const list = document.getElementById('lanternList');
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:0.85rem;">กำลังโหลด...</div>';
+
+  const GAS_READ = 'https://script.google.com/macros/s/AKfycbxlzA8_VvaQNzWvRD5kqJPJ24GIE8CHd8GjUtsq17jwAMwhmvDlan8g11qIDs1LVmpC1Q/exec';
+  let items = [];
+  // Read from Apps Script (Google Sheets)
+  try {
+    const res = await fetch(GAS_READ, { signal: AbortSignal.timeout(8000) });
+    if(res.ok){
+      const data = await res.json();
+      items = (Array.isArray(data) ? data : []).slice(-50).reverse();
+    }
+  } catch(e){ /* ignore */ }
+
+  // Fallback: local storage
+  if(items.length === 0){
+    items = JSON.parse(localStorage.getItem('lanterns')||'[]');
+  }
+
+  if(items.length === 0){
+    list.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.25);font-size:0.85rem;">ยังไม่มีโคมที่ถูกปล่อย<br>เป็นคนแรกที่ปล่อยโคม! 🏮</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'lantern-item';
+    const name = item.name || item['ชื่อ'] || 'ไม่ระบุชื่อ';
+    const wish = item.wish || item['คำอธิษฐาน'] || '';
+    const time = item.timestamp || item['เวลา'] || '';
+    const avatar = item.avatar || item['รูปโปรไฟล์'] || '';
+    el.innerHTML = `
+      ${avatar ? `<img class="avatar" src="${avatar}" onerror="this.style.display='none'" />` : '<div class="mini-lantern">🏮</div>'}
+      <div class="info">
+        <div class="sender">🏮 ${escapeHtml(name)}</div>
+        <div class="wish">${escapeHtml(wish)}</div>
+        <div class="time">${escapeHtml(time)}</div>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ===== START =====
+window.addEventListener('DOMContentLoaded', initLiff);
+</script>
+</body>
+</html>
