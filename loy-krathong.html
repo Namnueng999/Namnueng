@@ -1279,22 +1279,7 @@ function celebrationEffect() {
   }
 }
 
-// Demo: spawn some krathongs for preview
-setTimeout(() => {
-  const demo = [
-    { userId: 'd1', displayName: 'สมชาย', pictureUrl: 'https://via.placeholder.com/46/FF69B4/fff?text=🪷', wish: 'ขอให้มีความสุขตลอดปี', style: 0, timestamp: new Date().toLocaleString('th-TH') },
-    { userId: 'd2', displayName: 'สมหญิง', pictureUrl: 'https://via.placeholder.com/46/9B59B6/fff?text=⭐', wish: 'ขอให้ร่ำรวย โชคดีทุกวัน', style: 1, timestamp: new Date().toLocaleString('th-TH') },
-    { userId: 'd3', displayName: 'มีนา', pictureUrl: 'https://via.placeholder.com/46/FFD700/333?text=🌕', wish: 'ขอให้ครอบครัวมีสุขภาพดี', style: 3, timestamp: new Date().toLocaleString('th-TH') },
-  ];
-  demo.forEach((k, i) => {
-    setTimeout(() => {
-      renderKrathong(k);
-      krathongData.push(k);
-      updateCounter();
-      updateRecent();
-    }, i * 1000);
-  });
-}, 2000);
+
 </script>
 
 <!-- Google Apps Script Code (ให้ deploy เป็น Web App แยก) -->
