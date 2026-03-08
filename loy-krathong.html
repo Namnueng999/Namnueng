@@ -998,6 +998,7 @@ async function loadExistingKrathongs() {
         renderKrathong(k);
       });
       updateCounter();
+      updateRecent();
     }
   } catch(e) {
     console.log('Load existing krathongs error (expected if no GAS):', e.message);
