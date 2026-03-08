@@ -746,6 +746,7 @@
 <div class="bank"></div>
 
 <!-- Counter -->
+<div id="krathong-counter">🪷 <span id="counter-num">0</span> กระทง</div>
 
 <!-- UI Panel -->
 <div id="ui-panel">
@@ -979,28 +980,28 @@ function loginWithLine() {
 // ===== LOAD KRATHONGS FROM SHEET =====
 async function loadExistingKrathongs() {
   try {
-    if (!GAS_URL) return;
+    if (!GAS_URL) return; // Skip if no GAS URL
 
-    const res = await fetch(`${GAS_URL}?sheetId=${SHEET_ID}&_=${Date.now()}`);
+    const res = await fetch(`${GAS_URL}?action=get&sheetId=${SHEET_ID}`);
     const data = await res.json();
-    console.log('Loaded rows:', data);
-    const rows = data.rows || [];
-    rows.forEach(row => {
-      const k = {
-        userId:      row[0] || '',
-        displayName: row[1] || '',
-        pictureUrl:  row[2] || '',
-        wish:        row[3] || '',
-        style:       parseInt(row[4]) || 0,
-        timestamp:   row[5] || '',
-      };
-      krathongData.push(k);
-      renderKrathong(k);
-    });
-    updateCounter();
-    updateRecent();
+    if (data.rows) {
+      data.rows.forEach(row => {
+        const k = {
+          userId: row[0],
+          displayName: row[1],
+          pictureUrl: row[2],
+          wish: row[3],
+          style: parseInt(row[4]) || 0,
+          timestamp: row[5],
+        };
+        krathongData.push(k);
+        renderKrathong(k);
+      });
+      updateCounter();
+      updateRecent();
+    }
   } catch(e) {
-    console.error('Load krathongs error:', e.message);
+    console.log('Load existing krathongs error (expected if no GAS):', e.message);
   }
 }
 
