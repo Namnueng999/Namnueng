@@ -744,7 +744,7 @@ async function loadGallery(){
     const res = await fetch(GAS_READ, { signal: AbortSignal.timeout(8000) });
     if(res.ok){
       const data = await res.json();
-      items = (Array.isArray(data) ? data : []).slice(-50).reverse();
+      items = (Array.isArray(data) ? data : []).slice(-5).reverse();
     }
   } catch(e){ /* ignore */ }
 
