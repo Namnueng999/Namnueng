@@ -14,10 +14,10 @@
       --green: #06C755;
       --green-dark: #049A41;
       --green-glow: rgba(6,199,85,0.35);
-      --card: rgba(2,22,8,0.96);
+      --card: rgba(15,20,15,0.75);
       --text: #e8f5e8;
-      --muted: #4dcc7a;
-      --border: rgba(6,199,85,0.30);
+      --muted: #7aaa7a;
+      --border: rgba(6,199,85,0.18);
       --radius: 20px;
     }
 
@@ -28,7 +28,7 @@
       align-items: center;
       justify-content: center;
       padding: 24px 16px;
-      background: #021a08;
+      background: #060e06;
       overflow-x: hidden;
     }
 
@@ -51,7 +51,7 @@
       position: absolute;
       border-radius: 50%;
       filter: blur(80px);
-      opacity: 0.75;
+      opacity: 0.55;
       animation: drift 12s ease-in-out infinite alternate;
     }
     .orb1 { width:420px; height:420px; top:-100px; left:-80px;  background: radial-gradient(circle, #06C755 0%, transparent 70%); animation-delay: 0s; }
@@ -66,7 +66,7 @@
     .card {
       position: relative;
       z-index: 1;
-      background: rgba(2,22,8,0.93);
+      background: rgba(10,18,10,0.92);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--border);
@@ -95,13 +95,13 @@
     .header {
       padding: 36px 28px 22px;
       position: relative;
-      border-bottom: 1px solid rgba(6,199,85,0.30);
-      background: rgba(6,199,85,0.13);
+      border-bottom: 1px solid var(--border);
+      background: rgba(6,199,85,0.07);
     }
       50%      { opacity:0.5; transform:scale(0.7); }
     }
     .header-title {
-      color: #06C755;
+      color: #ffffff;
       font-family: 'Chakra Petch', sans-serif;
       font-size: 22px;
       font-weight: 700;
@@ -115,12 +115,11 @@
 
     /* === profile === */
     .profile {
-      background: rgba(6,199,85,0.04);
       display: flex;
       align-items: center;
       gap: 14px;
       padding: 20px 28px;
-      border-bottom: 1px solid rgba(6,199,85,0.30);
+      border-bottom: 1px solid var(--border);
       min-height: 76px;
     }
     .avatar {
@@ -134,7 +133,7 @@
     .avatar-placeholder {
       width: 50px; height: 50px;
       border-radius: 50%;
-      background: rgba(6,199,85,0.08);
+      background: rgba(6,199,85,0.04);
       border: 2px solid var(--border);
       flex-shrink: 0;
     }
@@ -162,7 +161,7 @@
     }
 
     /* === form === */
-    .form-area { padding: 22px 28px 24px; border-bottom: 1px solid rgba(6,199,85,0.30); }
+    .form-area { padding: 22px 28px 24px; border-bottom: 1px solid var(--border); }
     .label {
       font-size: 11px;
       font-weight: 600;
@@ -175,7 +174,7 @@
     }
     textarea {
       width: 100%;
-      background: rgba(6,199,85,0.08);
+      background: rgba(6,199,85,0.04);
       border: 1.5px solid var(--border);
       border-radius: 12px;
       padding: 14px 16px;
@@ -218,7 +217,7 @@
     .btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 
     /* === recent messages === */
-    .recent { padding: 20px 28px 28px; background: rgba(6,199,85,0.03); }
+    .recent { padding: 20px 28px 28px; }
     .recent-title {
       font-family: 'Chakra Petch', sans-serif;
       font-size: 11px;
@@ -230,7 +229,7 @@
     }
     .msg-list { display: flex; flex-direction: column; gap: 10px; }
     .msg-item {
-      background: rgba(6,199,85,0.08);
+      background: rgba(6,199,85,0.04);
       border: 1px solid var(--border);
       border-left: 3px solid var(--green);
       border-radius: 10px;
