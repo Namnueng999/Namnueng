@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ส่งข้อความ</title>
+  <title>ข้อความดิจิทัล</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Chakra+Petch:wght@600;700&display=swap');
@@ -260,7 +260,28 @@
       border-radius: 10px;
       padding: 10px 14px;
       animation: fadeIn 0.4s ease both;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
+    .ri-left { flex-shrink: 0; position: relative; width: 36px; height: 36px; }
+    .ri-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--green);
+      box-shadow: 0 0 6px var(--green-glow);
+      display: block;
+    }
+    .ri-fallback {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Chakra Petch', sans-serif;
+      font-weight: 700; font-size: 14px; color: #fff;
+    }
+    .ri-body { flex: 1; min-width: 0; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
     .msg-item-text {
       font-size: 14px;
@@ -353,9 +374,7 @@
   <!-- Main app -->
   <div id="app-screen" class="hidden">
     <div class="header">
-      <div class="header-badge">
-        <div class="dot-live"></div>
-        <span class="badge-text">LIVE</span>
+    <span class="badge-text">LIVE</span>
       </div>
       <div class="header-title">ข้อความดิจิทัล</div>
       <div class="header-sub">ส่งข้อความดิจิทัลของคุณขึ้นจอ</div>
@@ -456,10 +475,22 @@
       const c    = row.c || [];
       const ts   = c[0]?.v || '';
       const name = c[1]?.v || 'ไม่ระบุชื่อ';
+      const pic  = c[3]?.v || '';
       const msg  = c[4]?.v || '';
+      const initial = (name[0]||'?').toUpperCase();
+      const avatarHtml = (pic && pic.startsWith('https://'))
+        ? `<img class="ri-avatar" src="${esc(pic)}" alt="${esc(name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : '';
+      const fallbackStyle = (pic && pic.startsWith('https://')) ? 'display:none' : '';
       return `<div class="msg-item" style="animation-delay:${i*0.07}s">
-        <div class="msg-item-text">${esc(msg)}</div>
-        <div class="msg-item-meta">${esc(name)} · ${esc(ts)}</div>
+        <div class="ri-left">
+          ${avatarHtml}
+          <div class="ri-fallback" style="${fallbackStyle}">${initial}</div>
+        </div>
+        <div class="ri-body">
+          <div class="msg-item-text">${esc(msg)}</div>
+          <div class="msg-item-meta">${esc(name)} · ${esc(ts)}</div>
+        </div>
       </div>`;
     }).join('');
   }
