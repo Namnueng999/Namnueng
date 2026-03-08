@@ -3,161 +3,203 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ส่งข้อความขึ้นจอ</title>
+  <title>ส่งข้อความ</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Chakra+Petch:wght@600;700&display=swap');
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --green: #06C755;
       --green-dark: #049A41;
-      --bg: #F0F4F0;
-      --card: #ffffff;
-      --text: #1a1a1a;
-      --muted: #7a8c7a;
-      --border: #d8e8d8;
-      --radius: 18px;
+      --green-glow: rgba(6,199,85,0.35);
+      --card: rgba(15,20,15,0.75);
+      --text: #e8f5e8;
+      --muted: #7aaa7a;
+      --border: rgba(6,199,85,0.18);
+      --radius: 20px;
     }
 
     body {
       font-family: 'Sarabun', sans-serif;
-      background: var(--bg);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px 16px;
+      background: #060e06;
+      overflow-x: hidden;
     }
 
-    /* Background decoration */
-    body::before {
-      content: '';
+    /* === animated background === */
+    .bg {
       position: fixed;
-      top: -120px; right: -120px;
-      width: 380px; height: 380px;
-      background: radial-gradient(circle, rgba(6,199,85,0.15) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      bottom: -100px; left: -100px;
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(6,199,85,0.10) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.10);
-      width: 100%;
-      max-width: 420px;
+      inset: 0;
+      z-index: 0;
       overflow: hidden;
-      animation: slideUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(6,199,85,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6,199,85,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.55;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    .orb1 { width:420px; height:420px; top:-100px; left:-80px;  background: radial-gradient(circle, #06C755 0%, transparent 70%); animation-delay: 0s; }
+    .orb2 { width:300px; height:300px; bottom:-80px; right:-60px; background: radial-gradient(circle, #00a844 0%, transparent 70%); animation-delay: -4s; }
+    .orb3 { width:200px; height:200px; top:40%;  left:60%;  background: radial-gradient(circle, #06C755 0%, transparent 70%); opacity:0.25; animation-delay: -8s; }
+    @keyframes drift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(30px, 20px) scale(1.08); }
     }
 
+    /* === card === */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 0 0 1px rgba(6,199,85,0.06), 0 24px 64px rgba(0,0,0,0.55);
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+      animation: slideUp 0.6s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    /* top glow line */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--green) 40%, var(--green) 60%, transparent 100%);
+      opacity: 0.7;
+    }
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
+      from { opacity: 0; transform: translateY(36px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Header */
+    /* === header === */
     .header {
-      background: var(--green);
-      padding: 28px 28px 24px;
+      padding: 26px 28px 22px;
       position: relative;
-      overflow: hidden;
+      border-bottom: 1px solid var(--border);
     }
-    .header::after {
-      content: '';
-      position: absolute;
-      bottom: -30px; right: -30px;
-      width: 120px; height: 120px;
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(6,199,85,0.12);
+      border: 1px solid rgba(6,199,85,0.25);
+      border-radius: 30px;
+      padding: 4px 12px;
+      margin-bottom: 10px;
+    }
+    .dot-live {
+      width: 7px; height: 7px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.08);
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.5; transform:scale(0.7); }
+    }
+    .badge-text {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 1px;
     }
     .header-title {
       color: #fff;
+      font-family: 'Chakra Petch', sans-serif;
       font-size: 22px;
       font-weight: 700;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.5px;
     }
     .header-sub {
-      color: rgba(255,255,255,0.75);
+      color: var(--muted);
       font-size: 13px;
-      margin-top: 3px;
+      margin-top: 4px;
     }
 
-    /* Profile section */
+    /* === profile === */
     .profile {
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 22px 28px 18px;
+      padding: 20px 28px;
       border-bottom: 1px solid var(--border);
-      min-height: 80px;
+      min-height: 76px;
     }
     .avatar {
-      width: 52px; height: 52px;
+      width: 50px; height: 50px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--green);
       flex-shrink: 0;
-      background: var(--border);
+      box-shadow: 0 0 10px var(--green-glow);
     }
     .avatar-placeholder {
-      width: 52px; height: 52px;
+      width: 50px; height: 50px;
       border-radius: 50%;
-      background: var(--border);
+      background: rgba(6,199,85,0.08);
+      border: 2px solid var(--border);
       flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      font-size: 22px;
     }
     .profile-info .name {
       font-weight: 600;
-      font-size: 16px;
+      font-size: 15px;
       color: var(--text);
     }
     .profile-info .uid {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
-      margin-top: 2px;
-      font-weight: 300;
+      margin-top: 3px;
     }
     .skeleton {
-      background: linear-gradient(90deg, #e8f0e8 25%, #d8ead8 50%, #e8f0e8 75%);
+      background: linear-gradient(90deg, rgba(6,199,85,0.06) 25%, rgba(6,199,85,0.12) 50%, rgba(6,199,85,0.06) 75%);
       background-size: 200% 100%;
       animation: shimmer 1.4s infinite;
       border-radius: 6px;
     }
-    .skeleton-name { width: 120px; height: 16px; }
-    .skeleton-uid  { width: 80px;  height: 12px; margin-top: 5px; }
+    .skeleton-name { width: 120px; height: 14px; }
+    .skeleton-uid  { width: 80px;  height: 11px; margin-top: 6px; }
     @keyframes shimmer {
       0%   { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
 
-    /* Message form */
-    .form-area {
-      padding: 24px 28px 28px;
-    }
+    /* === form === */
+    .form-area { padding: 22px 28px 24px; border-bottom: 1px solid var(--border); }
     .label {
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 600;
+      font-family: 'Chakra Petch', sans-serif;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 1.2px;
       margin-bottom: 10px;
       display: block;
     }
     textarea {
       width: 100%;
+      background: rgba(6,199,85,0.04);
       border: 1.5px solid var(--border);
       border-radius: 12px;
       padding: 14px 16px;
@@ -165,125 +207,124 @@
       font-size: 15px;
       color: var(--text);
       resize: none;
-      min-height: 130px;
+      min-height: 120px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
       line-height: 1.6;
     }
     textarea:focus {
       border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(6,199,85,0.12);
+      box-shadow: 0 0 0 3px rgba(6,199,85,0.10);
     }
-    textarea::placeholder { color: #b0c4b0; }
+    textarea::placeholder { color: rgba(122,170,122,0.4); }
 
-    .char-count {
-      text-align: right;
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 6px;
-    }
-    .char-count.warn { color: #e05c00; }
+    .char-count { text-align: right; font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .char-count.warn { color: #f0800a; }
 
     .btn {
       width: 100%;
-      margin-top: 18px;
+      margin-top: 16px;
       padding: 15px;
       background: var(--green);
       color: #fff;
       border: none;
       border-radius: 12px;
-      font-family: 'Sarabun', sans-serif;
-      font-size: 16px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-      letter-spacing: 0.5px;
-      box-shadow: 0 4px 16px rgba(6,199,85,0.30);
-      position: relative;
-      overflow: hidden;
+      letter-spacing: 0.8px;
+      box-shadow: 0 4px 20px var(--green-glow);
     }
-    .btn:hover:not(:disabled) {
-      background: var(--green-dark);
-      box-shadow: 0 6px 20px rgba(6,199,85,0.38);
-    }
+    .btn:hover:not(:disabled) { background: var(--green-dark); box-shadow: 0 6px 28px var(--green-glow); }
     .btn:active:not(:disabled) { transform: scale(0.98); }
-    .btn:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-      box-shadow: none;
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+    /* === recent messages === */
+    .recent { padding: 20px 28px 28px; }
+    .recent-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .msg-list { display: flex; flex-direction: column; gap: 10px; }
+    .msg-item {
+      background: rgba(6,199,85,0.04);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      border-radius: 10px;
+      padding: 10px 14px;
+      animation: fadeIn 0.4s ease both;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .msg-item-text {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+      margin-bottom: 5px;
+    }
+    .msg-item-meta {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .msg-empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 12px 0;
+      opacity: 0.6;
     }
 
-    /* Toast */
+    /* === toast === */
     .toast-wrap {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: center;
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%); z-index: 999;
+      display: flex; flex-direction: column; gap: 10px; align-items: center;
     }
     .toast {
-      background: #1a2e1a;
+      background: rgba(6,199,85,0.15);
+      border: 1px solid rgba(6,199,85,0.3);
       color: #fff;
-      padding: 12px 22px;
+      padding: 11px 22px;
       border-radius: 30px;
       font-size: 14px;
       font-family: 'Sarabun', sans-serif;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
       animation: toastIn 0.35s cubic-bezier(0.22,1,0.36,1) both, toastOut 0.35s 2.5s ease forwards;
       white-space: nowrap;
+      backdrop-filter: blur(12px);
     }
-    .toast.error { background: #8b0000; }
+    .toast.error { background: rgba(180,0,0,0.3); border-color: rgba(255,60,60,0.3); }
     @keyframes toastIn  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     @keyframes toastOut { to   { opacity:0; transform:translateY(14px); } }
 
-    /* Login overlay */
+    /* === login screen === */
     #login-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 28px;
-      gap: 20px;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 52px 28px; gap: 18px;
     }
     .line-logo {
-      width: 72px; height: 72px;
-      background: var(--green);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      box-shadow: 0 8px 24px rgba(6,199,85,0.30);
+      width: 76px; height: 76px;
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      border-radius: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 38px;
+      box-shadow: 0 8px 30px var(--green-glow);
     }
-    #login-screen h2 {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-    }
-    #login-screen p {
-      font-size: 14px;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.6;
-    }
+    #login-screen h2 { font-size: 20px; font-weight: 700; color: var(--text); font-family: 'Chakra Petch', sans-serif; }
+    #login-screen p  { font-size: 14px; color: var(--muted); text-align: center; line-height: 1.7; }
     .btn-login {
-      width: 100%;
-      max-width: 260px;
-      padding: 14px;
-      background: var(--green);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-family: 'Sarabun', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
+      width: 100%; max-width: 260px; padding: 14px;
+      background: var(--green); color: #fff; border: none;
+      border-radius: 12px; font-family: 'Chakra Petch', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
       transition: background 0.2s, box-shadow 0.2s;
-      box-shadow: 0 4px 16px rgba(6,199,85,0.30);
+      box-shadow: 0 4px 20px var(--green-glow); letter-spacing: 0.5px;
     }
     .btn-login:hover { background: var(--green-dark); }
 
@@ -292,11 +333,19 @@
 </head>
 <body>
 
+<!-- background -->
+<div class="bg">
+  <div class="bg-grid"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
 <div class="card">
   <!-- Login screen -->
   <div id="login-screen" class="hidden">
     <div class="line-logo">💬</div>
-    <h2>ระบบส่งข้อความ</h2>
+    <h2>ข้อความดิจิทัล</h2>
     <p>กรุณาเข้าสู่ระบบด้วย LINE<br>เพื่อใช้งานการส่งข้อความ</p>
     <button class="btn-login" onclick="lineLogin()">เข้าสู่ระบบด้วย LINE</button>
   </div>
@@ -304,8 +353,12 @@
   <!-- Main app -->
   <div id="app-screen" class="hidden">
     <div class="header">
-      <div class="header-title">🎆 ส่งข้อความ</div>
-      <div class="header-sub">ข้อความของคุณจะถูกบันทึกและแสดงบนจอ</div>
+      <div class="header-badge">
+        <div class="dot-live"></div>
+        <span class="badge-text">LIVE</span>
+      </div>
+      <div class="header-title">ข้อความดิจิทัล</div>
+      <div class="header-sub">ส่งข้อความดิจิทัลของคุณขึ้นจอ</div>
     </div>
 
     <div class="profile" id="profile-area">
@@ -320,7 +373,15 @@
       <label class="label" for="msg">ข้อความ</label>
       <textarea id="msg" placeholder="พิมพ์ข้อความของคุณที่นี่..." maxlength="500" oninput="updateCount()"></textarea>
       <div class="char-count" id="char-count">0 / 500</div>
-      <button class="btn" id="send-btn" onclick="sendMessage()" disabled>ส่งข้อความ</button>
+      <button class="btn" id="send-btn" onclick="sendMessage()" disabled>ส่งข้อความ →</button>
+    </div>
+
+    <!-- Recent messages -->
+    <div class="recent">
+      <div class="recent-title">📋 ข้อความที่ส่งล่าสุด</div>
+      <div class="msg-list" id="msg-list">
+        <div class="msg-empty">ยังไม่มีข้อความ</div>
+      </div>
     </div>
   </div>
 </div>
@@ -328,24 +389,24 @@
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-  // ===== CONFIG =====
-  const LIFF_ID = '2007719419-zo9DgWwP';
+  const LIFF_ID  = '2007719419-zo9DgWwP';
   const SHEET_ID = '109cZGS6QIjl7N2Xox7TaMjb3SG6RSphX7PGOsIvUxYE';
-  // Google Apps Script Web App URL — ต้องสร้าง GAS แล้วใส่ URL ที่นี่
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbx9Wlv7PEQzK8aHt_8l8YgHAOweg4tO4kSqGnlGu_KCWxcS_kLbuYwlFM1ncn-bK7TJ/exec';
+  const GAS_URL  = 'https://script.google.com/macros/s/AKfycbx9Wlv7PEQzK8aHt_8l8YgHAOweg4tO4kSqGnlGu_KCWxcS_kLbuYwlFM1ncn-bK7TJ/exec';
+  const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Messages`;
 
   let userProfile = null;
+  const MAX_RECENT = 5;
 
   // ===== INIT =====
   async function init() {
     try {
       await liff.init({ liffId: LIFF_ID });
-
       if (!liff.isLoggedIn()) {
         show('login-screen');
       } else {
         show('app-screen');
-        loadProfile();
+        await loadProfile();
+        loadRecent();
       }
     } catch (e) {
       toast('เกิดข้อผิดพลาดในการเชื่อมต่อ LINE', true);
@@ -353,9 +414,7 @@
     }
   }
 
-  function lineLogin() {
-    liff.login();
-  }
+  function lineLogin() { liff.login(); }
 
   async function loadProfile() {
     try {
@@ -368,20 +427,47 @@
   }
 
   function renderProfile(p) {
-    const area = document.getElementById('profile-area');
-    area.innerHTML = `
-      <img class="avatar" src="${p.pictureUrl || ''}" alt="avatar"
-           onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><circle cx=%2226%22 cy=%2226%22 r=%2226%22 fill=%22%23d8e8d8%22/></svg>'" />
+    document.getElementById('profile-area').innerHTML = `
+      <img class="avatar" src="${p.pictureUrl||''}" alt="avatar"
+           onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 50 50%22><circle cx=%2225%22 cy=%2225%22 r=%2225%22 fill=%22%23062%22/></svg>'" />
       <div class="profile-info">
-        <div class="name">${escHtml(p.displayName)}</div>
-        <div class="uid">UID: ${p.userId.slice(0, 16)}…</div>
+        <div class="name">${esc(p.displayName)}</div>
+        <div class="uid">UID: ${p.userId.slice(0,16)}…</div>
       </div>`;
+  }
+
+  // ===== RECENT from Sheet =====
+  async function loadRecent() {
+    try {
+      const res  = await fetch(SHEET_URL + '&t=' + Date.now());
+      const text = await res.text();
+      const json = JSON.parse(text.replace(/^[^(]+\(/, '').replace(/\);$/, ''));
+      const rows = (json.table.rows || []).slice(-MAX_RECENT).reverse();
+      renderRecent(rows);
+    } catch(e) {
+      console.warn('loadRecent error', e);
+    }
+  }
+
+  function renderRecent(rows) {
+    const list = document.getElementById('msg-list');
+    if (!rows.length) { list.innerHTML = '<div class="msg-empty">ยังไม่มีข้อความ</div>'; return; }
+    list.innerHTML = rows.map((row, i) => {
+      const c    = row.c || [];
+      const ts   = c[0]?.v || '';
+      const name = c[1]?.v || 'ไม่ระบุชื่อ';
+      const msg  = c[4]?.v || '';
+      return `<div class="msg-item" style="animation-delay:${i*0.07}s">
+        <div class="msg-item-text">${esc(msg)}</div>
+        <div class="msg-item-meta">${esc(name)} · ${esc(ts)}</div>
+      </div>`;
+    }).join('');
   }
 
   // ===== TEXTAREA =====
   function updateCount() {
     const val = document.getElementById('msg').value;
-    const cc = document.getElementById('char-count');
+    const cc  = document.getElementById('char-count');
     cc.textContent = `${val.length} / 500`;
     cc.className = 'char-count' + (val.length > 450 ? ' warn' : '');
   }
@@ -405,27 +491,21 @@
     };
 
     try {
-      if (GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
-        // Demo mode — แสดง toast แจ้งเตือน
-        console.log('Payload (demo):', payload);
-        await sleep(800);
-        toast('✅ ส่งข้อความสำเร็จ (Demo mode — ยังไม่ได้ตั้ง GAS URL)');
-      } else {
-        const res = await fetch(GAS_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        toast('✅ ส่งข้อความสำเร็จ!');
-      }
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      toast('✅ ส่งข้อความสำเร็จ!');
       document.getElementById('msg').value = '';
       updateCount();
-    } catch (e) {
+      // รอ GAS บันทึกแล้ว refresh recent
+      setTimeout(loadRecent, 2000);
+    } catch(e) {
       toast('ส่งไม่สำเร็จ กรุณาลองใหม่', true);
     } finally {
       btn.disabled = false;
-      btn.textContent = 'ส่งข้อความ';
+      btn.textContent = 'ส่งข้อความ →';
     }
   }
 
@@ -434,7 +514,6 @@
     document.querySelectorAll('#login-screen, #app-screen').forEach(el => el.classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
   }
-
   function toast(msg, isError = false) {
     const wrap = document.getElementById('toast-wrap');
     const el = document.createElement('div');
@@ -443,12 +522,9 @@
     wrap.appendChild(el);
     setTimeout(() => el.remove(), 3000);
   }
-
-  function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-
-  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
   init();
 </script>
