@@ -576,6 +576,92 @@
 
   .popup-close:hover { background: rgba(244,197,66,0.3); }
 
+  /* Recent krathongs list */
+  #recent-section {
+    margin-top: 14px;
+    border-top: 1px solid rgba(244,197,66,0.15);
+    padding-top: 12px;
+  }
+
+  .recent-title {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  .recent-list::-webkit-scrollbar { width: 3px; }
+  .recent-list::-webkit-scrollbar-track { background: transparent; }
+  .recent-list::-webkit-scrollbar-thumb { background: rgba(244,197,66,0.3); border-radius: 4px; }
+
+  .recent-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 7px 10px;
+    animation: fadeSlideIn 0.4s ease forwards;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .recent-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(244,197,66,0.4);
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .recent-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    border: 1.5px solid rgba(244,197,66,0.3);
+  }
+
+  .recent-info { flex: 1; min-width: 0; }
+
+  .recent-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .recent-wish {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+
+  .recent-badge {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
   /* Loading spinner */
   .spinner {
     display: inline-block;
@@ -720,6 +806,13 @@
     <button id="float-btn" onclick="floatKrathong()">
       🪷 &nbsp;ลอยกระทง
     </button>
+
+    <div id="recent-section">
+      <div class="recent-title">🕯️ กระทงล่าสุด</div>
+      <div class="recent-list" id="recent-list">
+        <div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:8px 0;">ยังไม่มีกระทง...</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -946,6 +1039,7 @@ async function floatKrathong() {
     renderKrathong(krathong);
     krathongData.push(krathong);
     updateCounter();
+    updateRecent();
 
     // Reset form
     document.getElementById('wish-input').value = '';
@@ -961,6 +1055,7 @@ async function floatKrathong() {
     renderKrathong(krathong);
     krathongData.push(krathong);
     updateCounter();
+    updateRecent();
     document.getElementById('wish-input').value = '';
     document.getElementById('char-counter').textContent = '0';
     showToast('🪷 ลอยกระทงแล้ว! (offline mode)');
@@ -1111,6 +1206,40 @@ function updateCounter() {
   document.getElementById('counter-num').textContent = floatCount;
 }
 
+// ===== RECENT LIST =====
+const STYLE_COLORS = ['#2da44e','#FF1493','#8E44AD','#FFC200','#E74C3C','#1ABC9C','#F39C12','#5DADE2'];
+const STYLE_EMOJI  = ['🌿','🌸','💜','✨','🌹','💎','🍊','🩵'];
+
+function updateRecent() {
+  const list = document.getElementById('recent-list');
+  if (!list) return;
+  const recent = [...krathongData].reverse().slice(0, 5);
+  if (recent.length === 0) return;
+
+  list.innerHTML = recent.map(k => {
+    const color = STYLE_COLORS[k.style] || STYLE_COLORS[0];
+    const emoji = STYLE_EMOJI[k.style] || '🪷';
+    const avatarHtml = k.pictureUrl
+      ? `<img class="recent-avatar" src="${k.pictureUrl}" onerror="this.outerHTML='<div class=\'recent-dot\' style=\'background:rgba(255,255,255,0.06)\'>${emoji}</div>'">`
+      : `<div class="recent-dot" style="background:rgba(255,255,255,0.06)">${emoji}</div>`;
+    return `
+      <div class="recent-item">
+        ${avatarHtml}
+        <div class="recent-info">
+          <div class="recent-name">${escHtml(k.displayName)}</div>
+          <div class="recent-wish">${k.wish ? escHtml(k.wish) : '—'}</div>
+        </div>
+        <div class="recent-badge" style="background:${color};opacity:0.8;box-shadow:0 0 6px ${color}55;"></div>
+      </div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 // ===== TOAST =====
 function showToast(msg) {
   const toast = document.getElementById('toast');
@@ -1162,6 +1291,7 @@ setTimeout(() => {
       renderKrathong(k);
       krathongData.push(k);
       updateCounter();
+      updateRecent();
     }, i * 1000);
   });
 }, 2000);
