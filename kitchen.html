@@ -222,8 +222,39 @@ function render() {
   document.getElementById('list-done').innerHTML = done.length ? [...done].reverse().slice(0,10).map(o => orderCard(o, 'done')).join('') : '<div class="empty-col"><div class="empty-icon">🎉</div>ยังไม่มีที่เสร็จ</div>';
 }
 
+function parseItems(raw) {
+  if (Array.isArray(raw)) return { type:'array', data: raw };
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (trimmed.startsWith('[')) {
+      try { return { type:'array', data: JSON.parse(trimmed) }; } catch(e) {}
+    }
+    return { type:'string', data: trimmed };
+  }
+  return { type:'string', data: String(raw || '') };
+}
+
 function orderCard(o, col) {
-  const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items||'[]') : []);
+  let itemsHtml = '';
+  try {
+    const parsed = parseItems(o.items);
+    if (parsed.type === 'array') {
+      itemsHtml = parsed.data.map(i =>
+        `<div class="oc-item">
+          <span class="oc-item-name">${i.emoji||''}${i.name}</span>
+          <span class="oc-item-qty">x${i.qty}</span>
+        </div>`
+      ).join('');
+    } else {
+      // plain string เช่น "🍤 ข้าวผัดกุ้ง x1, 🧋 โกโก้ x1"
+      itemsHtml = parsed.data.split(',').map(s => s.trim()).filter(Boolean).map(s =>
+        `<div class="oc-item"><span class="oc-item-name">${s}</span></div>`
+      ).join('');
+    }
+  } catch(e) {
+    itemsHtml = `<div class="oc-item"><span class="oc-item-name">${o.items||''}</span></div>`;
+  }
+
   return `<div class="order-card">
     <div class="oc-header">
       <div>
@@ -233,12 +264,7 @@ function orderCard(o, col) {
       </div>
       ${col==='cooking' ? `<span class="timer normal" data-id="${o.orderId}">${formatTime(getElapsed(o.orderId))}</span>` : ''}
     </div>
-    <div class="oc-items">${items.map(i => `
-      <div class="oc-item">
-        <span class="oc-item-name">${i.name}</span>
-        <span class="oc-item-qty">x${i.qty}</span>
-      </div>
-    `).join('')}</div>
+    <div class="oc-items">${itemsHtml}</div>
     ${o.note ? `<div class="oc-note">📝 ${o.note}</div>` : ''}
     <div class="oc-actions">
       ${col==='new' ? `<button class="oc-btn btn-start" onclick="updateStatus('${o.orderId}','กำลังทำ')">🔥 เริ่มทำ</button>` : ''}
