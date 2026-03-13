@@ -197,7 +197,6 @@
 
 <script>
 const SHEET_ID = '1OtWP37dGEwLiSHI4BQhtPx6sf3UBGl5838-xofzxnS8';
-const DISCORD = 'https://discord.com/api/webhooks/1481670697456636146/iUC1YHuXFq0ubZMJvIXHwmpAXH9sNUhSC7pB87CHGf-xKTm8D2doDBOjoA7OGiBGSDcJ';
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzX3F5pmXMe2lerCHLPDn9Ky3Tf8ToFR0AwpD8Q6rm5_GcjVWRdlRfp-UJZbVdFnKll/exec';
 
 let menu = [];
@@ -351,7 +350,6 @@ async function submitOrder() {
   const payload = { action:'addOrder', orderId, table: tableNum, items, note, total: grand, status:'รอดำเนินการ', time: new Date().toLocaleString('th-TH') };
   try {
     await fetch(gasUrl, { method:'POST', body: JSON.stringify(payload) });
-    await sendDiscord(orderId, tableNum, items, note, grand);
     cart = {};
     updateCartCount();
     toggleCart();
@@ -363,26 +361,6 @@ async function submitOrder() {
     btn.textContent = '✅ ส่งออเดอร์';
     alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
   }
-}
-
-async function sendDiscord(orderId, table, items, note, grand) {
-  const lines = items.map(i => `• ${i.name} x${i.qty} = ฿${i.total.toLocaleString()}`).join('\n');
-  const msg = {
-    username: '🍽️ ออเดอร์ใหม่',
-    embeds: [{
-      title: `🔔 ออเดอร์ใหม่ - โต๊ะ ${table}`,
-      color: 0xe8a020,
-      fields: [
-        { name:'📋 หมายเลขออเดอร์', value: orderId, inline: true },
-        { name:'🪑 โต๊ะ', value: `โต๊ะ ${table}`, inline: true },
-        { name:'🍜 รายการ', value: lines },
-        ...(note ? [{ name:'📝 หมายเหตุ', value: note }] : []),
-        { name:'💰 รวม', value: `฿${grand.toLocaleString()}`, inline: true },
-      ],
-      timestamp: new Date().toISOString()
-    }]
-  };
-  await fetch(DISCORD, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(msg) });
 }
 
 function resetOrder() {
