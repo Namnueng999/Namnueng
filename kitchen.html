@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ครัว - รับออเดอร์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Prompt:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f0a;
+    --surface: #111811;
+    --card-new: #0d2218;
+    --card-cooking: #1a1a08;
+    --card-done: #181818;
+    --green: #2ecc71;
+    --yellow: #f39c12;
+    --red: #e74c3c;
+    --muted: #5a6a55;
+    --text: #e8f5e2;
+    --border: #1e2e1e;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Sarabun',sans-serif; min-height:100vh; }
+
+  .header {
+    background:var(--surface); border-bottom:2px solid var(--border);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .header h1 { font-family:'Prompt',sans-serif; font-size:1.4rem; color:var(--green); }
+  .header-right { display:flex; align-items:center; gap:16px; }
+  .live-dot { width:10px; height:10px; background:var(--green); border-radius:50%; animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+  .time-display { font-family:'Prompt',sans-serif; font-size:1.2rem; color:var(--green); }
+  .auto-refresh { font-size:0.8rem; color:var(--muted); }
+  .setup-bar { background:#0d1a0d; padding:12px 24px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); }
+  .gas-inp { background:#111; border:1px solid #2a3a2a; color:var(--text); padding:8px 12px; border-radius:8px; font-family:'Sarabun',sans-serif; font-size:0.85rem; flex:1; max-width:500px; }
+  .btn { padding:9px 18px; border-radius:8px; border:none; cursor:pointer; font-family:'Sarabun',sans-serif; font-weight:700; font-size:0.85rem; }
+  .btn-green { background:var(--green); color:#000; }
+  .btn-yellow { background:var(--yellow); color:#000; }
+
+  .columns { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; padding:20px; min-height:calc(100vh - 130px); }
+  .col-header { padding:12px 16px; border-radius:12px 12px 0 0; font-family:'Prompt',sans-serif; font-weight:700; font-size:1rem; display:flex; align-items:center; gap:8px; }
+  .col-new .col-header { background:#0d2a18; color:var(--green); border-bottom:2px solid var(--green); }
+  .col-cooking .col-header { background:#2a2000; color:var(--yellow); border-bottom:2px solid var(--yellow); }
+  .col-done .col-header { background:#1e1e1e; color:#888; border-bottom:2px solid #333; }
+  .col-count { background:rgba(255,255,255,0.1); padding:2px 10px; border-radius:20px; font-size:0.85rem; }
+
+  .order-card {
+    border-radius:0 0 12px 12px; padding:18px; margin-bottom:14px;
+    border:1px solid var(--border); animation:slideIn 0.3s ease;
+    transition:all 0.2s;
+  }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+  .col-new .order-card { background:var(--card-new); border-color:#1a3a28; border-top:none; }
+  .col-cooking .order-card { background:var(--card-cooking); border-color:#3a3010; border-top:none; }
+  .col-done .order-card { background:var(--card-done); border-top:none; opacity:0.6; }
+
+  .oc-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+  .oc-table { font-family:'Prompt',sans-serif; font-size:1.5rem; font-weight:800; }
+  .col-new .oc-table { color:var(--green); }
+  .col-cooking .oc-table { color:var(--yellow); }
+  .oc-id { font-size:0.7rem; color:var(--muted); }
+  .oc-time { font-size:0.75rem; }
+  .timer { font-family:'Prompt',sans-serif; font-size:0.9rem; padding:4px 10px; border-radius:6px; }
+  .timer.normal { color:var(--green); }
+  .timer.warning { color:var(--yellow); animation:blink 1s infinite; }
+  .timer.danger { color:var(--red); animation:blink 0.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .oc-items { margin:12px 0; }
+  .oc-item { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .oc-item:last-child { border-bottom:none; }
+  .oc-item-name { font-size:0.95rem; font-weight:600; }
+  .oc-item-qty { background:rgba(255,255,255,0.1); padding:2px 10px; border-radius:6px; font-weight:700; font-size:0.85rem; }
+  .oc-note { margin-top:8px; padding:8px 10px; background:rgba(255,255,255,0.05); border-radius:8px; font-size:0.8rem; color:var(--muted); }
+
+  .oc-actions { display:flex; gap:8px; margin-top:14px; }
+  .oc-btn { flex:1; padding:10px 8px; border:none; border-radius:8px; font-family:'Sarabun',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; transition:all 0.15s; }
+  .oc-btn:hover { transform:scale(1.03); }
+  .btn-start { background:var(--yellow); color:#000; }
+  .btn-done { background:var(--green); color:#000; }
+  .btn-undo { background:#333; color:#aaa; }
+
+  .empty-col { text-align:center; padding:40px 20px; color:var(--muted); font-size:0.9rem; }
+  .empty-icon { font-size:2.5rem; margin-bottom:10px; }
+
+  .sound-btn { background:#1a2a1a; border:1px solid #2a3a2a; color:var(--green); padding:8px 14px; border-radius:8px; cursor:pointer; font-size:0.8rem; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>👨‍🍳 ครัว - รับออเดอร์</h1>
+  <div class="header-right">
+    <div class="live-dot"></div>
+    <div class="auto-refresh" id="refreshInfo">รีเฟรชทุก 20 วินาที</div>
+    <div class="time-display" id="clock"></div>
+    <button class="sound-btn" onclick="toggleSound()" id="soundBtn">🔔 เสียง ON</button>
+  </div>
+</div>
+<div class="setup-bar">
+  <span style="color:var(--muted);font-size:0.85rem;">GAS URL:</span>
+  <input class="gas-inp" id="gasInp" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveGas()">
+  <button class="btn btn-green" onclick="loadOrders()">🔄 โหลด</button>
+</div>
+
+<div class="columns">
+  <div class="col-new" id="col-new">
+    <div class="col-header">🔔 ออเดอร์ใหม่ <span class="col-count" id="cnt-new">0</span></div>
+    <div id="list-new"></div>
+  </div>
+  <div class="col-cooking" id="col-cooking">
+    <div class="col-header">🔥 กำลังทำ <span class="col-count" id="cnt-cooking">0</span></div>
+    <div id="list-cooking"></div>
+  </div>
+  <div class="col-done" id="col-done">
+    <div class="col-header">✅ เสร็จแล้ว <span class="col-count" id="cnt-done">0</span></div>
+    <div id="list-done"></div>
+  </div>
+</div>
+
+<script>
+let gasUrl = '';
+let orders = [];
+let soundOn = true;
+let lastOrderIds = new Set();
+let timers = {};
+let orderStartTimes = {};
+let refreshInterval;
+
+const DEFAULT_GAS = 'https://script.google.com/macros/s/AKfycbzX3F5pmXMe2lerCHLPDn9Ky3Tf8ToFR0AwpD8Q6rm5_GcjVWRdlRfp-UJZbVdFnKll/exec';
+window.onload = () => {
+  gasUrl = localStorage.getItem('gasUrl') || DEFAULT_GAS;
+  document.getElementById('gasInp').value = gasUrl;
+  localStorage.setItem('gasUrl', gasUrl);
+  clockTick();
+  setInterval(clockTick, 1000);
+  setInterval(updateTimers, 1000);
+  loadOrders();
+  startAutoRefresh();
+};
+
+function saveGas() {
+  gasUrl = document.getElementById('gasInp').value.trim();
+  localStorage.setItem('gasUrl', gasUrl);
+  startAutoRefresh();
+}
+
+function startAutoRefresh() {
+  clearInterval(refreshInterval);
+  if (gasUrl) refreshInterval = setInterval(loadOrders, 20000);
+}
+
+function clockTick() {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('th-TH');
+}
+
+function toggleSound() {
+  soundOn = !soundOn;
+  document.getElementById('soundBtn').textContent = soundOn ? '🔔 เสียง ON' : '🔇 เสียง OFF';
+}
+
+function playAlert() {
+  if (!soundOn) return;
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine'; osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.5);
+  } catch(e) {}
+}
+
+async function loadOrders() {
+  if (!gasUrl) return;
+  try {
+    const res = await fetch(`${gasUrl}?action=getOrders`);
+    const data = await res.json();
+    const newOrders = data.orders || [];
+    // Check for new orders
+    const newIds = new Set(newOrders.filter(o => o.status==='รอดำเนินการ').map(o => o.orderId));
+    newIds.forEach(id => { if (!lastOrderIds.has(id)) playAlert(); });
+    lastOrderIds = newIds;
+    orders = newOrders;
+    render();
+  } catch(e) { console.error(e); }
+}
+
+function getElapsed(orderId) {
+  if (!orderStartTimes[orderId]) orderStartTimes[orderId] = Date.now();
+  return Math.floor((Date.now() - orderStartTimes[orderId]) / 1000);
+}
+
+function formatTime(secs) {
+  const m = Math.floor(secs / 60), s = secs % 60;
+  return `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function updateTimers() {
+  document.querySelectorAll('.timer[data-id]').forEach(el => {
+    const id = el.dataset.id;
+    const secs = getElapsed(id);
+    el.textContent = formatTime(secs);
+    el.className = 'timer ' + (secs < 300 ? 'normal' : secs < 600 ? 'warning' : 'danger');
+  });
+}
+
+function render() {
+  const pending = orders.filter(o => o.status === 'รอดำเนินการ');
+  const cooking = orders.filter(o => o.status === 'กำลังทำ');
+  const done = orders.filter(o => o.status === 'เสร็จแล้ว');
+  
+  document.getElementById('cnt-new').textContent = pending.length;
+  document.getElementById('cnt-cooking').textContent = cooking.length;
+  document.getElementById('cnt-done').textContent = done.length;
+
+  document.getElementById('list-new').innerHTML = pending.length ? pending.reverse().map(o => orderCard(o, 'new')).join('') : '<div class="empty-col"><div class="empty-icon">✨</div>ไม่มีออเดอร์รอ</div>';
+  document.getElementById('list-cooking').innerHTML = cooking.length ? cooking.reverse().map(o => orderCard(o, 'cooking')).join('') : '<div class="empty-col"><div class="empty-icon">🕐</div>ไม่มีออเดอร์กำลังทำ</div>';
+  document.getElementById('list-done').innerHTML = done.length ? [...done].reverse().slice(0,10).map(o => orderCard(o, 'done')).join('') : '<div class="empty-col"><div class="empty-icon">🎉</div>ยังไม่มีที่เสร็จ</div>';
+}
+
+function orderCard(o, col) {
+  const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items||'[]') : []);
+  return `<div class="order-card">
+    <div class="oc-header">
+      <div>
+        <div class="oc-table">โต๊ะ ${o.table}</div>
+        <div class="oc-id">${o.orderId||''}</div>
+        <div class="oc-time" style="color:var(--muted);font-size:0.75rem;">${o.time||''}</div>
+      </div>
+      ${col==='cooking' ? `<span class="timer normal" data-id="${o.orderId}">${formatTime(getElapsed(o.orderId))}</span>` : ''}
+    </div>
+    <div class="oc-items">${items.map(i => `
+      <div class="oc-item">
+        <span class="oc-item-name">${i.name}</span>
+        <span class="oc-item-qty">x${i.qty}</span>
+      </div>
+    `).join('')}</div>
+    ${o.note ? `<div class="oc-note">📝 ${o.note}</div>` : ''}
+    <div class="oc-actions">
+      ${col==='new' ? `<button class="oc-btn btn-start" onclick="updateStatus('${o.orderId}','กำลังทำ')">🔥 เริ่มทำ</button>` : ''}
+      ${col==='cooking' ? `<button class="oc-btn btn-done" onclick="updateStatus('${o.orderId}','เสร็จแล้ว')">✅ เสร็จแล้ว</button>` : ''}
+      ${col==='done' ? `<button class="oc-btn btn-undo" onclick="updateStatus('${o.orderId}','กำลังทำ')">↩️ ย้อนกลับ</button>` : ''}
+    </div>
+  </div>`;
+}
+
+async function updateStatus(orderId, status) {
+  if (status === 'กำลังทำ') orderStartTimes[orderId] = Date.now();
+  try {
+    await fetch(gasUrl, { method:'POST', body: JSON.stringify({ action:'updateOrderStatus', orderId, status }) });
+    const o = orders.find(x => x.orderId === orderId);
+    if (o) o.status = status;
+    render();
+  } catch(e) { alert('อัปเดตไม่ได้'); }
+}
+</script>
+</body>
+</html>
