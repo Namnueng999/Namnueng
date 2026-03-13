@@ -111,7 +111,34 @@
   .order-total-price { font-family:'Prompt',sans-serif; color:var(--accent); font-size:1.1rem; font-weight:700; }
   .status-select { padding:6px 12px; border-radius:8px; border:1px solid var(--border); font-family:'Sarabun',sans-serif; font-size:0.85rem; }
 
-  .toast {
+  /* Tables management */
+  .tables-config { display:flex; align-items:center; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+  .tables-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+  .table-card {
+    background:var(--card); border-radius:16px; padding:20px 16px;
+    border:2px solid var(--border); text-align:center; transition:all 0.2s;
+    position:relative; overflow:hidden;
+  }
+  .table-card.closed { background:#fff5f5; border-color:#f5c0c0; }
+  .table-card-num { font-family:'Prompt',sans-serif; font-size:2rem; font-weight:700; color:var(--accent); margin-bottom:4px; }
+  .table-card.closed .table-card-num { color:#cc4444; }
+  .table-card-label { font-size:0.75rem; color:var(--muted); margin-bottom:14px; }
+  .table-toggle {
+    width:100%; padding:8px; border-radius:10px; border:none; cursor:pointer;
+    font-family:'Sarabun',sans-serif; font-weight:700; font-size:0.85rem; transition:all 0.2s;
+  }
+  .table-toggle.open { background:#d4f5e0; color:#2e7d4f; }
+  .table-toggle.open:hover { background:#2e7d4f; color:#fff; }
+  .table-toggle.closed { background:#fde8e8; color:#cc2222; }
+  .table-toggle.closed:hover { background:#cc2222; color:#fff; }
+  .table-status-dot {
+    position:absolute; top:10px; right:10px;
+    width:10px; height:10px; border-radius:50%;
+  }
+  .table-status-dot.open { background:var(--success); box-shadow:0 0 6px var(--success); }
+  .table-status-dot.closed { background:#cc4444; }
+
+
     position:fixed; bottom:24px; right:24px; background:var(--sidebar); color:#e8d8b0;
     padding:12px 20px; border-radius:12px; font-size:0.9rem; z-index:999;
     transform:translateY(80px); opacity:0; transition:all 0.3s; pointer-events:none;
@@ -137,6 +164,9 @@
   </div>
   <div class="nav-item" onclick="showSection('orders')">
     <span class="nav-icon">🧾</span> ออเดอร์
+  </div>
+  <div class="nav-item" onclick="showSection('tables')">
+    <span class="nav-icon">🪑</span> จัดการโต๊ะ
   </div>
   <div class="nav-item" onclick="showSection('settings')">
     <span class="nav-icon">⚙️</span> ตั้งค่า
@@ -203,6 +233,24 @@
         <button class="btn btn-secondary" onclick="loadAll()">🔄 รีเฟรช</button>
       </div>
       <div class="orders-grid" id="ordersContainer"></div>
+    </div>
+
+    <!-- Tables -->
+    <div class="section" id="sec-tables">
+      <div class="tables-config">
+        <label style="font-size:0.85rem;color:var(--muted);font-weight:600;">จำนวนโต๊ะ:</label>
+        <select id="tableCountSelect" style="padding:9px 14px;border-radius:10px;border:1px solid var(--border);font-family:'Sarabun',sans-serif;" onchange="renderTablesGrid()">
+          <option value="5">5 โต๊ะ</option>
+          <option value="10" selected>10 โต๊ะ</option>
+          <option value="15">15 โต๊ะ</option>
+          <option value="20">20 โต๊ะ</option>
+          <option value="30">30 โต๊ะ</option>
+        </select>
+        <button class="btn btn-success" onclick="openAllTables()">✅ เปิดทั้งหมด</button>
+        <button class="btn btn-danger" onclick="closeAllTables()">🔒 ปิดทั้งหมด</button>
+        <button class="btn btn-secondary" onclick="saveTables()">💾 บันทึก</button>
+      </div>
+      <div class="tables-grid" id="tablesGrid"></div>
     </div>
 
     <!-- Settings -->
@@ -311,6 +359,12 @@ async function loadAll() {
     renderOrders(allOrders);
     if (data.settings) {
       document.getElementById('set-name').value = data.settings.restaurantName || '';
+      if (data.settings.tableStates) {
+        try { tableStates = JSON.parse(data.settings.tableStates); } catch(e) { tableStates = {}; }
+      }
+      if (data.settings.tableCount) {
+        document.getElementById('tableCountSelect').value = data.settings.tableCount;
+      }
     }
     document.getElementById('lastUpdate').textContent = 'อัปเดต ' + new Date().toLocaleTimeString('th-TH');
     toast('โหลดข้อมูลสำเร็จ ✓');
@@ -368,13 +422,16 @@ function renderOrders(orders) {
   const filter = document.getElementById('orderFilter').value;
   const filtered = filter ? orders.filter(o => o.status === filter) : orders;
   document.getElementById('ordersContainer').innerHTML = [...filtered].reverse().map(o => {
-    const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items) : []);
+    const rawItems = o.items;
+    const itemsStr = typeof rawItems === 'string'
+      ? rawItems
+      : Array.isArray(rawItems) ? rawItems.map(i => `${i.emoji||''}${i.name} x${i.qty}`).join(', ') : '';
     return `<div class="order-card">
       <div class="order-header">
         <div class="order-id">${o.orderId||'ORDER'}</div>
         <div class="order-table-badge">โต๊ะ ${o.table}</div>
       </div>
-      <div class="order-items">${items.map(i => `${i.name} x${i.qty}`).join(', ')}</div>
+      <div class="order-items">${itemsStr}</div>
       ${o.note ? `<div class="order-note">📝 ${o.note}</div>` : ''}
       <div class="order-footer">
         <div class="order-total-price">฿${Number(o.total).toLocaleString()}</div>
@@ -531,8 +588,72 @@ function showSection(name) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('sec-'+name).classList.add('active');
   event.currentTarget.classList.add('active');
-  const titles = { dashboard:'📊 ภาพรวม', menu:'📋 จัดการเมนู', orders:'🧾 ออเดอร์', settings:'⚙️ ตั้งค่า' };
+  const titles = { dashboard:'📊 ภาพรวม', menu:'📋 จัดการเมนู', orders:'🧾 ออเดอร์', tables:'🪑 จัดการโต๊ะ', settings:'⚙️ ตั้งค่า' };
   document.getElementById('sectionTitle').textContent = titles[name];
+  if (name === 'tables') renderTablesGrid();
+}
+
+// ─── TABLES ───────────────────────────────────────────────────
+let tableStates = {}; // { '1': true, '2': false, ... }  true=open
+
+function renderTablesGrid() {
+  const count = parseInt(document.getElementById('tableCountSelect').value);
+  const grid = document.getElementById('tablesGrid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= count; i++) {
+    const key = String(i);
+    const isOpen = tableStates[key] !== false; // default open
+    const card = document.createElement('div');
+    card.className = 'table-card' + (isOpen ? '' : ' closed');
+    card.id = `tcard-${i}`;
+    card.innerHTML = `
+      <div class="table-status-dot ${isOpen ? 'open' : 'closed'}" id="tdot-${i}"></div>
+      <div class="table-card-num">โต๊ะ ${i}</div>
+      <div class="table-card-label">Table ${i}</div>
+      <button class="table-toggle ${isOpen ? 'open' : 'closed'}" id="tbtn-${i}" onclick="toggleTable(${i})">
+        ${isOpen ? '🟢 เปิดอยู่' : '🔴 ปิดอยู่'}
+      </button>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+function toggleTable(num) {
+  const key = String(num);
+  tableStates[key] = tableStates[key] === false; // flip (default open → false → true)
+  if (tableStates[key] === true) delete tableStates[key]; // open = default, no need to store
+  updateTableCard(num);
+}
+
+function updateTableCard(num) {
+  const key = String(num);
+  const isOpen = tableStates[key] !== false;
+  const card = document.getElementById(`tcard-${num}`);
+  const btn = document.getElementById(`tbtn-${num}`);
+  const dot = document.getElementById(`tdot-${num}`);
+  if (!card) return;
+  card.className = 'table-card' + (isOpen ? '' : ' closed');
+  btn.className = `table-toggle ${isOpen ? 'open' : 'closed'}`;
+  btn.textContent = isOpen ? '🟢 เปิดอยู่' : '🔴 ปิดอยู่';
+  dot.className = `table-status-dot ${isOpen ? 'open' : 'closed'}`;
+}
+
+function openAllTables() {
+  tableStates = {};
+  renderTablesGrid();
+}
+
+function closeAllTables() {
+  const count = parseInt(document.getElementById('tableCountSelect').value);
+  for (let i = 1; i <= count; i++) tableStates[String(i)] = false;
+  renderTablesGrid();
+}
+
+async function saveTables() {
+  try {
+    await fetch(gasUrl, { method:'POST', body: JSON.stringify({ action:'saveSettings', settings: { tableStates: JSON.stringify(tableStates), tableCount: document.getElementById('tableCountSelect').value } }) });
+    toast('บันทึกสถานะโต๊ะแล้ว ✓');
+  } catch(e) { toast('บันทึกไม่ได้', 'error'); }
 }
 
 function toast(msg, type='ok') {
