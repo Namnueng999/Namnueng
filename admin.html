@@ -423,9 +423,17 @@ function renderOrders(orders) {
   const filtered = filter ? orders.filter(o => o.status === filter) : orders;
   document.getElementById('ordersContainer').innerHTML = [...filtered].reverse().map(o => {
     const rawItems = o.items;
-    const itemsStr = typeof rawItems === 'string'
-      ? rawItems
-      : Array.isArray(rawItems) ? rawItems.map(i => `${i.emoji||''}${i.name} x${i.qty}`).join(', ') : '';
+    let itemsStr = '';
+    if (Array.isArray(rawItems)) {
+      itemsStr = rawItems.map(i => `${i.emoji||''}${i.name} x${i.qty}`).join(', ');
+    } else if (typeof rawItems === 'string' && rawItems.trim().startsWith('[')) {
+      try {
+        const arr = JSON.parse(rawItems);
+        itemsStr = arr.map(i => `${i.emoji||''}${i.name} x${i.qty}`).join(', ');
+      } catch(e) { itemsStr = rawItems; }
+    } else {
+      itemsStr = rawItems || '';
+    }
     return `<div class="order-card">
       <div class="order-header">
         <div class="order-id">${o.orderId||'ORDER'}</div>
