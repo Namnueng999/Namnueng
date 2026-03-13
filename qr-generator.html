@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สร้าง QR Code โต๊ะ</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Prompt:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f3ea;
+    --surface: #fffef9;
+    --accent: #b8340a;
+    --accent2: #d44a1a;
+    --text: #1a1208;
+    --muted: #8a7455;
+    --border: #e0cfa8;
+    --gold: #c89020;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Sarabun',sans-serif; min-height:100vh; }
+
+  .header { background:var(--text); color:#f0e8d5; padding:20px 28px; }
+  .header h1 { font-family:'Prompt',sans-serif; font-size:1.3rem; color:#e8a020; }
+  .header p { font-size:0.85rem; color:#8a7860; margin-top:4px; }
+
+  .config-panel { background:var(--surface); border-bottom:1px solid var(--border); padding:20px 28px; display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  label { font-size:0.8rem; color:var(--muted); font-weight:600; }
+  input, select {
+    padding:10px 14px; border:1px solid var(--border); border-radius:10px;
+    font-family:'Sarabun',sans-serif; font-size:0.9rem; background:var(--surface);
+  }
+  input:focus, select:focus { outline:none; border-color:var(--accent); }
+  .btn { padding:11px 22px; border-radius:10px; border:none; cursor:pointer; font-family:'Sarabun',sans-serif; font-weight:700; font-size:0.9rem; transition:all 0.2s; }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-primary:hover { background:var(--accent2); }
+  .btn-secondary { background:var(--bg); border:1px solid var(--border); color:var(--text); }
+  .btn-print { background:var(--gold); color:#000; }
+
+  .qr-grid { padding:24px 28px; display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px; max-width:1200px; margin:0 auto; }
+
+  .qr-card {
+    background:var(--surface); border-radius:20px; overflow:hidden;
+    border:1px solid var(--border); box-shadow:0 2px 12px rgba(0,0,0,0.06);
+    transition:all 0.2s;
+  }
+  .qr-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.1); }
+  .qr-card-header {
+    background:var(--text); padding:14px 20px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .qr-table-num { font-family:'Prompt',sans-serif; font-size:1.5rem; color:#e8a020; }
+  .qr-label { font-size:0.75rem; color:#8a7860; }
+  .qr-body { padding:20px; display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .qr-code { background:#fff; padding:12px; border-radius:12px; border:2px solid var(--border); }
+  .qr-url { font-size:0.65rem; color:var(--muted); text-align:center; word-break:break-all; max-width:180px; }
+  .qr-actions { display:flex; gap:8px; width:100%; }
+  .qr-actions .btn { flex:1; padding:9px; font-size:0.8rem; }
+
+  /* Print Styles */
+  .print-card {
+    background:#fff; border:2px solid #ccc; border-radius:16px;
+    padding:20px; text-align:center; display:inline-flex; flex-direction:column;
+    align-items:center; gap:8px; break-inside:avoid; margin:10px;
+  }
+  .print-card .table-big { font-family:'Prompt',sans-serif; font-size:2rem; font-weight:700; color:var(--text); }
+  .print-card .scan-text { font-size:0.8rem; color:#666; }
+
+  @media print {
+    body { background:#fff; }
+    .header, .config-panel, .no-print { display:none !important; }
+    .qr-grid { grid-template-columns:repeat(2,1fr); padding:0; gap:10px; }
+    .qr-card { box-shadow:none; border:2px solid #ddd; }
+    .qr-actions { display:none; }
+  }
+
+  .empty-state { text-align:center; padding:80px; color:var(--muted); }
+  .empty-state h3 { font-size:1.2rem; margin-bottom:8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📱 สร้าง QR Code สำหรับโต๊ะ</h1>
+  <p>สร้าง QR Code ให้ลูกค้าแสกนสั่งอาหาร</p>
+</div>
+
+<div class="config-panel no-print">
+  <div class="form-group">
+    <label>URL ไฟล์ menu.html</label>
+    <input id="menuUrl" style="width:340px;" placeholder="https://yoursite.com/menu.html" value="">
+  </div>
+  <div class="form-group">
+    <label>Google Apps Script URL</label>
+    <input id="gasUrl" style="width:320px;" placeholder="https://script.google.com/macros/s/.../exec">
+  </div>
+  <div class="form-group">
+    <label>จำนวนโต๊ะ</label>
+    <select id="tableCount">
+      <option value="5">5 โต๊ะ</option>
+      <option value="10" selected>10 โต๊ะ</option>
+      <option value="15">15 โต๊ะ</option>
+      <option value="20">20 โต๊ะ</option>
+      <option value="30">30 โต๊ะ</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>โต๊ะเริ่มต้น</label>
+    <input id="tableStart" type="number" value="1" style="width:90px;" min="1">
+  </div>
+  <button class="btn btn-primary" onclick="generate()">✨ สร้าง QR Code</button>
+  <button class="btn btn-print" onclick="window.print()">🖨️ พิมพ์ทั้งหมด</button>
+</div>
+
+<div id="qrGrid" class="qr-grid">
+  <div class="empty-state" style="grid-column:1/-1;">
+    <h3>📱 ยังไม่มี QR Code</h3>
+    <p>กรอกข้อมูลด้านบนแล้วกดสร้าง QR Code</p>
+  </div>
+</div>
+
+<script>
+const DEFAULT_GAS = 'https://script.google.com/macros/s/AKfycbzX3F5pmXMe2lerCHLPDn9Ky3Tf8ToFR0AwpD8Q6rm5_GcjVWRdlRfp-UJZbVdFnKll/exec';
+window.onload = () => {
+  document.getElementById('gasUrl').value = localStorage.getItem('gasUrl') || DEFAULT_GAS;
+};
+
+function generate() {
+  const menuUrl = document.getElementById('menuUrl').value.trim();
+  const gasUrl = document.getElementById('gasUrl').value.trim();
+  const count = parseInt(document.getElementById('tableCount').value);
+  const start = parseInt(document.getElementById('tableStart').value) || 1;
+
+  if (!menuUrl) { alert('กรุณาใส่ URL ของไฟล์ menu.html\n\nตัวอย่าง: https://yourname.github.io/restaurant/menu.html'); return; }
+
+  localStorage.setItem('gasUrl', gasUrl);
+
+  const grid = document.getElementById('qrGrid');
+  grid.innerHTML = '';
+
+  for (let i = start; i < start + count; i++) {
+    const params = `?table=${i}${gasUrl ? `&gas=${encodeURIComponent(gasUrl)}` : ''}`;
+    const url = menuUrl + params;
+    const card = createCard(i, url);
+    grid.appendChild(card);
+    const qrDiv = card.querySelector('.qr-code');
+    new QRCode(qrDiv, {
+      text: url, width:160, height:160,
+      colorDark:'#1a1208', colorLight:'#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+    card.querySelector('.qr-url').textContent = url;
+  }
+}
+
+function createCard(num, url) {
+  const div = document.createElement('div');
+  div.className = 'qr-card';
+  div.innerHTML = `
+    <div class="qr-card-header">
+      <div>
+        <div class="qr-table-num">โต๊ะ ${num}</div>
+        <div class="qr-label">Table ${num}</div>
+      </div>
+      <span style="font-size:2rem;">🪑</span>
+    </div>
+    <div class="qr-body">
+      <div class="qr-code"></div>
+      <p style="font-size:0.75rem;color:var(--muted);">แสกนเพื่อสั่งอาหาร</p>
+      <div class="qr-url"></div>
+      <div class="qr-actions no-print">
+        <button class="btn btn-secondary" onclick="downloadQR(this, ${num})">⬇️ บันทึก</button>
+        <button class="btn btn-primary" onclick="copyUrl('${url.replace(/'/g,"\\'")}')">📋 คัดลอก URL</button>
+      </div>
+    </div>
+  `;
+  return div;
+}
+
+function downloadQR(btn, tableNum) {
+  const card = btn.closest('.qr-card');
+  const canvas = card.querySelector('canvas');
+  if (!canvas) { alert('QR Code ยังไม่พร้อม'); return; }
+  // Draw with label
+  const bigCanvas = document.createElement('canvas');
+  bigCanvas.width = 280; bigCanvas.height = 340;
+  const ctx = bigCanvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,280,340);
+  ctx.fillStyle = '#1a1208';
+  ctx.font = 'bold 28px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(`โต๊ะ ${tableNum}`, 140, 36);
+  ctx.drawImage(canvas, 60, 50, 160, 160);
+  ctx.fillStyle = '#666';
+  ctx.font = '16px sans-serif';
+  ctx.fillText('แสกนเพื่อสั่งอาหาร', 140, 230);
+  ctx.font = '12px sans-serif';
+  ctx.fillText(`Scan to Order - Table ${tableNum}`, 140, 252);
+
+  const link = document.createElement('a');
+  link.download = `QR-Table-${tableNum}.png`;
+  link.href = bigCanvas.toDataURL('image/png');
+  link.click();
+}
+
+function copyUrl(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    alert('คัดลอก URL แล้ว!');
+  });
+}
+</script>
+</body>
+</html>
