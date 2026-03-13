@@ -142,6 +142,16 @@
   }
   .back-btn:hover { background:var(--accent); color:#000; }
 
+  .table-closed-screen {
+    display:none; position:fixed; inset:0; background:var(--bg);
+    z-index:300; flex-direction:column; align-items:center; justify-content:center;
+    gap:16px; text-align:center; padding:32px;
+  }
+  .table-closed-screen.show { display:flex; }
+  .closed-icon { font-size:5rem; }
+  .table-closed-screen h2 { font-family:'Prompt',sans-serif; font-size:1.5rem; color:#cc4444; }
+  .table-closed-screen p { color:var(--muted); font-size:0.95rem; line-height:1.6; }
+
   .loading { text-align:center; padding:60px; color:var(--muted); }
   .spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px; }
   @keyframes spin { to { transform:rotate(360deg); } }
@@ -187,6 +197,12 @@
   <button class="confirm-btn" id="confirmBtn" onclick="submitOrder()">✅ ส่งออเดอร์</button>
 </div>
 
+<div class="table-closed-screen" id="tableClosedScreen">
+  <div class="closed-icon">🔒</div>
+  <h2>โต๊ะนี้ปิดอยู่</h2>
+  <p>ขณะนี้โต๊ะ <strong id="closedTableNum"></strong> ยังไม่เปิดให้บริการ<br>กรุณาติดต่อพนักงาน</p>
+</div>
+
 <div class="success-screen" id="successScreen">
   <div class="success-icon">✅</div>
   <h2>ส่งออเดอร์แล้ว!</h2>
@@ -222,6 +238,17 @@ async function loadMenu() {
   try {
     const res = await fetch(`${gasUrl}?action=getMenu`);
     const data = await res.json();
+
+    // Check if this table is closed
+    let tableStates = {};
+    try { tableStates = JSON.parse(data.tableStates || '{}'); } catch(e) {}
+    if (tableStates[String(tableNum)] === false) {
+      document.getElementById('closedTableNum').textContent = tableNum;
+      document.getElementById('tableClosedScreen').classList.add('show');
+      document.getElementById('restaurantName').textContent = data.restaurantName || 'ร้านอาหาร';
+      return;
+    }
+
     menu = data.menu || [];
     document.getElementById('restaurantName').textContent = data.restaurantName || 'ร้านอาหาร';
     document.title = data.restaurantName || 'สั่งอาหาร';
@@ -342,7 +369,7 @@ async function submitOrder() {
   btn.textContent = '⏳ กำลังส่ง...';
   const items = Object.entries(cart).filter(([,q]) => q > 0).map(([id, qty]) => {
     const item = menu.find(m => m.id === id);
-    return { id, name: item.name, qty, price: item.price, total: item.price * qty };
+    return { id, name: item.name, emoji: item.emoji||'', qty, price: item.price, total: item.price * qty };
   });
   const note = document.getElementById('orderNote').value;
   const orderId = `ORD-${Date.now()}`;
