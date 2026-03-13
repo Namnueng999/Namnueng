@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สั่งอาหาร</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #1a1814;
+    --card: #221f1b;
+    --accent: #e8a020;
+    --accent2: #f5c842;
+    --text: #f0ead8;
+    --muted: #8a7d6a;
+    --success: #4caf7d;
+    --border: #2e2a24;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Sarabun',sans-serif; min-height:100vh; }
+
+  .header {
+    background: linear-gradient(135deg, #1a1410 0%, #2a1f0a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    position: sticky; top:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .header-left h1 { font-family:'Prompt',sans-serif; font-size:1.3rem; color:var(--accent); }
+  .header-left p { font-size:0.8rem; color:var(--muted); }
+  .cart-btn {
+    background:var(--accent); color:#000; border:none; border-radius:50px;
+    padding:10px 18px; font-family:'Sarabun',sans-serif; font-size:0.9rem; font-weight:700;
+    cursor:pointer; display:flex; align-items:center; gap:8px; transition:all 0.2s;
+  }
+  .cart-btn:hover { background:var(--accent2); transform:scale(1.03); }
+  .cart-count {
+    background:#000; color:var(--accent); border-radius:50%;
+    width:22px; height:22px; display:flex; align-items:center; justify-content:center;
+    font-size:0.75rem; font-weight:700;
+  }
+
+  .categories {
+    display:flex; gap:10px; padding:16px 20px; overflow-x:auto;
+    scrollbar-width:none; border-bottom:1px solid var(--border);
+    background:var(--surface);
+  }
+  .categories::-webkit-scrollbar { display:none; }
+  .cat-btn {
+    background:var(--card); border:1px solid var(--border);
+    color:var(--muted); border-radius:50px; padding:8px 18px;
+    font-family:'Sarabun',sans-serif; font-size:0.85rem; cursor:pointer;
+    white-space:nowrap; transition:all 0.2s; flex-shrink:0;
+  }
+  .cat-btn.active { background:var(--accent); color:#000; border-color:var(--accent); font-weight:700; }
+
+  .menu-grid {
+    padding:16px 20px;
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap:14px; max-width:900px; margin:0 auto;
+  }
+
+  .menu-card {
+    background:var(--card); border-radius:16px; overflow:hidden;
+    border:1px solid var(--border); transition:all 0.25s;
+    cursor:pointer; position:relative;
+  }
+  .menu-card:hover { transform:translateY(-3px); border-color:var(--accent); }
+  .menu-card.out-of-stock { opacity:0.4; pointer-events:none; }
+  .menu-img {
+    width:100%; height:120px; background:var(--surface);
+    display:flex; align-items:center; justify-content:center;
+    font-size:2.5rem; position:relative;
+  }
+  .menu-img img { width:100%; height:100%; object-fit:cover; position:absolute; }
+  .badge-sold { position:absolute; top:8px; right:8px; background:#cc3333; color:#fff; font-size:0.65rem; padding:3px 7px; border-radius:20px; }
+  .menu-info { padding:12px; }
+  .menu-name { font-weight:600; font-size:0.9rem; margin-bottom:4px; }
+  .menu-desc { font-size:0.75rem; color:var(--muted); margin-bottom:8px; line-height:1.4; }
+  .menu-price { font-family:'Prompt',sans-serif; color:var(--accent); font-size:1rem; font-weight:700; }
+  .add-btn {
+    width:100%; margin-top:8px; background:var(--accent); border:none;
+    color:#000; font-weight:700; font-size:0.85rem; padding:8px;
+    border-radius:8px; cursor:pointer; font-family:'Sarabun',sans-serif; transition:all 0.2s;
+  }
+  .add-btn:hover { background:var(--accent2); }
+
+  /* Cart Modal */
+  .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:none; }
+  .cart-modal {
+    position:fixed; bottom:0; left:0; right:0; z-index:201;
+    background:var(--surface); border-radius:24px 24px 0 0;
+    padding:24px 20px 32px; max-height:80vh; overflow-y:auto;
+    transform:translateY(100%); transition:transform 0.35s cubic-bezier(.32,2,.55,.89);
+  }
+  .cart-modal.open { transform:translateY(0); }
+  .cart-title { font-family:'Prompt',sans-serif; font-size:1.2rem; margin-bottom:16px; }
+  .cart-item {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 0; border-bottom:1px solid var(--border);
+  }
+  .ci-emoji { font-size:1.8rem; width:44px; text-align:center; }
+  .ci-info { flex:1; }
+  .ci-name { font-weight:600; font-size:0.9rem; }
+  .ci-price { color:var(--accent); font-size:0.85rem; }
+  .ci-qty { display:flex; align-items:center; gap:10px; }
+  .qty-btn { background:var(--card); border:1px solid var(--border); color:var(--text); width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:1rem; transition:all 0.15s; }
+  .qty-btn:hover { background:var(--accent); color:#000; border-color:var(--accent); }
+  .note-input {
+    width:100%; margin-top:16px; padding:12px; background:var(--card);
+    border:1px solid var(--border); border-radius:10px;
+    color:var(--text); font-family:'Sarabun',sans-serif; font-size:0.9rem; resize:none;
+  }
+  .order-total { margin-top:16px; font-size:1.1rem; font-weight:700; text-align:right; }
+  .order-total span { color:var(--accent); font-family:'Prompt',sans-serif; font-size:1.3rem; }
+  .confirm-btn {
+    width:100%; margin-top:16px; background:var(--accent); color:#000;
+    border:none; border-radius:14px; padding:16px; font-size:1rem; font-weight:700;
+    font-family:'Sarabun',sans-serif; cursor:pointer; transition:all 0.2s;
+  }
+  .confirm-btn:hover { background:var(--accent2); }
+  .confirm-btn:disabled { background:var(--muted); cursor:not-allowed; }
+
+  .empty-cart { text-align:center; padding:40px; color:var(--muted); }
+
+  /* Success screen */
+  .success-screen {
+    display:none; position:fixed; inset:0; background:var(--bg);
+    z-index:300; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px;
+  }
+  .success-screen.show { display:flex; }
+  .success-icon { font-size:5rem; animation: pop 0.5s cubic-bezier(.32,2,.55,.89); }
+  @keyframes pop { from{transform:scale(0)} to{transform:scale(1)} }
+  .success-screen h2 { font-family:'Prompt',sans-serif; font-size:1.5rem; color:var(--success); }
+  .success-screen p { color:var(--muted); font-size:0.9rem; }
+  .back-btn {
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:12px 28px; border-radius:50px; cursor:pointer; font-family:'Sarabun',sans-serif;
+    font-size:0.9rem; transition:all 0.2s; margin-top:10px;
+  }
+  .back-btn:hover { background:var(--accent); color:#000; }
+
+  .loading { text-align:center; padding:60px; color:var(--muted); }
+  .spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .table-banner {
+    background:linear-gradient(90deg,#2a1f0a,#1a1410);
+    border-bottom:1px solid var(--border);
+    padding:10px 20px; display:flex; align-items:center; gap:10px;
+  }
+  .table-num { font-family:'Prompt',sans-serif; font-size:1.8rem; color:var(--accent); font-weight:700; }
+  .table-label { color:var(--muted); font-size:0.85rem; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>🍽️ สั่งอาหาร</h1>
+    <p id="restaurantName">กำลังโหลด...</p>
+  </div>
+  <button class="cart-btn" onclick="toggleCart()">
+    🛒 ตะกร้า <span class="cart-count" id="cartCount">0</span>
+  </button>
+</div>
+
+<div class="table-banner">
+  <div class="table-num" id="tableDisplay">-</div>
+  <div class="table-label">โต๊ะของคุณ</div>
+</div>
+
+<div class="categories" id="categoriesBar"></div>
+
+<div id="menuContainer">
+  <div class="loading"><div class="spinner"></div>กำลังโหลดเมนู...</div>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleCart()"></div>
+<div class="cart-modal" id="cartModal">
+  <div class="cart-title">🛒 รายการที่เลือก</div>
+  <div id="cartItems"></div>
+  <textarea class="note-input" id="orderNote" rows="2" placeholder="หมายเหตุ เช่น ไม่ใส่ผัก, เผ็ดน้อย..."></textarea>
+  <div class="order-total">รวม: <span id="totalPrice">฿0</span></div>
+  <button class="confirm-btn" id="confirmBtn" onclick="submitOrder()">✅ ส่งออเดอร์</button>
+</div>
+
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">✅</div>
+  <h2>ส่งออเดอร์แล้ว!</h2>
+  <p>ครัวได้รับออเดอร์ของคุณแล้ว</p>
+  <p id="successOrderId" style="color:var(--accent);font-weight:700;"></p>
+  <button class="back-btn" onclick="resetOrder()">สั่งเพิ่ม</button>
+</div>
+
+<script>
+const SHEET_ID = '1OtWP37dGEwLiSHI4BQhtPx6sf3UBGl5838-xofzxnS8';
+const DISCORD = 'https://discord.com/api/webhooks/1481670697456636146/iUC1YHuXFq0ubZMJvIXHwmpAXH9sNUhSC7pB87CHGf-xKTm8D2doDBOjoA7OGiBGSDcJ';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzX3F5pmXMe2lerCHLPDn9Ky3Tf8ToFR0AwpD8Q6rm5_GcjVWRdlRfp-UJZbVdFnKll/exec';
+
+let menu = [];
+let cart = {};
+let tableNum = '?';
+let currentCat = 'ทั้งหมด';
+let gasUrl = '';
+
+function getParams() {
+  const p = new URLSearchParams(window.location.search);
+  tableNum = p.get('table') || '1';
+  gasUrl = GAS_URL;
+  localStorage.setItem('gasUrl', gasUrl);
+  document.getElementById('tableDisplay').textContent = tableNum;
+}
+
+async function loadMenu() {
+  getParams();
+  if (!gasUrl) {
+    document.getElementById('menuContainer').innerHTML = '<div class="loading" style="color:#cc5533">⚠️ เกิดข้อผิดพลาด กรุณาแจ้งพนักงาน</div>';
+    return;
+  }
+  try {
+    const res = await fetch(`${gasUrl}?action=getMenu`);
+    const data = await res.json();
+    menu = data.menu || [];
+    document.getElementById('restaurantName').textContent = data.restaurantName || 'ร้านอาหาร';
+    document.title = data.restaurantName || 'สั่งอาหาร';
+    renderCategories();
+    renderMenu('ทั้งหมด');
+  } catch(e) {
+    document.getElementById('menuContainer').innerHTML = '<div class="loading" style="color:#cc5533">⚠️ โหลดเมนูไม่ได้ กรุณาลองใหม่</div>';
+  }
+}
+
+function renderCategories() {
+  const cats = ['ทั้งหมด', ...new Set(menu.map(m => m.category).filter(Boolean))];
+  const bar = document.getElementById('categoriesBar');
+  bar.innerHTML = cats.map(c => `<button class="cat-btn ${c===currentCat?'active':''}" onclick="filterCat('${c}')">${c}</button>`).join('');
+}
+
+function filterCat(cat) {
+  currentCat = cat;
+  renderCategories();
+  renderMenu(cat);
+}
+
+function renderMenu(cat) {
+  const items = cat === 'ทั้งหมด' ? menu : menu.filter(m => m.category === cat);
+  if (!items.length) {
+    document.getElementById('menuContainer').innerHTML = '<div class="loading">ไม่มีเมนูในหมวดนี้</div>';
+    return;
+  }
+  document.getElementById('menuContainer').innerHTML = `<div class="menu-grid">${items.map(item => `
+    <div class="menu-card ${item.available===false||item.available==='false'?'out-of-stock':''}">
+      <div class="menu-img">
+        ${item.image ? `<img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'">` : ''}
+        <span>${item.emoji||'🍽️'}</span>
+        ${item.available===false||item.available==='false' ? '<div class="badge-sold">หมด</div>' : ''}
+      </div>
+      <div class="menu-info">
+        <div class="menu-name">${item.name}</div>
+        ${item.description ? `<div class="menu-desc">${item.description}</div>` : ''}
+        <div class="menu-price">฿${Number(item.price).toLocaleString()}</div>
+        <button class="add-btn" onclick="addToCart('${item.id}')">+ เพิ่ม</button>
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function addToCart(id) {
+  const item = menu.find(m => m.id === id);
+  if (!item) return;
+  cart[id] = (cart[id] || 0) + 1;
+  updateCartCount();
+  // Mini feedback
+  const btn = event.target;
+  btn.textContent = '✓ เพิ่มแล้ว';
+  btn.style.background = 'var(--success)';
+  setTimeout(() => { btn.textContent = '+ เพิ่ม'; btn.style.background = ''; }, 800);
+}
+
+function updateCartCount() {
+  const total = Object.values(cart).reduce((a,b) => a+b, 0);
+  document.getElementById('cartCount').textContent = total;
+}
+
+function toggleCart() {
+  const modal = document.getElementById('cartModal');
+  const overlay = document.getElementById('overlay');
+  const isOpen = modal.classList.contains('open');
+  if (!isOpen) {
+    renderCartItems();
+    modal.classList.add('open');
+    overlay.style.display = 'block';
+  } else {
+    modal.classList.remove('open');
+    overlay.style.display = 'none';
+  }
+}
+
+function renderCartItems() {
+  const container = document.getElementById('cartItems');
+  const items = Object.entries(cart).filter(([,q]) => q > 0);
+  if (!items.length) {
+    container.innerHTML = '<div class="empty-cart">🛒<br>ยังไม่ได้เลือกอาหาร</div>';
+    document.getElementById('totalPrice').textContent = '฿0';
+    document.getElementById('confirmBtn').disabled = true;
+    return;
+  }
+  document.getElementById('confirmBtn').disabled = false;
+  let total = 0;
+  container.innerHTML = items.map(([id, qty]) => {
+    const item = menu.find(m => m.id === id);
+    if (!item) return '';
+    total += item.price * qty;
+    return `<div class="cart-item">
+      <div class="ci-emoji">${item.emoji||'🍽️'}</div>
+      <div class="ci-info">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-price">฿${(item.price * qty).toLocaleString()}</div>
+      </div>
+      <div class="ci-qty">
+        <button class="qty-btn" onclick="changeQty('${id}',-1)">−</button>
+        <span>${qty}</span>
+        <button class="qty-btn" onclick="changeQty('${id}',1)">+</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('totalPrice').textContent = `฿${total.toLocaleString()}`;
+}
+
+function changeQty(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] <= 0) delete cart[id];
+  updateCartCount();
+  renderCartItems();
+}
+
+async function submitOrder() {
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ กำลังส่ง...';
+  const items = Object.entries(cart).filter(([,q]) => q > 0).map(([id, qty]) => {
+    const item = menu.find(m => m.id === id);
+    return { id, name: item.name, qty, price: item.price, total: item.price * qty };
+  });
+  const note = document.getElementById('orderNote').value;
+  const orderId = `ORD-${Date.now()}`;
+  const grand = items.reduce((a,b) => a + b.total, 0);
+  const payload = { action:'addOrder', orderId, table: tableNum, items, note, total: grand, status:'รอดำเนินการ', time: new Date().toLocaleString('th-TH') };
+  try {
+    await fetch(gasUrl, { method:'POST', body: JSON.stringify(payload) });
+    await sendDiscord(orderId, tableNum, items, note, grand);
+    cart = {};
+    updateCartCount();
+    toggleCart();
+    const ss = document.getElementById('successScreen');
+    document.getElementById('successOrderId').textContent = `หมายเลขออเดอร์: ${orderId}`;
+    ss.classList.add('show');
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '✅ ส่งออเดอร์';
+    alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
+  }
+}
+
+async function sendDiscord(orderId, table, items, note, grand) {
+  const lines = items.map(i => `• ${i.name} x${i.qty} = ฿${i.total.toLocaleString()}`).join('\n');
+  const msg = {
+    username: '🍽️ ออเดอร์ใหม่',
+    embeds: [{
+      title: `🔔 ออเดอร์ใหม่ - โต๊ะ ${table}`,
+      color: 0xe8a020,
+      fields: [
+        { name:'📋 หมายเลขออเดอร์', value: orderId, inline: true },
+        { name:'🪑 โต๊ะ', value: `โต๊ะ ${table}`, inline: true },
+        { name:'🍜 รายการ', value: lines },
+        ...(note ? [{ name:'📝 หมายเหตุ', value: note }] : []),
+        { name:'💰 รวม', value: `฿${grand.toLocaleString()}`, inline: true },
+      ],
+      timestamp: new Date().toISOString()
+    }]
+  };
+  await fetch(DISCORD, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(msg) });
+}
+
+function resetOrder() {
+  document.getElementById('successScreen').classList.remove('show');
+  document.getElementById('orderNote').value = '';
+}
+
+loadMenu();
+</script>
+</body>
+</html>
