@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - จัดการเมนู</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --surface: #fffef9;
+    --card: #ffffff;
+    --accent: #c8410a;
+    --accent2: #e85c1a;
+    --text: #1a1208;
+    --muted: #8a7455;
+    --success: #2e7d4f;
+    --border: #e0d5c0;
+    --sidebar: #1a1208;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Sarabun',sans-serif; min-height:100vh; display:flex; }
+
+  .sidebar {
+    width:240px; background:var(--sidebar); color:#f0e8d5; flex-shrink:0;
+    display:flex; flex-direction:column; height:100vh; position:sticky; top:0;
+  }
+  .sidebar-logo { padding:24px 20px; border-bottom:1px solid #2e2820; }
+  .sidebar-logo h1 { font-family:'Prompt',sans-serif; font-size:1.1rem; color:#e8a020; }
+  .sidebar-logo p { font-size:0.75rem; color:#6a5a40; margin-top:2px; }
+  .nav-item {
+    padding:14px 20px; cursor:pointer; display:flex; align-items:center; gap:12px;
+    font-size:0.9rem; transition:all 0.2s; border-left:3px solid transparent;
+  }
+  .nav-item:hover { background:#2a2018; }
+  .nav-item.active { background:#2a2018; border-left-color:#e8a020; color:#e8a020; }
+  .nav-icon { font-size:1.1rem; width:24px; text-align:center; }
+  .sidebar-bottom { margin-top:auto; padding:20px; border-top:1px solid #2e2820; }
+  .gas-label { font-size:0.7rem; color:#6a5a40; margin-bottom:6px; }
+  .gas-input { width:100%; background:#2a2018; border:1px solid #3a3028; color:#c0a87a; padding:8px 10px; border-radius:8px; font-size:0.75rem; font-family:'Sarabun',sans-serif; }
+
+  .main { flex:1; overflow-y:auto; }
+  .topbar {
+    background:var(--surface); border-bottom:1px solid var(--border);
+    padding:16px 28px; display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:10;
+  }
+  .topbar h2 { font-family:'Prompt',sans-serif; font-size:1.2rem; }
+  .btn { padding:10px 20px; border-radius:10px; border:none; cursor:pointer; font-family:'Sarabun',sans-serif; font-size:0.9rem; font-weight:600; transition:all 0.2s; }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-primary:hover { background:var(--accent2); }
+  .btn-secondary { background:var(--bg); border:1px solid var(--border); color:var(--text); }
+  .btn-danger { background:#cc2222; color:#fff; }
+  .btn-success { background:var(--success); color:#fff; }
+
+  .content { padding:24px 28px; }
+  .section { display:none; }
+  .section.active { display:block; }
+
+  /* Stats */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
+  .stat-card { background:var(--card); border-radius:16px; padding:20px; border:1px solid var(--border); }
+  .stat-num { font-family:'Prompt',sans-serif; font-size:2rem; font-weight:700; color:var(--accent); }
+  .stat-label { color:var(--muted); font-size:0.85rem; margin-top:4px; }
+
+  /* Menu management */
+  .menu-actions { display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
+  .search-input {
+    flex:1; min-width:200px; padding:10px 16px; border-radius:10px;
+    border:1px solid var(--border); font-family:'Sarabun',sans-serif; font-size:0.9rem;
+    background:var(--surface);
+  }
+  .menu-table { background:var(--card); border-radius:16px; overflow:hidden; border:1px solid var(--border); }
+  table { width:100%; border-collapse:collapse; }
+  th { background:var(--bg); padding:12px 16px; text-align:left; font-size:0.8rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+  td { padding:12px 16px; border-bottom:1px solid var(--border); font-size:0.9rem; vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#faf8f4; }
+  .item-emoji { font-size:1.5rem; }
+  .badge { padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:600; }
+  .badge-active { background:#d4f5e0; color:#2e7d4f; }
+  .badge-inactive { background:#fde8e8; color:#cc2222; }
+  .action-btns { display:flex; gap:8px; }
+  .btn-sm { padding:6px 12px; font-size:0.8rem; border-radius:8px; }
+
+  /* Modal */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:200; display:none; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--card); border-radius:20px; padding:28px; width:90%; max-width:480px; max-height:90vh; overflow-y:auto; }
+  .modal h3 { font-family:'Prompt',sans-serif; font-size:1.1rem; margin-bottom:20px; }
+  .form-group { margin-bottom:16px; }
+  label { display:block; font-size:0.85rem; color:var(--muted); margin-bottom:6px; font-weight:600; }
+  input, textarea, select {
+    width:100%; padding:11px 14px; border:1px solid var(--border); border-radius:10px;
+    font-family:'Sarabun',sans-serif; font-size:0.9rem; background:var(--surface);
+    transition:border-color 0.2s;
+  }
+  input:focus, textarea:focus, select:focus { outline:none; border-color:var(--accent); }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .modal-actions { display:flex; gap:10px; margin-top:20px; }
+
+  /* Orders */
+  .orders-grid { display:grid; gap:14px; }
+  .order-card { background:var(--card); border-radius:16px; padding:20px; border:1px solid var(--border); border-left:4px solid var(--accent); }
+  .order-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .order-id { font-family:'Prompt',sans-serif; font-size:0.9rem; font-weight:700; }
+  .order-table-badge { background:var(--accent); color:#fff; padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:700; }
+  .order-items { font-size:0.85rem; color:var(--muted); margin-bottom:8px; }
+  .order-note { font-size:0.8rem; background:#faf8f4; padding:8px 12px; border-radius:8px; color:var(--muted); }
+  .order-footer { display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+  .order-total-price { font-family:'Prompt',sans-serif; color:var(--accent); font-size:1.1rem; font-weight:700; }
+  .status-select { padding:6px 12px; border-radius:8px; border:1px solid var(--border); font-family:'Sarabun',sans-serif; font-size:0.85rem; }
+
+  .toast {
+    position:fixed; bottom:24px; right:24px; background:var(--sidebar); color:#e8d8b0;
+    padding:12px 20px; border-radius:12px; font-size:0.9rem; z-index:999;
+    transform:translateY(80px); opacity:0; transition:all 0.3s; pointer-events:none;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+
+  .settings-card { background:var(--card); border-radius:16px; padding:24px; border:1px solid var(--border); margin-bottom:16px; }
+  .settings-card h3 { font-family:'Prompt',sans-serif; margin-bottom:16px; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h1>🍽️ Admin Panel</h1>
+    <p>จัดการร้านอาหาร</p>
+  </div>
+  <div class="nav-item active" onclick="showSection('dashboard')">
+    <span class="nav-icon">📊</span> ภาพรวม
+  </div>
+  <div class="nav-item" onclick="showSection('menu')">
+    <span class="nav-icon">📋</span> จัดการเมนู
+  </div>
+  <div class="nav-item" onclick="showSection('orders')">
+    <span class="nav-icon">🧾</span> ออเดอร์
+  </div>
+  <div class="nav-item" onclick="showSection('settings')">
+    <span class="nav-icon">⚙️</span> ตั้งค่า
+  </div>
+  <div class="sidebar-bottom">
+    <div class="gas-label">🔗 Google Apps Script URL</div>
+    <input class="gas-input" id="gasUrlInput" placeholder="https://script.google.com/..." oninput="saveGasUrl()">
+    <div style="margin-top:8px;">
+      <button class="btn btn-primary" style="width:100%;padding:8px;font-size:0.8rem;" onclick="loadAll()">🔄 โหลดข้อมูล</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h2 id="sectionTitle">📊 ภาพรวม</h2>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <span style="font-size:0.8rem;color:var(--muted);" id="lastUpdate"></span>
+      <button class="btn btn-secondary" onclick="loadAll()">🔄 รีเฟรช</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Dashboard -->
+    <div class="section active" id="sec-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="stat-menu">-</div><div class="stat-label">เมนูทั้งหมด</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-orders">-</div><div class="stat-label">ออเดอร์วันนี้</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-pending">-</div><div class="stat-label">รอดำเนินการ</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-revenue">-</div><div class="stat-label">ยอดขายวันนี้ (฿)</div></div>
+      </div>
+      <div class="menu-table">
+        <table>
+          <thead><tr><th>ออเดอร์ล่าสุด</th><th>โต๊ะ</th><th>รวม</th><th>สถานะ</th><th>เวลา</th></tr></thead>
+          <tbody id="recentOrders"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Menu -->
+    <div class="section" id="sec-menu">
+      <div class="menu-actions">
+        <input class="search-input" placeholder="🔍 ค้นหาเมนู..." oninput="filterMenu(this.value)">
+        <button class="btn btn-primary" onclick="openAddMenu()">+ เพิ่มเมนู</button>
+        <button class="btn btn-secondary" onclick="loadAll()">🔄 รีเฟรช</button>
+      </div>
+      <div class="menu-table">
+        <table>
+          <thead><tr><th></th><th>ชื่อ</th><th>หมวด</th><th>ราคา</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+          <tbody id="menuTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Orders -->
+    <div class="section" id="sec-orders">
+      <div class="menu-actions" style="margin-bottom:20px;">
+        <select id="orderFilter" onchange="filterOrders()" style="padding:10px 14px;border-radius:10px;border:1px solid var(--border);font-family:'Sarabun',sans-serif;">
+          <option value="">ทุกสถานะ</option>
+          <option value="รอดำเนินการ">รอดำเนินการ</option>
+          <option value="กำลังทำ">กำลังทำ</option>
+          <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+        </select>
+        <button class="btn btn-secondary" onclick="loadAll()">🔄 รีเฟรช</button>
+      </div>
+      <div class="orders-grid" id="ordersContainer"></div>
+    </div>
+
+    <!-- Settings -->
+    <div class="section" id="sec-settings">
+      <div class="settings-card">
+        <h3>⚙️ ตั้งค่าร้าน</h3>
+        <div class="form-group"><label>ชื่อร้าน</label><input id="set-name" placeholder="ชื่อร้านอาหาร"></div>
+        <div class="form-group"><label>Discord Webhook URL</label><input id="set-discord" value="https://discord.com/api/webhooks/1481670697456636146/iUC1YHuXFq0ubZMJvIXHwmpAXH9sNUhSC7pB87CHGf-xKTm8D2doDBOjoA7OGiBGSDcJ" placeholder="https://discord.com/api/webhooks/..."></div>
+        <button class="btn btn-primary" onclick="saveSettings()">💾 บันทึก</button>
+      </div>
+      <div class="settings-card">
+        <h3>📱 ลิงก์สำหรับลูกค้า</h3>
+        <div class="form-group">
+          <label>URL ไฟล์ menu.html (ต้องอัปโหลดออนไลน์)</label>
+          <input id="set-menuUrl" placeholder="https://yoursite.com/menu.html">
+        </div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-top:8px;">ลิงก์จะถูกนำไปสร้าง QR Code ในหน้า QR Generator</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="menuModal">
+  <div class="modal">
+    <h3 id="modalTitle">➕ เพิ่มเมนู</h3>
+    <input type="hidden" id="editId">
+    <div class="form-row">
+      <div class="form-group"><label>อีโมจิ</label><input id="m-emoji" placeholder="🍜" maxlength="2"></div>
+      <div class="form-group"><label>หมวดหมู่</label><input id="m-category" placeholder="อาหารหลัก, เครื่องดื่ม..."></div>
+    </div>
+    <div class="form-group"><label>ชื่อเมนู *</label><input id="m-name" placeholder="ชื่ออาหาร"></div>
+    <div class="form-group"><label>คำอธิบาย</label><textarea id="m-desc" rows="2" placeholder="รายละเอียด..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>ราคา (฿) *</label><input id="m-price" type="number" placeholder="0"></div>
+      <div class="form-group"><label>สถานะ</label>
+        <select id="m-available">
+          <option value="true">✅ มีขาย</option>
+          <option value="false">❌ หมด/ปิด</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>URL รูปภาพ (ถ้ามี)</label><input id="m-image" placeholder="https://..."></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" style="flex:1;" onclick="saveMenu()">💾 บันทึก</button>
+      <button class="btn btn-secondary" onclick="closeModal()">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DISCORD = 'https://discord.com/api/webhooks/1481670697456636146/iUC1YHuXFq0ubZMJvIXHwmpAXH9sNUhSC7pB87CHGf-xKTm8D2doDBOjoA7OGiBGSDcJ';
+let gasUrl = '';
+let allMenu = [];
+let allOrders = [];
+
+const DEFAULT_GAS = 'https://script.google.com/macros/s/AKfycbzX3F5pmXMe2lerCHLPDn9Ky3Tf8ToFR0AwpD8Q6rm5_GcjVWRdlRfp-UJZbVdFnKll/exec';
+window.onload = () => {
+  gasUrl = localStorage.getItem('gasUrl') || DEFAULT_GAS;
+  document.getElementById('gasUrlInput').value = gasUrl;
+  localStorage.setItem('gasUrl', gasUrl);
+  loadAll();
+};
+
+function saveGasUrl() {
+  gasUrl = document.getElementById('gasUrlInput').value.trim();
+  localStorage.setItem('gasUrl', gasUrl);
+}
+
+async function loadAll() {
+  gasUrl = document.getElementById('gasUrlInput').value.trim();
+  if (!gasUrl) { toast('กรุณาใส่ Google Apps Script URL ก่อน', 'warn'); return; }
+  localStorage.setItem('gasUrl', gasUrl);
+  try {
+    const res = await fetch(`${gasUrl}?action=getAll`);
+    const data = await res.json();
+    allMenu = data.menu || [];
+    allOrders = data.orders || [];
+    renderDashboard();
+    renderMenuTable(allMenu);
+    renderOrders(allOrders);
+    if (data.settings) {
+      document.getElementById('set-name').value = data.settings.restaurantName || '';
+    }
+    document.getElementById('lastUpdate').textContent = 'อัปเดต ' + new Date().toLocaleTimeString('th-TH');
+    toast('โหลดข้อมูลสำเร็จ ✓');
+  } catch(e) {
+    toast('โหลดไม่ได้: ' + e.message, 'error');
+  }
+}
+
+function renderDashboard() {
+  const today = new Date().toLocaleDateString('th-TH');
+  const todayOrders = allOrders.filter(o => o.time && o.time.includes(new Date().toLocaleDateString('th-TH',{day:'numeric',month:'numeric',year:'numeric'})));
+  document.getElementById('stat-menu').textContent = allMenu.length;
+  document.getElementById('stat-orders').textContent = allOrders.length;
+  document.getElementById('stat-pending').textContent = allOrders.filter(o => o.status==='รอดำเนินการ').length;
+  const revenue = allOrders.reduce((a,b) => a + (Number(b.total)||0), 0);
+  document.getElementById('stat-revenue').textContent = revenue.toLocaleString();
+  const recent = [...allOrders].reverse().slice(0,8);
+  document.getElementById('recentOrders').innerHTML = recent.map(o => `
+    <tr>
+      <td style="font-weight:600;font-size:0.8rem;">${o.orderId||'-'}</td>
+      <td><span style="background:var(--accent);color:#fff;padding:3px 8px;border-radius:12px;font-size:0.8rem;">โต๊ะ ${o.table}</span></td>
+      <td>฿${Number(o.total).toLocaleString()}</td>
+      <td><span class="badge ${o.status==='เสร็จแล้ว'?'badge-active':'badge-inactive'}">${o.status}</span></td>
+      <td style="font-size:0.8rem;color:var(--muted);">${o.time||''}</td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px;">ยังไม่มีออเดอร์</td></tr>';
+}
+
+function renderMenuTable(items) {
+  document.getElementById('menuTableBody').innerHTML = items.map(item => `
+    <tr>
+      <td class="item-emoji">${item.emoji||'🍽️'}</td>
+      <td><strong>${item.name}</strong><br><span style="font-size:0.75rem;color:var(--muted);">${item.description||''}</span></td>
+      <td style="color:var(--muted);font-size:0.85rem;">${item.category||'-'}</td>
+      <td style="font-weight:700;color:var(--accent);">฿${Number(item.price).toLocaleString()}</td>
+      <td><span class="badge ${item.available==='false'||item.available===false?'badge-inactive':'badge-active'}">${item.available==='false'||item.available===false?'หมด':'มีขาย'}</span></td>
+      <td><div class="action-btns">
+        <button class="btn btn-secondary btn-sm" onclick='editMenu(${JSON.stringify(item).replace(/'/g,"&#39;")})'>✏️ แก้ไข</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteMenu('${item.id}')">🗑️</button>
+      </div></td>
+    </tr>
+  `).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">ยังไม่มีเมนู</td></tr>';
+}
+
+function filterMenu(q) {
+  const filtered = allMenu.filter(m => m.name.includes(q) || (m.category||'').includes(q));
+  renderMenuTable(filtered);
+}
+
+function renderOrders(orders) {
+  const filter = document.getElementById('orderFilter').value;
+  const filtered = filter ? orders.filter(o => o.status === filter) : orders;
+  document.getElementById('ordersContainer').innerHTML = [...filtered].reverse().map(o => {
+    const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items) : []);
+    return `<div class="order-card">
+      <div class="order-header">
+        <div class="order-id">${o.orderId||'ORDER'}</div>
+        <div class="order-table-badge">โต๊ะ ${o.table}</div>
+      </div>
+      <div class="order-items">${items.map(i => `${i.name} x${i.qty}`).join(', ')}</div>
+      ${o.note ? `<div class="order-note">📝 ${o.note}</div>` : ''}
+      <div class="order-footer">
+        <div class="order-total-price">฿${Number(o.total).toLocaleString()}</div>
+        <select class="status-select" onchange="updateStatus('${o.orderId}', this.value)">
+          <option ${o.status==='รอดำเนินการ'?'selected':''}>รอดำเนินการ</option>
+          <option ${o.status==='กำลังทำ'?'selected':''}>กำลังทำ</option>
+          <option ${o.status==='เสร็จแล้ว'?'selected':''}>เสร็จแล้ว</option>
+        </select>
+      </div>
+      <div style="font-size:0.75rem;color:var(--muted);margin-top:8px;">${o.time||''}</div>
+    </div>`;
+  }).join('') || '<div style="text-align:center;color:var(--muted);padding:40px;">ไม่มีออเดอร์</div>';
+}
+
+function filterOrders() { renderOrders(allOrders); }
+
+function openAddMenu() {
+  document.getElementById('modalTitle').textContent = '➕ เพิ่มเมนู';
+  document.getElementById('editId').value = '';
+  ['m-name','m-desc','m-price','m-emoji','m-category','m-image'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('m-available').value = 'true';
+  document.getElementById('menuModal').classList.add('open');
+}
+
+function editMenu(item) {
+  document.getElementById('modalTitle').textContent = '✏️ แก้ไขเมนู';
+  document.getElementById('editId').value = item.id;
+  document.getElementById('m-name').value = item.name||'';
+  document.getElementById('m-desc').value = item.description||'';
+  document.getElementById('m-price').value = item.price||'';
+  document.getElementById('m-emoji').value = item.emoji||'';
+  document.getElementById('m-category').value = item.category||'';
+  document.getElementById('m-image').value = item.image||'';
+  document.getElementById('m-available').value = String(item.available)!=='false' ? 'true' : 'false';
+  document.getElementById('menuModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('menuModal').classList.remove('open');
+}
+
+async function saveMenu() {
+  const id = document.getElementById('editId').value || `item-${Date.now()}`;
+  const payload = {
+    action: document.getElementById('editId').value ? 'updateMenu' : 'addMenu',
+    item: {
+      id, name: document.getElementById('m-name').value,
+      description: document.getElementById('m-desc').value,
+      price: document.getElementById('m-price').value,
+      emoji: document.getElementById('m-emoji').value,
+      category: document.getElementById('m-category').value,
+      image: document.getElementById('m-image').value,
+      available: document.getElementById('m-available').value,
+    }
+  };
+  if (!payload.item.name || !payload.item.price) { toast('กรุณาใส่ชื่อและราคา', 'warn'); return; }
+  try {
+    await fetch(gasUrl, { method:'POST', body: JSON.stringify(payload) });
+    closeModal();
+    toast('บันทึกเมนูสำเร็จ ✓');
+    await loadAll();
+  } catch(e) { toast('บันทึกไม่ได้: ' + e.message, 'error'); }
+}
+
+async function deleteMenu(id) {
+  if (!confirm('ลบเมนูนี้?')) return;
+  try {
+    await fetch(gasUrl, { method:'POST', body: JSON.stringify({ action:'deleteMenu', id }) });
+    toast('ลบเมนูแล้ว');
+    await loadAll();
+  } catch(e) { toast('ลบไม่ได้', 'error'); }
+}
+
+async function updateStatus(orderId, status) {
+  try {
+    await fetch(gasUrl, { method:'POST', body: JSON.stringify({ action:'updateOrderStatus', orderId, status }) });
+    const o = allOrders.find(x => x.orderId === orderId);
+    if (o) o.status = status;
+    toast(`อัปเดต ${orderId} → ${status}`);
+    renderDashboard();
+  } catch(e) { toast('อัปเดตไม่ได้', 'error'); }
+}
+
+async function saveSettings() {
+  const payload = {
+    action: 'saveSettings',
+    settings: {
+      restaurantName: document.getElementById('set-name').value,
+      discordUrl: document.getElementById('set-discord').value,
+    }
+  };
+  try {
+    await fetch(gasUrl, { method:'POST', body: JSON.stringify(payload) });
+    toast('บันทึกการตั้งค่าแล้ว ✓');
+  } catch(e) { toast('บันทึกไม่ได้', 'error'); }
+}
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  const titles = { dashboard:'📊 ภาพรวม', menu:'📋 จัดการเมนู', orders:'🧾 ออเดอร์', settings:'⚙️ ตั้งค่า' };
+  document.getElementById('sectionTitle').textContent = titles[name];
+}
+
+function toast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = type==='error' ? '#cc2222' : type==='warn' ? '#cc7700' : '#1a1208';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
