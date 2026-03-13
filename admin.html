@@ -245,7 +245,30 @@
         </select>
       </div>
     </div>
-    <div class="form-group"><label>URL รูปภาพ (ถ้ามี)</label><input id="m-image" placeholder="https://..."></div>
+    <div class="form-group">
+      <label>รูปภาพเมนู</label>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <!-- Preview -->
+        <div id="imgPreviewWrap" style="display:none;position:relative;width:100%;height:140px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:var(--bg);">
+          <img id="imgPreview" style="width:100%;height:100%;object-fit:cover;" src="" alt="preview">
+          <button onclick="clearImage()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:0.8rem;">✕</button>
+        </div>
+        <!-- Upload button -->
+        <label style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px dashed var(--border);border-radius:10px;transition:border-color 0.2s;color:var(--muted);font-weight:400;"
+               id="uploadLabel" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+          <span style="font-size:1.3rem;">📷</span>
+          <span id="uploadLabelText">อัปโหลดรูปภาพ (JPG, PNG ไม่เกิน 1MB)</span>
+          <input type="file" id="m-imageFile" accept="image/*" style="display:none;" onchange="handleImageUpload(this)">
+        </label>
+        <!-- URL fallback -->
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+          <span style="font-size:0.75rem;color:var(--muted);">หรือใส่ URL</span>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+        <input id="m-image" placeholder="https://example.com/image.jpg" oninput="previewFromUrl(this.value)" style="font-size:0.85rem;">
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="btn btn-primary" style="flex:1;" onclick="saveMenu()">💾 บันทึก</button>
       <button class="btn btn-secondary" onclick="closeModal()">ยกเลิก</button>
@@ -319,7 +342,11 @@ function renderDashboard() {
 function renderMenuTable(items) {
   document.getElementById('menuTableBody').innerHTML = items.map(item => `
     <tr>
-      <td class="item-emoji">${item.emoji||'🍽️'}</td>
+      <td style="width:44px;">
+        ${item.image
+          ? `<img src="${item.image}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;display:block;" onerror="this.style.display='none';this.nextSibling.style.display='block'"><span style="display:none;font-size:1.5rem;">${item.emoji||'🍽️'}</span>`
+          : `<span style="font-size:1.5rem;">${item.emoji||'🍽️'}</span>`}
+      </td>
       <td><strong>${item.name}</strong><br><span style="font-size:0.75rem;color:var(--muted);">${item.description||''}</span></td>
       <td style="color:var(--muted);font-size:0.85rem;">${item.category||'-'}</td>
       <td style="font-weight:700;color:var(--accent);">฿${Number(item.price).toLocaleString()}</td>
@@ -364,11 +391,57 @@ function renderOrders(orders) {
 
 function filterOrders() { renderOrders(allOrders); }
 
+// ─── IMAGE UPLOAD ─────────────────────────────────────────────
+function handleImageUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 1.2 * 1024 * 1024) {
+    toast('รูปภาพต้องไม่เกิน 1MB', 'warn');
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const base64 = e.target.result;
+    document.getElementById('m-image').value = base64;
+    showImagePreview(base64);
+    document.getElementById('uploadLabelText').textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewFromUrl(url) {
+  if (url && (url.startsWith('http') || url.startsWith('data:'))) {
+    showImagePreview(url);
+  } else {
+    hideImagePreview();
+  }
+}
+
+function showImagePreview(src) {
+  document.getElementById('imgPreview').src = src;
+  document.getElementById('imgPreviewWrap').style.display = 'block';
+  document.getElementById('imgPreview').onerror = () => hideImagePreview();
+}
+
+function hideImagePreview() {
+  document.getElementById('imgPreviewWrap').style.display = 'none';
+  document.getElementById('imgPreview').src = '';
+}
+
+function clearImage() {
+  document.getElementById('m-image').value = '';
+  document.getElementById('m-imageFile').value = '';
+  document.getElementById('uploadLabelText').textContent = 'อัปโหลดรูปภาพ (JPG, PNG ไม่เกิน 1MB)';
+  hideImagePreview();
+}
+
 function openAddMenu() {
   document.getElementById('modalTitle').textContent = '➕ เพิ่มเมนู';
   document.getElementById('editId').value = '';
   ['m-name','m-desc','m-price','m-emoji','m-category','m-image'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('m-available').value = 'true';
+  clearImage();
   document.getElementById('menuModal').classList.add('open');
 }
 
@@ -382,11 +455,19 @@ function editMenu(item) {
   document.getElementById('m-category').value = item.category||'';
   document.getElementById('m-image').value = item.image||'';
   document.getElementById('m-available').value = String(item.available)!=='false' ? 'true' : 'false';
+  document.getElementById('m-imageFile').value = '';
+  document.getElementById('uploadLabelText').textContent = 'อัปโหลดรูปภาพใหม่ (JPG, PNG ไม่เกิน 1MB)';
+  if (item.image) {
+    showImagePreview(item.image);
+  } else {
+    hideImagePreview();
+  }
   document.getElementById('menuModal').classList.add('open');
 }
 
 function closeModal() {
   document.getElementById('menuModal').classList.remove('open');
+  clearImage();
 }
 
 async function saveMenu() {
