@@ -163,6 +163,42 @@
   }
   .table-num { font-family:'Prompt',sans-serif; font-size:1.8rem; color:var(--accent); font-weight:700; }
   .table-label { color:var(--muted); font-size:0.85rem; }
+  /* Options picker modal */
+  .opt-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:250; display:none; }
+  .opt-overlay.open { display:block; }
+  .opt-modal {
+    position:fixed; bottom:0; left:0; right:0; z-index:251;
+    background:var(--surface); border-radius:24px 24px 0 0;
+    padding:24px 20px 36px; max-height:85vh; overflow-y:auto;
+    transform:translateY(100%); transition:transform 0.35s cubic-bezier(.32,2,.55,.89);
+  }
+  .opt-modal.open { transform:translateY(0); }
+  .opt-modal-header { display:flex; align-items:center; gap:12px; margin-bottom:4px; }
+  .opt-modal-emoji { font-size:2.2rem; }
+  .opt-modal-name { font-family:'Prompt',sans-serif; font-size:1.1rem; font-weight:700; }
+  .opt-modal-price { color:var(--accent); font-family:'Prompt',sans-serif; font-size:1rem; margin-bottom:16px; }
+  .opt-group-label {
+    font-size:0.75rem; color:var(--muted); font-weight:700; text-transform:uppercase;
+    letter-spacing:.06em; margin:16px 0 10px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .opt-required-badge { background:#e8a020; color:#000; font-size:0.65rem; padding:2px 7px; border-radius:10px; }
+  .opt-chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .opt-chip {
+    padding:10px 20px; border-radius:50px; border:1.5px solid var(--border);
+    background:var(--card); color:var(--text); font-family:'Sarabun',sans-serif;
+    font-size:0.9rem; cursor:pointer; transition:all 0.18s; user-select:none;
+  }
+  .opt-chip.selected { background:var(--accent); color:#000; border-color:var(--accent); font-weight:700; }
+  .opt-chip:active { transform:scale(0.96); }
+  .opt-add-cart-btn {
+    width:100%; margin-top:22px; background:var(--accent); color:#000;
+    border:none; border-radius:14px; padding:16px; font-size:1rem; font-weight:700;
+    font-family:'Sarabun',sans-serif; cursor:pointer; transition:all 0.2s;
+  }
+  .opt-add-cart-btn:active { transform:scale(0.98); }
+  .opt-add-cart-btn:disabled { background:var(--muted); cursor:not-allowed; }
+  .ci-opts { font-size:0.75rem; color:var(--muted); margin-top:2px; }
 </style>
 </head>
 <body>
@@ -195,6 +231,20 @@
   <textarea class="note-input" id="orderNote" rows="2" placeholder="หมายเหตุ เช่น ไม่ใส่ผัก, เผ็ดน้อย..."></textarea>
   <div class="order-total">รวม: <span id="totalPrice">฿0</span></div>
   <button class="confirm-btn" id="confirmBtn" onclick="submitOrder()">✅ ส่งออเดอร์</button>
+</div>
+
+<!-- Options Picker Modal -->
+<div class="opt-overlay" id="optOverlay" onclick="closeOptModal()"></div>
+<div class="opt-modal" id="optModal">
+  <div class="opt-modal-header">
+    <div class="opt-modal-emoji" id="optEmoji"></div>
+    <div>
+      <div class="opt-modal-name" id="optName"></div>
+    </div>
+  </div>
+  <div class="opt-modal-price" id="optPrice"></div>
+  <div id="optGroupsBody"></div>
+  <button class="opt-add-cart-btn" id="optAddBtn" onclick="confirmAddToCart()">+ เพิ่มใส่ตะกร้า</button>
 </div>
 
 <div class="table-closed-screen" id="tableClosedScreen">
@@ -294,20 +344,114 @@ function renderMenu(cat) {
   `).join('')}</div>`;
 }
 
+// cart เปลี่ยนเป็น array เพื่อรองรับ options
+// cart = [{ cartId, id, name, emoji, price, qty, opts:{groupName:choice} }]
+let cart = [];
+let currentOptItem = null;   // เมนูที่กำลังเลือก options
+let currentOptSelections = {}; // { groupName: choice }
+
 function addToCart(id) {
   const item = menu.find(m => m.id === id);
   if (!item) return;
-  cart[id] = (cart[id] || 0) + 1;
+
+  let groups = [];
+  try { groups = item.options ? JSON.parse(item.options) : []; } catch(e) {}
+  // กรอง groups ที่มี choices จริง
+  groups = groups.filter(g => g.name && g.choices && g.choices.length);
+
+  if (groups.length > 0) {
+    openOptModal(item, groups);
+  } else {
+    // ไม่มี options — เพิ่มตะกร้าได้เลย
+    pushToCart(item, {});
+    const btn = event.target;
+    btn.textContent = '✓ เพิ่มแล้ว';
+    btn.style.background = 'var(--success)';
+    setTimeout(() => { btn.textContent = '+ เพิ่ม'; btn.style.background = ''; }, 800);
+  }
+}
+
+// ── Options Modal ──────────────────────────────────────────────
+function openOptModal(item, groups) {
+  currentOptItem = { item, groups };
+  currentOptSelections = {};
+  document.getElementById('optEmoji').textContent = item.emoji || '🍽️';
+  document.getElementById('optName').textContent = item.name;
+  document.getElementById('optPrice').textContent = `฿${Number(item.price).toLocaleString()}`;
+  renderOptGroups(groups);
+  updateOptAddBtn();
+  document.getElementById('optOverlay').classList.add('open');
+  document.getElementById('optModal').classList.add('open');
+}
+
+function closeOptModal() {
+  document.getElementById('optOverlay').classList.remove('open');
+  document.getElementById('optModal').classList.remove('open');
+  currentOptItem = null;
+  currentOptSelections = {};
+}
+
+function renderOptGroups(groups) {
+  document.getElementById('optGroupsBody').innerHTML = groups.map((g, gi) => `
+    <div class="opt-group-label">
+      ${g.name}
+      <span class="opt-required-badge">บังคับเลือก</span>
+    </div>
+    <div class="opt-chips">
+      ${g.choices.map(c => `
+        <div class="opt-chip ${currentOptSelections[g.name]===c?'selected':''}"
+          onclick="selectOpt('${g.name.replace(/'/g,"\\'")}','${c.replace(/'/g,"\\'")}')">
+          ${c}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function selectOpt(groupName, choice) {
+  currentOptSelections[groupName] = choice;
+  if (currentOptItem) renderOptGroups(currentOptItem.groups);
+  updateOptAddBtn();
+}
+
+function updateOptAddBtn() {
+  if (!currentOptItem) return;
+  const allSelected = currentOptItem.groups.every(g => currentOptSelections[g.name]);
+  const btn = document.getElementById('optAddBtn');
+  btn.disabled = !allSelected;
+  btn.textContent = allSelected ? '+ เพิ่มใส่ตะกร้า' : `เลือกให้ครบก่อน (${Object.keys(currentOptSelections).length}/${currentOptItem.groups.length})`;
+}
+
+function confirmAddToCart() {
+  if (!currentOptItem) return;
+  const { item } = currentOptItem;
+  pushToCart(item, { ...currentOptSelections });
+  closeOptModal();
+}
+
+// ── Cart Core ──────────────────────────────────────────────────
+function pushToCart(item, opts) {
+  // หา entry ที่ตรงกันทั้ง id และ opts
+  const optsKey = JSON.stringify(opts);
+  const existing = cart.find(e => e.id === item.id && JSON.stringify(e.opts) === optsKey);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({
+      cartId: `${item.id}-${Date.now()}`,
+      id: item.id,
+      name: item.name,
+      emoji: item.emoji || '',
+      price: item.price,
+      qty: 1,
+      opts
+    });
+  }
   updateCartCount();
-  // Mini feedback
-  const btn = event.target;
-  btn.textContent = '✓ เพิ่มแล้ว';
-  btn.style.background = 'var(--success)';
-  setTimeout(() => { btn.textContent = '+ เพิ่ม'; btn.style.background = ''; }, 800);
 }
 
 function updateCartCount() {
-  const total = Object.values(cart).reduce((a,b) => a+b, 0);
+  const total = cart.reduce((a, e) => a + e.qty, 0);
   document.getElementById('cartCount').textContent = total;
 }
 
@@ -327,8 +471,7 @@ function toggleCart() {
 
 function renderCartItems() {
   const container = document.getElementById('cartItems');
-  const items = Object.entries(cart).filter(([,q]) => q > 0);
-  if (!items.length) {
+  if (!cart.length) {
     container.innerHTML = '<div class="empty-cart">🛒<br>ยังไม่ได้เลือกอาหาร</div>';
     document.getElementById('totalPrice').textContent = '฿0';
     document.getElementById('confirmBtn').disabled = true;
@@ -336,29 +479,31 @@ function renderCartItems() {
   }
   document.getElementById('confirmBtn').disabled = false;
   let total = 0;
-  container.innerHTML = items.map(([id, qty]) => {
-    const item = menu.find(m => m.id === id);
-    if (!item) return '';
-    total += item.price * qty;
+  container.innerHTML = cart.map(e => {
+    total += e.price * e.qty;
+    const optsText = Object.values(e.opts).join(', ');
     return `<div class="cart-item">
-      <div class="ci-emoji">${item.emoji||'🍽️'}</div>
+      <div class="ci-emoji">${e.emoji||'🍽️'}</div>
       <div class="ci-info">
-        <div class="ci-name">${item.name}</div>
-        <div class="ci-price">฿${(item.price * qty).toLocaleString()}</div>
+        <div class="ci-name">${e.name}</div>
+        ${optsText ? `<div class="ci-opts">${optsText}</div>` : ''}
+        <div class="ci-price">฿${(e.price * e.qty).toLocaleString()}</div>
       </div>
       <div class="ci-qty">
-        <button class="qty-btn" onclick="changeQty('${id}',-1)">−</button>
-        <span>${qty}</span>
-        <button class="qty-btn" onclick="changeQty('${id}',1)">+</button>
+        <button class="qty-btn" onclick="changeQty('${e.cartId}',-1)">−</button>
+        <span>${e.qty}</span>
+        <button class="qty-btn" onclick="changeQty('${e.cartId}',1)">+</button>
       </div>
     </div>`;
   }).join('');
   document.getElementById('totalPrice').textContent = `฿${total.toLocaleString()}`;
 }
 
-function changeQty(id, delta) {
-  cart[id] = (cart[id] || 0) + delta;
-  if (cart[id] <= 0) delete cart[id];
+function changeQty(cartId, delta) {
+  const idx = cart.findIndex(e => e.cartId === cartId);
+  if (idx === -1) return;
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
   updateCartCount();
   renderCartItems();
 }
@@ -367,17 +512,22 @@ async function submitOrder() {
   const btn = document.getElementById('confirmBtn');
   btn.disabled = true;
   btn.textContent = '⏳ กำลังส่ง...';
-  const items = Object.entries(cart).filter(([,q]) => q > 0).map(([id, qty]) => {
-    const item = menu.find(m => m.id === id);
-    return { id, name: item.name, emoji: item.emoji||'', qty, price: item.price, total: item.price * qty };
-  });
+  const items = cart.map(e => ({
+    id: e.id,
+    name: e.name + (Object.values(e.opts).length ? ` (${Object.values(e.opts).join(', ')})` : ''),
+    emoji: e.emoji,
+    qty: e.qty,
+    price: e.price,
+    total: e.price * e.qty,
+    opts: e.opts
+  }));
   const note = document.getElementById('orderNote').value;
   const orderId = `ORD-${Date.now()}`;
-  const grand = items.reduce((a,b) => a + b.total, 0);
+  const grand = items.reduce((a, b) => a + b.total, 0);
   const payload = { action:'addOrder', orderId, table: tableNum, items, note, total: grand, status:'รอดำเนินการ', time: new Date().toLocaleString('th-TH') };
   try {
     await fetch(gasUrl, { method:'POST', body: JSON.stringify(payload) });
-    cart = {};
+    cart = [];
     updateCartCount();
     toggleCart();
     const ss = document.getElementById('successScreen');
@@ -393,6 +543,8 @@ async function submitOrder() {
 function resetOrder() {
   document.getElementById('successScreen').classList.remove('show');
   document.getElementById('orderNote').value = '';
+  cart = [];
+  updateCartCount();
 }
 
 loadMenu();
