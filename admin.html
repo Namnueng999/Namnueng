@@ -149,7 +149,7 @@
   .opt-choice-chip { display:flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:5px 12px; font-size:0.82rem; }
   .opt-choice-chip .chip-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:0.9rem; padding:0; line-height:1; }
   .opt-choice-chip .chip-del:hover { color:#cc2222; }
-  .opt-add-choice { display:flex; gap:6px; }
+  .opt-add-choice { display:flex; gap:6px; flex-wrap:wrap; }
   .opt-add-input { flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:8px; font-family:'Sarabun',sans-serif; font-size:0.82rem; background:var(--surface); }
   .opt-add-btn { padding:7px 12px; background:var(--accent); color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:0.8rem; font-family:'Sarabun',sans-serif; font-weight:600; }
   .btn-add-group { width:100%; padding:10px; background:var(--bg); border:2px dashed var(--border); border-radius:10px; color:var(--muted); font-family:'Sarabun',sans-serif; font-size:0.85rem; cursor:pointer; margin-top:4px; transition:all 0.2s; }
@@ -526,7 +526,7 @@ function clearImage() {
 }
 
 // ─── OPTIONS GROUPS ───────────────────────────────────────────
-let optGroups = []; // [{ name, type:'radio'|'checkbox', choices:[] }]
+let optGroups = []; // [{ name, choices:[{ label, extraPrice }] }]
 
 function addOptGroup(group = null) {
   const idx = optGroups.length;
@@ -544,20 +544,22 @@ function renderOptGroups() {
   container.innerHTML = optGroups.map((g, gi) => `
     <div class="opt-group">
       <div class="opt-group-header">
-        <input class="opt-group-name" placeholder="ชื่อกลุ่ม เช่น ความหวาน, ขนาด" value="${g.name}"
+        <input class="opt-group-name" placeholder="ชื่อกลุ่ม เช่น ขนาด, ความหวาน" value="${g.name}"
           oninput="optGroups[${gi}].name=this.value">
         <button type="button" class="btn-del-group" onclick="delOptGroup(${gi})">🗑️</button>
       </div>
       <div class="opt-choices">
         ${g.choices.map((c, ci) => `
           <div class="opt-choice-chip">
-            <span>${c}</span>
+            <span>${c.label}${c.extraPrice > 0 ? ` <em style="color:var(--accent);font-style:normal;">+฿${c.extraPrice}</em>` : ''}</span>
             <button type="button" class="chip-del" onclick="delOptChoice(${gi},${ci})">✕</button>
           </div>
         `).join('')}
       </div>
       <div class="opt-add-choice">
-        <input class="opt-add-input" id="opt-inp-${gi}" placeholder="พิมพ์ตัวเลือก แล้วกด +"
+        <input class="opt-add-input" id="opt-inp-${gi}" placeholder="ชื่อตัวเลือก เช่น แก้วใหญ่"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('opt-price-${gi}').focus()}">
+        <input class="opt-add-input" id="opt-price-${gi}" type="number" min="0" placeholder="+฿ (0=ฟรี)" style="width:100px;"
           onkeydown="if(event.key==='Enter'){event.preventDefault();addOptChoice(${gi})}">
         <button type="button" class="opt-add-btn" onclick="addOptChoice(${gi})">＋</button>
       </div>
@@ -571,11 +573,16 @@ function delOptGroup(gi) {
 }
 
 function addOptChoice(gi) {
-  const inp = document.getElementById(`opt-inp-${gi}`);
-  const val = inp.value.trim();
-  if (!val) return;
-  if (!optGroups[gi].choices.includes(val)) optGroups[gi].choices.push(val);
-  inp.value = '';
+  const inp   = document.getElementById(`opt-inp-${gi}`);
+  const prInp = document.getElementById(`opt-price-${gi}`);
+  const label = inp.value.trim();
+  if (!label) return;
+  const extraPrice = Math.max(0, parseInt(prInp.value) || 0);
+  // ห้ามซ้ำ label เดียวกัน
+  if (!optGroups[gi].choices.find(c => c.label === label)) {
+    optGroups[gi].choices.push({ label, extraPrice });
+  }
+  inp.value = ''; prInp.value = '';
   renderOptGroups();
   setTimeout(() => { const el = document.getElementById(`opt-inp-${gi}`); if(el) el.focus(); }, 30);
 }
