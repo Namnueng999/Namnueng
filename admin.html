@@ -138,7 +138,26 @@
   .table-status-dot.open { background:var(--success); box-shadow:0 0 6px var(--success); }
   .table-status-dot.closed { background:#cc4444; }
 
+  /* Options groups builder */
+  .opt-group {
+    background:var(--bg); border:1px solid var(--border); border-radius:12px;
+    padding:14px; margin-bottom:10px;
+  }
+  .opt-group-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .opt-group-name { flex:1; padding:8px 12px; border:1px solid var(--border); border-radius:8px; font-family:'Sarabun',sans-serif; font-size:0.85rem; background:var(--surface); }
+  .opt-choices { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+  .opt-choice-chip { display:flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:5px 12px; font-size:0.82rem; }
+  .opt-choice-chip .chip-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:0.9rem; padding:0; line-height:1; }
+  .opt-choice-chip .chip-del:hover { color:#cc2222; }
+  .opt-add-choice { display:flex; gap:6px; }
+  .opt-add-input { flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:8px; font-family:'Sarabun',sans-serif; font-size:0.82rem; background:var(--surface); }
+  .opt-add-btn { padding:7px 12px; background:var(--accent); color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:0.8rem; font-family:'Sarabun',sans-serif; font-weight:600; }
+  .btn-add-group { width:100%; padding:10px; background:var(--bg); border:2px dashed var(--border); border-radius:10px; color:var(--muted); font-family:'Sarabun',sans-serif; font-size:0.85rem; cursor:pointer; margin-top:4px; transition:all 0.2s; }
+  .btn-add-group:hover { border-color:var(--accent); color:var(--accent); }
+  .btn-del-group { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:2px 6px; border-radius:6px; }
+  .btn-del-group:hover { background:#fde8e8; color:#cc2222; }
 
+  .toast {
     position:fixed; bottom:24px; right:24px; background:var(--sidebar); color:#e8d8b0;
     padding:12px 20px; border-radius:12px; font-size:0.9rem; z-index:999;
     transform:translateY(80px); opacity:0; transition:all 0.3s; pointer-events:none;
@@ -316,6 +335,11 @@
         </div>
         <input id="m-image" placeholder="https://example.com/image.jpg" oninput="previewFromUrl(this.value)" style="font-size:0.85rem;">
       </div>
+    </div>
+    <div class="form-group">
+      <label>🎛️ ตัวเลือกเสริม (ลูกค้าเลือกได้)</label>
+      <div id="optGroupsContainer"></div>
+      <button type="button" class="btn-add-group" onclick="addOptGroup()">＋ เพิ่มกลุ่มตัวเลือก เช่น ความหวาน, ขนาด</button>
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary" style="flex:1;" onclick="saveMenu()">💾 บันทึก</button>
@@ -501,12 +525,78 @@ function clearImage() {
   hideImagePreview();
 }
 
+// ─── OPTIONS GROUPS ───────────────────────────────────────────
+let optGroups = []; // [{ name, type:'radio'|'checkbox', choices:[] }]
+
+function addOptGroup(group = null) {
+  const idx = optGroups.length;
+  optGroups.push(group || { name:'', choices:[] });
+  renderOptGroups();
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.opt-group-name');
+    if (inputs[idx]) inputs[idx].focus();
+  }, 50);
+}
+
+function renderOptGroups() {
+  const container = document.getElementById('optGroupsContainer');
+  if (!optGroups.length) { container.innerHTML = ''; return; }
+  container.innerHTML = optGroups.map((g, gi) => `
+    <div class="opt-group">
+      <div class="opt-group-header">
+        <input class="opt-group-name" placeholder="ชื่อกลุ่ม เช่น ความหวาน, ขนาด" value="${g.name}"
+          oninput="optGroups[${gi}].name=this.value">
+        <button type="button" class="btn-del-group" onclick="delOptGroup(${gi})">🗑️</button>
+      </div>
+      <div class="opt-choices">
+        ${g.choices.map((c, ci) => `
+          <div class="opt-choice-chip">
+            <span>${c}</span>
+            <button type="button" class="chip-del" onclick="delOptChoice(${gi},${ci})">✕</button>
+          </div>
+        `).join('')}
+      </div>
+      <div class="opt-add-choice">
+        <input class="opt-add-input" id="opt-inp-${gi}" placeholder="พิมพ์ตัวเลือก แล้วกด +"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();addOptChoice(${gi})}">
+        <button type="button" class="opt-add-btn" onclick="addOptChoice(${gi})">＋</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function delOptGroup(gi) {
+  optGroups.splice(gi, 1);
+  renderOptGroups();
+}
+
+function addOptChoice(gi) {
+  const inp = document.getElementById(`opt-inp-${gi}`);
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!optGroups[gi].choices.includes(val)) optGroups[gi].choices.push(val);
+  inp.value = '';
+  renderOptGroups();
+  setTimeout(() => { const el = document.getElementById(`opt-inp-${gi}`); if(el) el.focus(); }, 30);
+}
+
+function delOptChoice(gi, ci) {
+  optGroups[gi].choices.splice(ci, 1);
+  renderOptGroups();
+}
+
+function clearOptGroups() {
+  optGroups = [];
+  renderOptGroups();
+}
+
 function openAddMenu() {
   document.getElementById('modalTitle').textContent = '➕ เพิ่มเมนู';
   document.getElementById('editId').value = '';
   ['m-name','m-desc','m-price','m-emoji','m-category','m-image'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('m-available').value = 'true';
   clearImage();
+  clearOptGroups();
   document.getElementById('menuModal').classList.add('open');
 }
 
@@ -527,12 +617,15 @@ function editMenu(item) {
   } else {
     hideImagePreview();
   }
+  try { optGroups = item.options ? JSON.parse(item.options) : []; } catch(e) { optGroups = []; }
+  renderOptGroups();
   document.getElementById('menuModal').classList.add('open');
 }
 
 function closeModal() {
   document.getElementById('menuModal').classList.remove('open');
   clearImage();
+  clearOptGroups();
 }
 
 async function saveMenu() {
@@ -547,6 +640,9 @@ async function saveMenu() {
       category: document.getElementById('m-category').value,
       image: document.getElementById('m-image').value,
       available: document.getElementById('m-available').value,
+      options: optGroups.filter(g => g.name && g.choices.length).length
+        ? JSON.stringify(optGroups.filter(g => g.name && g.choices.length))
+        : '',
     }
   };
   if (!payload.item.name || !payload.item.price) { toast('กรุณาใส่ชื่อและราคา', 'warn'); return; }
