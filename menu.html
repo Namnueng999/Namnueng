@@ -80,6 +80,7 @@
   .opt-chip{padding:10px 20px;border-radius:50px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-family:'Sarabun',sans-serif;font-size:0.9rem;cursor:pointer;transition:all 0.18s;user-select:none;}
   .opt-chip.selected{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700;}
   .opt-chip:active{transform:scale(0.96);}
+  .chip-price{font-size:0.8rem;opacity:0.85;}
   .opt-add-cart-btn{width:100%;margin-top:22px;background:var(--accent);color:#000;border:none;border-radius:14px;padding:16px;font-size:1rem;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:all 0.2s;}
   .opt-add-cart-btn:active{transform:scale(0.98);}
   .opt-add-cart-btn:disabled{background:var(--muted);cursor:not-allowed;}
@@ -283,17 +284,23 @@ function renderOptGroupsUI(groups) {
     return '<div class="opt-group-label">' + g.name + ' <span class="opt-required-badge">บังคับเลือก</span></div>' +
       '<div class="opt-chips">' +
       g.choices.map(function(c) {
-        var sel = currentOptSelections[g.name] === c ? ' selected' : '';
-        var gn  = g.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-        var cv  = c.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-        return '<div class="opt-chip' + sel + '" onclick="selectOpt(\'' + gn + '\',\'' + cv + '\')">' + c + '</div>';
+        // รองรับทั้ง { label, extraPrice } และ string เก่า
+        var label      = typeof c === 'object' ? c.label : c;
+        var extraPrice = typeof c === 'object' ? (c.extraPrice || 0) : 0;
+        var isSelected = currentOptSelections[g.name] && currentOptSelections[g.name].label === label;
+        var priceTag   = extraPrice > 0 ? ' <span class="chip-price">+฿' + extraPrice + '</span>' : '';
+        var gn = g.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        var lb = label.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        return '<div class="opt-chip' + (isSelected ? ' selected' : '') + '" onclick="selectOpt(\'' + gn + '\',\'' + lb + '\',' + extraPrice + ')">' +
+          label + priceTag +
+        '</div>';
       }).join('') +
       '</div>';
   }).join('');
 }
 
-function selectOpt(groupName, choice) {
-  currentOptSelections[groupName] = choice;
+function selectOpt(groupName, label, extraPrice) {
+  currentOptSelections[groupName] = { label: label, extraPrice: extraPrice || 0 };
   if (currentOptItem) renderOptGroupsUI(currentOptItem.groups);
   updateOptAddBtn();
 }
@@ -304,8 +311,15 @@ function updateOptAddBtn() {
   var selected = Object.keys(currentOptSelections).length;
   var allDone  = selected >= total;
   var btn = document.getElementById('optAddBtn');
-  btn.disabled    = !allDone;
-  btn.textContent = allDone ? '+ เพิ่มใส่ตะกร้า' : 'เลือกให้ครบก่อน (' + selected + '/' + total + ')';
+  btn.disabled = !allDone;
+  if (allDone) {
+    var extraTotal = Object.values(currentOptSelections).reduce(function(a,s){ return a + (s.extraPrice||0); }, 0);
+    var basePrice  = currentOptItem.item.price;
+    var finalPrice = basePrice + extraTotal;
+    btn.textContent = '+ เพิ่มใส่ตะกร้า  ฿' + finalPrice.toLocaleString();
+  } else {
+    btn.textContent = 'เลือกให้ครบก่อน (' + selected + '/' + total + ')';
+  }
 }
 
 function confirmAddToCart() {
@@ -315,12 +329,14 @@ function confirmAddToCart() {
 }
 
 function pushToCart(item, opts) {
-  var optsKey  = JSON.stringify(opts);
-  var existing = cart.find(function(e) { return e.id === item.id && JSON.stringify(e.opts) === optsKey; });
+  var extraTotal = Object.values(opts).reduce(function(a,s){ return a + (s && s.extraPrice ? s.extraPrice : 0); }, 0);
+  var finalPrice = item.price + extraTotal;
+  var optsKey    = JSON.stringify(opts);
+  var existing   = cart.find(function(e){ return e.id === item.id && JSON.stringify(e.opts) === optsKey; });
   if (existing) {
     existing.qty += 1;
   } else {
-    cart.push({ cartId: item.id + '-' + Date.now(), id: item.id, name: item.name, emoji: item.emoji || '', price: item.price, qty: 1, opts: opts });
+    cart.push({ cartId: item.id + '-' + Date.now(), id: item.id, name: item.name, emoji: item.emoji || '', price: finalPrice, basePrice: item.price, qty: 1, opts: opts });
   }
   updateCartCount();
 }
@@ -354,7 +370,7 @@ function renderCartItems() {
   var total = 0;
   container.innerHTML = cart.map(function(e) {
     total += e.price * e.qty;
-    var optsText = Object.values(e.opts).join(' · ');
+    var optsText = Object.values(e.opts).map(function(s){ return typeof s === 'object' ? s.label : s; }).join(' · ');
     return '<div class="cart-item">' +
       '<div class="ci-emoji">' + (e.emoji||'🍽️') + '</div>' +
       '<div class="ci-info">' +
@@ -386,7 +402,8 @@ async function submitOrder() {
   btn.disabled    = true;
   btn.textContent = '⏳ กำลังส่ง...';
   var items = cart.map(function(e) {
-    var optsLabel = Object.values(e.opts).length ? ' (' + Object.values(e.opts).join(', ') + ')' : '';
+    var optsLabels = Object.values(e.opts).map(function(s){ return typeof s === 'object' ? s.label : s; });
+    var optsLabel  = optsLabels.length ? ' (' + optsLabels.join(', ') + ')' : '';
     return { id: e.id, name: e.name + optsLabel, emoji: e.emoji, qty: e.qty, price: e.price, total: e.price * e.qty, opts: e.opts };
   });
   var note    = document.getElementById('orderNote').value;
