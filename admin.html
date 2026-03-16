@@ -24,7 +24,17 @@
   .sidebar {
     width:240px; background:var(--sidebar); color:#f0e8d5; flex-shrink:0;
     display:flex; flex-direction:column; height:100vh; position:sticky; top:0;
+    transition:width 0.25s ease, padding 0.25s ease;
+    overflow:hidden;
   }
+  .sidebar.collapsed { width:0; }
+  .toggle-sidebar-btn {
+    background:var(--card); border:1px solid var(--border); color:var(--muted);
+    width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:1rem;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition:all 0.2s;
+  }
+  .toggle-sidebar-btn:hover { background:var(--accent); color:#000; border-color:var(--accent); }
   .sidebar-logo { padding:24px 20px; border-bottom:1px solid #2e2820; }
   .sidebar-logo h1 { font-family:'Prompt',sans-serif; font-size:1.1rem; color:#e8a020; }
   .sidebar-logo p { font-size:0.75rem; color:#6a5a40; margin-top:2px; }
@@ -201,7 +211,10 @@
 
 <div class="main">
   <div class="topbar">
-    <h2 id="sectionTitle">📊 ภาพรวม</h2>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="toggle-sidebar-btn" onclick="toggleSidebar()" title="ซ่อน/แสดงเมนู">☰</button>
+      <h2 id="sectionTitle">📊 ภาพรวม</h2>
+    </div>
     <div style="display:flex;gap:10px;align-items:center;">
       <span style="font-size:0.8rem;color:var(--muted);" id="lastUpdate"></span>
       <button class="btn btn-secondary" onclick="loadAll()">🔄 รีเฟรช</button>
@@ -715,6 +728,10 @@ async function saveSettings() {
     await fetch(gasUrl, { method:'POST', body: JSON.stringify(payload) });
     toast('บันทึกการตั้งค่าแล้ว ✓');
   } catch(e) { toast('บันทึกไม่ได้', 'error'); }
+}
+
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('collapsed');
 }
 
 function showSection(name) {
