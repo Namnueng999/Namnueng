@@ -228,9 +228,9 @@ function render() {
   document.getElementById('cnt-cooking').textContent = cooking.length;
   document.getElementById('cnt-done').textContent = done.length;
 
-  document.getElementById('list-new').innerHTML = pending.length ? pending.reverse().map(o => orderCard(o, 'new')).join('') : '<div class="empty-col"><div class="empty-icon">✨</div>ไม่มีออเดอร์รอ</div>';
-  document.getElementById('list-cooking').innerHTML = cooking.length ? cooking.reverse().map(o => orderCard(o, 'cooking')).join('') : '<div class="empty-col"><div class="empty-icon">🕐</div>ไม่มีออเดอร์กำลังทำ</div>';
-  document.getElementById('list-done').innerHTML = done.length ? [...done].reverse().slice(0,10).map(o => orderCard(o, 'done')).join('') : '<div class="empty-col"><div class="empty-icon">🎉</div>ยังไม่มีที่เสร็จ</div>';
+  document.getElementById('list-new').innerHTML = pending.length ? pending.map(o => orderCard(o, 'new')).join('') : '<div class="empty-col"><div class="empty-icon">✨</div>ไม่มีออเดอร์รอ</div>';
+  document.getElementById('list-cooking').innerHTML = cooking.length ? cooking.map(o => orderCard(o, 'cooking')).join('') : '<div class="empty-col"><div class="empty-icon">🕐</div>ไม่มีออเดอร์กำลังทำ</div>';
+  document.getElementById('list-done').innerHTML = done.length ? [...done].slice(-10).map(o => orderCard(o, 'done')).join('') : '<div class="empty-col"><div class="empty-icon">🎉</div>ยังไม่มีที่เสร็จ</div>';
 }
 
 function parseItems(raw) {
