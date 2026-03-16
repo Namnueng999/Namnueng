@@ -32,7 +32,13 @@
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
   .time-display { font-family:'Prompt',sans-serif; font-size:1.2rem; color:var(--green); }
   .auto-refresh { font-size:0.8rem; color:var(--muted); }
-  .setup-bar { background:#0d1a0d; padding:12px 24px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); }
+  .setup-bar {
+    background:#0d1a0d; padding:10px 24px; display:none;
+    align-items:center; gap:12px; border-bottom:1px solid var(--border);
+  }
+  .setup-bar.open { display:flex; }
+  .btn-settings { background:transparent; border:1px solid var(--border); color:var(--muted); padding:6px 12px; border-radius:8px; cursor:pointer; font-size:0.8rem; transition:all 0.2s; }
+  .btn-settings:hover { border-color:var(--green); color:var(--green); }
   .gas-inp { background:#111; border:1px solid #2a3a2a; color:var(--text); padding:8px 12px; border-radius:8px; font-family:'Sarabun',sans-serif; font-size:0.85rem; flex:1; max-width:500px; }
   .btn { padding:9px 18px; border-radius:8px; border:none; cursor:pointer; font-family:'Sarabun',sans-serif; font-weight:700; font-size:0.85rem; }
   .btn-green { background:var(--green); color:#000; }
@@ -70,8 +76,8 @@
   .oc-items { margin:12px 0; }
   .oc-item { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
   .oc-item:last-child { border-bottom:none; }
-  .oc-item-name { font-size:0.95rem; font-weight:600; }
-  .oc-item-qty { background:rgba(255,255,255,0.1); padding:2px 10px; border-radius:6px; font-weight:700; font-size:0.85rem; }
+  .oc-item-name { font-size:0.92rem; font-weight:600; flex:1; }
+  .oc-item-qty { background:rgba(255,255,255,0.1); padding:2px 10px; border-radius:6px; font-weight:700; font-size:0.85rem; white-space:nowrap; margin-left:8px; }
   .oc-note { margin-top:8px; padding:8px 10px; background:rgba(255,255,255,0.05); border-radius:8px; font-size:0.8rem; color:var(--muted); }
 
   .oc-actions { display:flex; gap:8px; margin-top:14px; }
@@ -96,9 +102,10 @@
     <div class="auto-refresh" id="refreshInfo">รีเฟรชทุก 20 วินาที</div>
     <div class="time-display" id="clock"></div>
     <button class="sound-btn" onclick="toggleSound()" id="soundBtn">🔔 เสียง ON</button>
+    <button class="btn-settings" onclick="toggleSetupBar()">⚙️ ตั้งค่า</button>
   </div>
 </div>
-<div class="setup-bar">
+<div class="setup-bar" id="setupBar">
   <span style="color:var(--muted);font-size:0.85rem;">GAS URL:</span>
   <input class="gas-inp" id="gasInp" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveGas()">
   <button class="btn btn-green" onclick="loadOrders()">🔄 โหลด</button>
@@ -139,6 +146,10 @@ window.onload = () => {
   loadOrders();
   startAutoRefresh();
 };
+
+function toggleSetupBar() {
+  document.getElementById('setupBar').classList.toggle('open');
+}
 
 function saveGas() {
   gasUrl = document.getElementById('gasInp').value.trim();
@@ -242,12 +253,12 @@ function orderCard(o, col) {
       itemsHtml = parsed.data.map(i =>
         `<div class="oc-item">
           <span class="oc-item-name">${i.emoji||''}${i.name}</span>
-          <span class="oc-item-qty">x${i.qty}</span>
+          <span class="oc-item-qty">×${i.qty}</span>
         </div>`
       ).join('');
     } else {
-      // plain string เช่น "🍤 ข้าวผัดกุ้ง x1, 🧋 โกโก้ x1"
-      itemsHtml = parsed.data.split(',').map(s => s.trim()).filter(Boolean).map(s =>
+      // plain string คั่นด้วย newline
+      itemsHtml = parsed.data.split('\n').map(s => s.trim()).filter(Boolean).map(s =>
         `<div class="oc-item"><span class="oc-item-name">${s}</span></div>`
       ).join('');
     }
