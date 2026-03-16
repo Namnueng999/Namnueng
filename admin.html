@@ -484,26 +484,19 @@ function filterOrders() { renderOrders(allOrders); }
 function handleImageUpload(input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) {
-    toast('รูปภาพต้องไม่เกิน 5MB', 'warn');
-    input.value = '';
-    return;
-  }
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
-      // Compress ให้เล็กพอส่งผ่าน GAS: max 600px, quality 0.6
-      const maxW = 600;
+      const maxW = 800;
       let w = img.width, h = img.height;
       if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      // ลด quality จนกว่า base64 จะน้อยกว่า 200KB
-      let quality = 0.7;
+      let quality = 0.8;
       let base64  = canvas.toDataURL('image/jpeg', quality);
-      while (base64.length > 200000 && quality > 0.2) {
+      while (base64.length > 300000 && quality > 0.2) {
         quality -= 0.1;
         base64 = canvas.toDataURL('image/jpeg', quality);
       }
