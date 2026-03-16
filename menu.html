@@ -281,7 +281,7 @@ function closeOptModal() {
 
 function renderOptGroupsUI(groups) {
   document.getElementById('optGroupsBody').innerHTML = groups.map(function(g) {
-    return '<div class="opt-group-label">' + g.name + ' <span class="opt-required-badge">บังคับเลือก</span></div>' +
+    return '<div class="opt-group-label">' + g.name + '</div>' +
       '<div class="opt-chips">' +
       g.choices.map(function(c) {
         // รองรับทั้ง { label, extraPrice } และ string เก่า
