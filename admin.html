@@ -324,7 +324,7 @@
         <label style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px dashed var(--border);border-radius:10px;transition:border-color 0.2s;color:var(--muted);font-weight:400;"
                id="uploadLabel" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
           <span style="font-size:1.3rem;">📷</span>
-          <span id="uploadLabelText">อัปโหลดรูปภาพ (JPG, PNG ไม่เกิน 1MB)</span>
+          <span id="uploadLabelText">อัปโหลดรูปภาพ (JPG, PNG ไม่เกิน 5MB)</span>
           <input type="file" id="m-imageFile" accept="image/*" style="display:none;" onchange="handleImageUpload(this)">
         </label>
         <!-- URL fallback -->
@@ -484,17 +484,35 @@ function filterOrders() { renderOrders(allOrders); }
 function handleImageUpload(input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 1.2 * 1024 * 1024) {
-    toast('รูปภาพต้องไม่เกิน 1MB', 'warn');
+  if (file.size > 5 * 1024 * 1024) {
+    toast('รูปภาพต้องไม่เกิน 5MB', 'warn');
     input.value = '';
     return;
   }
   const reader = new FileReader();
   reader.onload = e => {
-    const base64 = e.target.result;
-    document.getElementById('m-image').value = base64;
-    showImagePreview(base64);
-    document.getElementById('uploadLabelText').textContent = file.name;
+    const img = new Image();
+    img.onload = () => {
+      // Compress ให้เล็กพอส่งผ่าน GAS: max 600px, quality 0.6
+      const maxW = 600;
+      let w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      // ลด quality จนกว่า base64 จะน้อยกว่า 200KB
+      let quality = 0.7;
+      let base64  = canvas.toDataURL('image/jpeg', quality);
+      while (base64.length > 200000 && quality > 0.2) {
+        quality -= 0.1;
+        base64 = canvas.toDataURL('image/jpeg', quality);
+      }
+      const sizeKB = Math.round(base64.length * 0.75 / 1024);
+      document.getElementById('m-image').value = base64;
+      showImagePreview(base64);
+      document.getElementById('uploadLabelText').textContent = `${file.name} (${sizeKB}KB)`;
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -521,7 +539,7 @@ function hideImagePreview() {
 function clearImage() {
   document.getElementById('m-image').value = '';
   document.getElementById('m-imageFile').value = '';
-  document.getElementById('uploadLabelText').textContent = 'อัปโหลดรูปภาพ (JPG, PNG ไม่เกิน 1MB)';
+  document.getElementById('uploadLabelText').textContent = 'อัปโหลดรูปภาพ (JPG, PNG ไม่เกิน 5MB)';
   hideImagePreview();
 }
 
@@ -618,7 +636,7 @@ function editMenu(item) {
   document.getElementById('m-image').value = item.image||'';
   document.getElementById('m-available').value = String(item.available)!=='false' ? 'true' : 'false';
   document.getElementById('m-imageFile').value = '';
-  document.getElementById('uploadLabelText').textContent = 'อัปโหลดรูปภาพใหม่ (JPG, PNG ไม่เกิน 1MB)';
+  document.getElementById('uploadLabelText').textContent = 'อัปโหลดรูปภาพใหม่ (JPG, PNG ไม่เกิน 5MB)';
   if (item.image) {
     showImagePreview(item.image);
   } else {
@@ -636,29 +654,41 @@ function closeModal() {
 }
 
 async function saveMenu() {
-  const id = document.getElementById('editId').value || `item-${Date.now()}`;
-  const payload = {
-    action: document.getElementById('editId').value ? 'updateMenu' : 'addMenu',
-    item: {
-      id, name: document.getElementById('m-name').value,
-      description: document.getElementById('m-desc').value,
-      price: document.getElementById('m-price').value,
-      emoji: document.getElementById('m-emoji').value,
-      category: document.getElementById('m-category').value,
-      image: document.getElementById('m-image').value,
-      available: document.getElementById('m-available').value,
-      options: optGroups.filter(g => g.name && g.choices.length).length
-        ? JSON.stringify(optGroups.filter(g => g.name && g.choices.length))
-        : '',
-    }
+  const id    = document.getElementById('editId').value || `item-${Date.now()}`;
+  const image = document.getElementById('m-image').value;
+  const isBase64 = image.startsWith('data:');
+
+  const item = {
+    id,
+    name:        document.getElementById('m-name').value,
+    description: document.getElementById('m-desc').value,
+    price:       document.getElementById('m-price').value,
+    emoji:       document.getElementById('m-emoji').value,
+    category:    document.getElementById('m-category').value,
+    image:       isBase64 ? '__pending__' : image,  // placeholder ถ้าเป็น base64
+    available:   document.getElementById('m-available').value,
+    options:     optGroups.filter(g => g.name && g.choices.length).length
+                   ? JSON.stringify(optGroups.filter(g => g.name && g.choices.length)) : '',
   };
-  if (!payload.item.name || !payload.item.price) { toast('กรุณาใส่ชื่อและราคา', 'warn'); return; }
+  if (!item.name || !item.price) { toast('กรุณาใส่ชื่อและราคา', 'warn'); return; }
+
   try {
-    await fetch(gasUrl, { method:'POST', body: JSON.stringify(payload) });
+    // Step 1: บันทึกข้อมูลเมนูก่อน (ไม่มีรูป)
+    const action = document.getElementById('editId').value ? 'updateMenu' : 'addMenu';
+    await fetch(gasUrl, { method:'POST', body: JSON.stringify({ action, item }) });
+
+    // Step 2: ถ้ามีรูป base64 ส่งแยก request
+    if (isBase64) {
+      toast('กำลังบันทึกรูปภาพ...', 'ok');
+      await fetch(gasUrl, { method:'POST', body: JSON.stringify({ action:'updateMenuImage', id, image }) });
+    }
+
     closeModal();
     toast('บันทึกเมนูสำเร็จ ✓');
     await loadAll();
-  } catch(e) { toast('บันทึกไม่ได้: ' + e.message, 'error'); }
+  } catch(e) {
+    toast('บันทึกไม่ได้: ' + e.message, 'error');
+  }
 }
 
 async function deleteMenu(id) {
