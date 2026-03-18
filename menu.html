@@ -207,11 +207,27 @@ async function initLiff() {
       document.getElementById('lineAvatarWrap').innerHTML =
         '<img class="line-avatar" src="' + profile.pictureUrl + '" alt="avatar">';
     }
+    // บันทึกโปรไฟล์ลง Sheet (background — ไม่ block การโหลดเมนู)
+    saveCustomerProfile(lineUser).catch(() => {});
     return true;
   } catch(e) {
     console.warn('LIFF init failed:', e);
-    return true; // ถ้า LIFF ใช้ไม่ได้ (เปิดนอก LINE) ให้ทำงานต่อได้
+    return true;
   }
+}
+
+async function saveCustomerProfile(user) {
+  await fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action:     'saveCustomer',
+      userId:     user.userId,
+      displayName: user.displayName,
+      pictureUrl:  user.pictureUrl,
+      lastSeen:   new Date().toLocaleString('th-TH'),
+      table:      tableNum
+    })
+  });
 }
 
 function getParams() {
@@ -271,7 +287,7 @@ function renderMenu(cat) {
     const soldOut = item.available === false || item.available === 'false';
     return '<div class="menu-card' + (soldOut ? ' out-of-stock' : '') + '">' +
       '<div class="menu-img">' +
-        (item.image ? '<img src="' + item.image + '" onerror="this.style.display=\'none\'">' : '') +
+        (item.image ? '<img src="' + item.image + '" alt="' + item.name + '" onerror="this.style.display=\'none\'">' : '') +
         '<span>' + (item.emoji || '🍽️') + '</span>' +
         (soldOut ? '<div class="badge-sold">หมด</div>' : '') +
       '</div>' +
