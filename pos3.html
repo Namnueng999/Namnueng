@@ -29,20 +29,21 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
 .main-layout{display:flex;flex:1;min-height:0;}
 
 /* ── Table Panel ── */
-.table-panel{width:188px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
-.table-panel-top{padding:10px 12px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.table-panel{width:188px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;min-height:0;}
+.table-panel-top{padding:10px 12px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;}
 .table-panel-title{font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
 .table-count-select{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:3px 6px;border-radius:6px;font-size:0.72rem;font-family:'Sarabun',sans-serif;}
-.table-grid{padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:7px;overflow-y:auto;flex:1;}
-.table-chip{border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;border:2px solid var(--border);background:var(--card);transition:all 0.15s;position:relative;}
+.table-grid{padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:7px;overflow-y:auto;flex:1;min-height:0;align-content:start;}
+.table-chip{border-radius:10px;padding:0;aspect-ratio:1;text-align:center;cursor:pointer;border:2px solid var(--border);background:var(--card);transition:all 0.15s;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .table-chip:hover{border-color:var(--accent);}
 .table-chip.active{border-color:var(--accent);background:#2a2010;}
 .table-chip.has-order{border-color:var(--green);background:#051a12;}
 .table-chip.has-order.active{border-color:var(--accent);}
-.table-chip.closed{opacity:0.4;pointer-events:none;background:var(--card2);}
+.table-chip.closed{opacity:0.5;background:var(--card2);}
 .table-chip-num{font-family:'Prompt',sans-serif;font-size:1.05rem;font-weight:700;}
 .table-chip.active .table-chip-num{color:var(--accent);}
 .table-chip.has-order .table-chip-num{color:var(--green);}
+.table-chip.closed .table-chip-num{color:var(--red);}
 .table-chip-info{font-size:0.62rem;color:var(--muted);margin-top:1px;}
 .table-chip.has-order .table-chip-info{color:var(--green);}
 .tdot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--green);}
@@ -57,20 +58,21 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
 .cat-bar::-webkit-scrollbar{display:none;}
 .cat-chip{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:'Sarabun',sans-serif;font-size:0.8rem;cursor:pointer;white-space:nowrap;transition:all 0.13s;}
 .cat-chip.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700;}
-.menu-grid{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:10px 14px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;align-content:start;}
-@media(min-width:900px){.menu-grid{grid-template-columns:repeat(3,1fr);}}
-@media(min-width:1200px){.menu-grid{grid-template-columns:repeat(4,1fr);}}
-.mcard{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.15s;user-select:none;display:flex;flex-direction:column;min-height:170px;}
-.mcard:hover{border-color:var(--accent);transform:translateY(-2px);}
+.menu-grid{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:10px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));grid-auto-rows:280px;gap:12px;}
+.mcard{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:default;transition:all 0.2s;user-select:none;display:flex;flex-direction:column;}
+.mcard:hover{border-color:var(--accent);transform:translateY(-3px);}
 .mcard:active{transform:scale(0.97);}
 .mcard.soldout{opacity:0.3;pointer-events:none;}
-.mcard-img{width:100%;min-height:110px;height:110px;flex-shrink:0;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:2rem;position:relative;overflow:hidden;}
+.mcard-img{width:100%;height:130px;flex-shrink:0;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative;overflow:hidden;}
 .mcard-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .mcard-emoji{position:relative;z-index:1;pointer-events:none;}
-.mcard-body{padding:9px;flex:1;display:flex;flex-direction:column;justify-content:center;}
-.mcard-name{font-size:0.82rem;font-weight:600;line-height:1.3;margin-bottom:4px;color:var(--text);}
-.mcard-price{font-family:'Prompt',sans-serif;color:var(--accent);font-size:0.92rem;font-weight:700;}
-.mcard-opt{font-size:0.68rem;color:var(--muted);margin-top:3px;}
+.mcard-body{padding:11px 12px 12px;flex:1;display:flex;flex-direction:column;min-height:0;}
+.mcard-name{font-size:0.88rem;font-weight:700;line-height:1.3;margin-bottom:4px;color:var(--text);}
+.mcard-desc{font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.mcard-price{font-family:'Prompt',sans-serif;color:var(--accent);font-size:1rem;font-weight:700;margin-bottom:4px;}
+.mcard-opt{font-size:0.72rem;color:var(--accent2);font-weight:600;margin-bottom:8px;}
+.mcard-addbtn{width:100%;padding:9px;background:var(--accent);border:none;color:#000;font-weight:700;font-size:0.85rem;border-radius:9px;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all 0.15s;margin-top:auto;}
+.mcard-addbtn:hover{background:var(--accent2);}
 
 /* ── Bill Panel ── */
 .bill-panel{width:290px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
@@ -182,7 +184,7 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
 
 <div class="topbar">
   <div style="display:flex;align-items:center;gap:10px;">
-    <h1>🧾 POS</h1>
+    <h1 id="posTitle">🧾 POS</h1>
     <div class="tab-btns">
       <button class="tab-btn active" onclick="gotoTab('pos',this)">🍽️ สั่งอาหาร</button>
       <button class="tab-btn" onclick="gotoTab('summary',this)">📊 ยอดขาย</button>
@@ -335,6 +337,8 @@ async function loadData() {
     menu           = (d.menu || []).filter(m => m.name);
     allOrders      = d.orders || [];
     restaurantName = d.restaurantName || 'ร้านอาหาร';
+    document.getElementById('posTitle').textContent = '🧾 ' + restaurantName;
+    document.title = 'POS - ' + restaurantName;
     try { tableStates = JSON.parse(d.settings?.tableStates || '{}'); } catch(e) { tableStates = {}; }
     renderTableGrid();
     renderCategories();
@@ -409,12 +413,14 @@ function renderMenu() {
   document.getElementById('menuGrid').innerHTML = items.map(item => {
     const sold = item.available===false||item.available==='false';
     const opts = hasOpts(item);
-    return `<div class="mcard ${sold?'soldout':''}" onclick="clickMenu('${item.id}')">
+    return `<div class="mcard ${sold?'soldout':''}">
       <div class="mcard-img"><span class="mcard-emoji">${item.emoji||'🍽️'}</span>${item.image?`<img src="${item.image}" onload="this.previousSibling.style.display='none'" onerror="this.style.visibility='hidden'">`:''}</div>
       <div class="mcard-body">
         <div class="mcard-name">${item.name}</div>
+        ${item.description?`<div class="mcard-desc">${item.description}</div>`:''}
         <div class="mcard-price">฿${Number(item.price).toLocaleString()}</div>
-        ${opts?'<div class="mcard-opt">🎛️ มีตัวเลือก</div>':''}
+        ${opts?'<div class="mcard-opt">🎛️ มีตัวเลือกเสริม</div>':''}
+        <button class="mcard-addbtn" onclick="clickMenu('${item.id}')">+ เพิ่ม</button>
       </div>
     </div>`;
   }).join('');
@@ -538,13 +544,37 @@ async function sendOrder() {
 
 // ── Mark Paid ─────────────────────────────────────────────────
 async function markPaid() {
-  const tableOrders=allOrders.filter(o=>String(o.table)===String(currentTable)&&!['ชำระแล้ว'].includes(o.status));
-  if (!tableOrders.length&&!bills[currentTable]?.length) { toast('ไม่มีออเดอร์'); return; }
-  if (!confirm('ยืนยันชำระเงินโต๊ะ '+currentTable+'?')) return;
-  for (const o of tableOrders) {
-    await fetch(GAS,{method:'POST',body:JSON.stringify({action:'updateOrderStatus',orderId:o.orderId,status:'ชำระแล้ว'})});
+  const bill = bills[currentTable] || [];
+  const tableOrders = allOrders.filter(o => String(o.table) === String(currentTable) && !['ชำระแล้ว'].includes(o.status));
+  if (!tableOrders.length && !bill.length) { toast('ไม่มีออเดอร์'); return; }
+  if (!confirm('ยืนยันชำระเงินโต๊ะ ' + currentTable + '?')) return;
+
+  // ถ้า bill ยังมีรายการที่ยังไม่ส่งครัว ให้ส่งพร้อมสถานะ "ชำระแล้ว" เลย
+  if (bill.length) {
+    const items = bill.map(e => {
+      const ol = Object.values(e.opts).map(s => typeof s === 'object' ? s.label : s);
+      return { id:e.id, name:e.name+(ol.length?` (${ol.join(', ')})`:``), emoji:e.emoji, qty:e.qty, price:e.price, total:e.price*e.qty, opts:e.opts };
+    });
+    const grand = items.reduce((a,b) => a+b.total, 0);
+    const payload = {
+      action:'addOrder', orderId:'POS-'+Date.now(), table:currentTable,
+      items, note:document.getElementById('billNote').value,
+      total:grand, status:'ชำระแล้ว',
+      time:new Date().toLocaleString('th-TH'),
+      customer:{name:'พนักงาน (POS)', userId:'pos-staff'}
+    };
+    await fetch(GAS, { method:'POST', body:JSON.stringify(payload) });
   }
-  bills[currentTable]=[]; renderBill(); await loadData(); toast('💰 ชำระแล้ว — โต๊ะ '+currentTable);
+
+  // update ออเดอร์เก่าที่มีอยู่ใน sheet
+  for (const o of tableOrders) {
+    await fetch(GAS, { method:'POST', body:JSON.stringify({ action:'updateOrderStatus', orderId:o.orderId, status:'ชำระแล้ว' }) });
+  }
+
+  bills[currentTable] = [];
+  document.getElementById('billNote').value = '';
+  renderBill(); await loadData();
+  toast('💰 ชำระแล้ว — โต๊ะ ' + currentTable);
 }
 
 // ── Receipt ───────────────────────────────────────────────────
