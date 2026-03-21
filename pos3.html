@@ -29,7 +29,10 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
 .main-layout{display:flex;flex:1;min-height:0;}
 
 /* ── Table Panel ── */
-.table-panel{width:188px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;min-height:0;}
+.table-panel{width:188px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;min-height:0;transition:width 0.25s ease;overflow:hidden;}
+.table-panel.hidden{width:0;border-right:none;}
+.table-toggle-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
+.table-toggle-btn:hover{background:var(--accent);color:#000;border-color:var(--accent);}
 .table-panel-top{padding:10px 12px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;}
 .table-panel-title{font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
 .table-count-select{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:3px 6px;border-radius:6px;font-size:0.72rem;font-family:'Sarabun',sans-serif;}
@@ -200,14 +203,17 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
 <div class="main-layout" id="tab-pos">
 
   <!-- Table Panel -->
-  <div class="table-panel">
+  <div class="table-panel" id="tablePanel">
     <div class="table-panel-top">
       <span class="table-panel-title">โต๊ะ</span>
-      <select class="table-count-select" id="tableCountSel" onchange="renderTableGrid()">
-        <option value="5">5</option><option value="8">8</option>
-        <option value="10" selected>10</option><option value="15">15</option>
-        <option value="20">20</option><option value="30">30</option>
-      </select>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <select class="table-count-select" id="tableCountSel" onchange="renderTableGrid()">
+          <option value="5">5</option><option value="8">8</option>
+          <option value="10" selected>10</option><option value="15">15</option>
+          <option value="20">20</option><option value="30">30</option>
+        </select>
+        <button class="table-toggle-btn" onclick="toggleTablePanel()" title="ซ่อนโต๊ะ">◀</button>
+      </div>
     </div>
     <div class="table-grid" id="tableGrid"></div>
   </div>
@@ -215,6 +221,7 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
   <!-- Menu Panel -->
   <div class="menu-panel">
     <div class="menu-top">
+      <button class="table-toggle-btn" id="showTableBtn" onclick="toggleTablePanel()" title="แสดงโต๊ะ" style="display:none;flex-shrink:0;">▶</button>
       <input class="menu-search" id="menuSearch" placeholder="🔍 ค้นหาเมนู..." oninput="renderMenu()">
     </div>
     <div class="cat-bar" id="catBar"></div>
@@ -348,6 +355,13 @@ async function loadData() {
 }
 
 // ── Tables ────────────────────────────────────────────────────
+function toggleTablePanel() {
+  const panel  = document.getElementById('tablePanel');
+  const showBtn = document.getElementById('showTableBtn');
+  const hidden = panel.classList.toggle('hidden');
+  showBtn.style.display = hidden ? 'flex' : 'none';
+}
+
 function tableCount() { return parseInt(document.getElementById('tableCountSel').value) || 10; }
 
 function renderTableGrid() {
