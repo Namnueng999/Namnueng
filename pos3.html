@@ -616,67 +616,106 @@ function setThisMonth() {
 }
 
 function parseOrderDate(o) {
-  // time format: "16/3/2569 BE, 05:21:05" or ISO
   try {
-    if (!o.time) return null;
-    // Try orderId timestamp (more reliable)
-    const match = String(o.orderId).match(/\d{13}/);
-    if (match) return new Date(parseInt(match[0]));
-    return new Date(o.time);
+    // ลอง parse จาก orderId timestamp ก่อน (ดีที่สุด)
+    const match = String(o.orderId||'').match(/(\d{13})/);
+    if (match) {
+      const d = new Date(parseInt(match[1]));
+      if (!isNaN(d)) return d;
+    }
+    // ลอง parse จาก o.time — format ไทย เช่น "18/3/2568 BE, 20:34:06"
+    if (o.time) {
+      const t = String(o.time);
+      // แปลง พ.ศ. → ค.ศ.
+      const thMatch = t.match(/(\d+)\/(\d+)\/(\d+)[^,]*,\s*(\d+):(\d+)/);
+      if (thMatch) {
+        let [,d,m,y,hr,min] = thMatch;
+        y = parseInt(y); if (y > 2400) y -= 543; // พ.ศ. → ค.ศ.
+        return new Date(y, parseInt(m)-1, parseInt(d), parseInt(hr), parseInt(min));
+      }
+      const d = new Date(t);
+      if (!isNaN(d)) return d;
+    }
+    return null;
   } catch(e) { return null; }
 }
 
-function renderSummary() {
-  const from=new Date(document.getElementById('dateFrom').value);
-  const to  =new Date(document.getElementById('dateTo').value);
-  to.setHours(23,59,59,999);
+function parseItemsFromOrder(o) {
+  const raw = o.items;
+  // JSON array
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (trimmed.startsWith('[')) {
+      try { return JSON.parse(trimmed); } catch(e) {}
+    }
+    // plain string เช่น "🍤ข้าวผัดกุ้ง (หวานน้อย) ×1\n🧋โกโก้ ×2"
+    return trimmed.split('\n').filter(Boolean).map(line => {
+      const m = line.match(/^(.*?)×?\s*(\d+)\s*$/);
+      if (m) return { name: m[1].replace(/×\d+/, '').trim(), qty: parseInt(m[2]) || 1, price: 0 };
+      return { name: line.trim(), qty: 1, price: 0 };
+    });
+  }
+  return [];
+}
 
-  const filtered=allOrders.filter(o=>{
-    const d=parseOrderDate(o); if(!d) return true; // ถ้า parse ไม่ได้รวมทั้งหมด
-    return d>=from&&d<=to;
+function renderSummary() {
+  const fromVal = document.getElementById('dateFrom').value;
+  const toVal   = document.getElementById('dateTo').value;
+  const from    = fromVal ? new Date(fromVal + 'T00:00:00') : null;
+  const to      = toVal   ? new Date(toVal   + 'T23:59:59') : null;
+
+  const filtered = allOrders.filter(o => {
+    if (!from && !to) return true;
+    const d = parseOrderDate(o);
+    if (!d) return true; // parse ไม่ได้แสดงทั้งหมด
+    if (from && d < from) return false;
+    if (to   && d > to)   return false;
+    return true;
   });
 
-  const revenue=filtered.reduce((a,o)=>a+(Number(o.total)||0),0);
-  const paid   =filtered.filter(o=>o.status==='ชำระแล้ว').reduce((a,o)=>a+(Number(o.total)||0),0);
-  const pending=filtered.filter(o=>o.status==='รอดำเนินการ').length;
+  const revenue = filtered.reduce((a,o) => a+(Number(o.total)||0), 0);
+  const paid    = filtered.filter(o => o.status==='ชำระแล้ว').reduce((a,o) => a+(Number(o.total)||0), 0);
+  const pending = filtered.filter(o => o.status==='รอดำเนินการ').length;
 
-  document.getElementById('sOrders').textContent=filtered.length;
-  document.getElementById('sRevenue').textContent=revenue.toLocaleString();
-  document.getElementById('sPaid').textContent=paid.toLocaleString();
-  document.getElementById('sPending').textContent=pending;
+  document.getElementById('sOrders').textContent  = filtered.length;
+  document.getElementById('sRevenue').textContent = revenue.toLocaleString();
+  document.getElementById('sPaid').textContent    = paid.toLocaleString();
+  document.getElementById('sPending').textContent = pending;
 
-  // Top menus
-  const menuCount={};
-  filtered.forEach(o=>{
-    const raw=o.items;
-    const items=Array.isArray(raw)?raw:(typeof raw==='string'&&raw.startsWith('[')?(() =>{try{return JSON.parse(raw);}catch(e){return[];}})():[]);
-    if (Array.isArray(items)) items.forEach(i=>{
-      const key=i.name||'?';
-      if (!menuCount[key]) menuCount[key]={qty:0,total:0};
-      menuCount[key].qty+=i.qty||1;
-      menuCount[key].total+=(i.price||0)*(i.qty||1);
+  // Top menus — ใช้ parseItemsFromOrder
+  const menuCount = {};
+  filtered.forEach(o => {
+    const items = parseItemsFromOrder(o);
+    items.forEach(i => {
+      // ตัด options ออกจากชื่อ เช่น "ชาเขียว (หวานน้อย)" → "ชาเขียว"
+      const key = (i.name||'?').replace(/\s*\(.*?\)\s*/g, '').trim() || '?';
+      if (!menuCount[key]) menuCount[key] = { qty:0, total:0 };
+      menuCount[key].qty   += Number(i.qty)   || 1;
+      menuCount[key].total += (Number(i.price)||0) * (Number(i.qty)||1);
     });
   });
-  const topMenus=Object.entries(menuCount).sort((a,b)=>b[1].qty-a[1].qty).slice(0,10);
-  document.getElementById('topMenuBody').innerHTML=topMenus.length
-    ? topMenus.map(([name,v],i)=>`<tr><td><span class="rank-num">${i+1}</span></td><td>${name}</td><td>${v.qty}</td><td>฿${v.total.toLocaleString()}</td></tr>`).join('')
+  const topMenus = Object.entries(menuCount).sort((a,b) => b[1].qty - a[1].qty).slice(0,10);
+  document.getElementById('topMenuBody').innerHTML = topMenus.length
+    ? topMenus.map(([name,v],i) =>
+        `<tr><td><span class="rank-num">${i+1}</span></td><td>${name}</td><td>${v.qty}</td><td>${v.total>0?'฿'+v.total.toLocaleString():'-'}</td></tr>`
+      ).join('')
     : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:16px;">ไม่มีข้อมูล</td></tr>';
 
   // Orders table
-  const sc={รอดำเนินการ:'b-pending',กำลังทำ:'b-cooking',เสร็จแล้ว:'b-done',ชำระแล้ว:'b-paid'};
-  document.getElementById('orderTableBody').innerHTML=[...filtered].reverse().map(o=>{
-    const raw=o.items; let prev='';
-    if (typeof raw==='string') prev=raw.replace(/\n/g,', ').substring(0,35)+(raw.length>35?'...':'');
-    else if (Array.isArray(raw)) prev=raw.map(i=>i.name).join(', ').substring(0,35);
+  const sc = { รอดำเนินการ:'b-pending', กำลังทำ:'b-cooking', เสร็จแล้ว:'b-done', ชำระแล้ว:'b-paid' };
+  document.getElementById('orderTableBody').innerHTML = [...filtered].reverse().map(o => {
+    const items = parseItemsFromOrder(o);
+    const prev  = items.map(i => i.name).join(', ').substring(0,35) + (items.length>2?'...':'');
     return `<tr>
       <td style="font-size:0.72rem;color:var(--muted);">${(o.orderId||'').slice(-10)}</td>
       <td>โต๊ะ ${o.table}</td>
-      <td style="font-size:0.75rem;color:var(--muted);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${prev}</td>
+      <td style="font-size:0.75rem;color:var(--muted);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${prev||'-'}</td>
       <td>฿${Number(o.total).toLocaleString()}</td>
       <td><span class="badge ${sc[o.status]||''}">${o.status||'-'}</span></td>
       <td style="font-size:0.72rem;color:var(--muted);">${(o.time||'').substring(0,16)}</td>
     </tr>`;
-  }).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px;">ไม่มีออเดอร์ในช่วงนี้</td></tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px;">ไม่มีออเดอร์ในช่วงนี้</td></tr>';
 }
 
 // ── Tab ───────────────────────────────────────────────────────
