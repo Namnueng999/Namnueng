@@ -9,12 +9,103 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        .product-item { transition: transform 0.2s; }
-        .product-item:hover { transform: scale(1.05); }
-        .emoji-display { font-size: 3rem; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * { font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-card:active {
+            transform: translateY(-4px);
+        }
+        
+        .gradient-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s;
+        }
+        
+        .gradient-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .category-tab {
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .category-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+        
+        .cart-item {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .modal-backdrop {
+            backdrop-filter: blur(8px);
+        }
+        
+        .emoji-display {
+            font-size: 3.5rem;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+        
+        .receipt {
+            background: white;
+            font-family: 'Courier New', monospace;
+        }
+        
+        @media print {
+            body * { visibility: hidden; }
+            .receipt, .receipt * { visibility: visible; }
+            .receipt { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid #667eea;
+        }
     </style>
 </head>
-<body class="bg-gray-100">
+<body>
     <div id="root"></div>
 
     <script type="text/babel">
@@ -32,8 +123,7 @@
         ];
         const DEFAULT_CATEGORIES = ['เครื่องดื่ม', 'อาหาร', 'ของหวาน'];
 
-        function POSSystem() {
-            // state เริ่มต้นเป็น empty — รอโหลดจาก Sheets
+        function ModernPOS() {
             const [products, setProducts] = useState([]);
             const [customCategories, setCustomCategories] = useState([]);
             const [cart, setCart] = useState([]);
@@ -41,95 +131,60 @@
             const [showAddProduct, setShowAddProduct] = useState(false);
             const [showEditProduct, setShowEditProduct] = useState(false);
             const [showCategoryManager, setShowCategoryManager] = useState(false);
+            const [showReceipt, setShowReceipt] = useState(false);
+            const [lastReceipt, setLastReceipt] = useState(null);
             const [editingProduct, setEditingProduct] = useState(null);
-            const [newCategoryName, setNewCategoryName] = useState('');
             const [editingCategory, setEditingCategory] = useState(null);
             const [editingCategoryName, setEditingCategoryName] = useState('');
+            const [newCategoryName, setNewCategoryName] = useState('');
             const [isLoading, setIsLoading] = useState(true);
             const [formData, setFormData] = useState({ name: '', emoji: '', price: '', category: '' });
-
-            // ✅ KEY FIX: useRef ไม่ถูก reset ตอน re-render
-            // จะเป็น true ก็ต่อเมื่อ load จาก Sheets เสร็จแล้วเท่านั้น
             const isLoaded = useRef(false);
 
-            // โหลดครั้งแรก
-            useEffect(() => {
-                loadFromGoogleSheets();
-            }, []);
-
-            // Save products — ทำงานเฉพาะเมื่อ isLoaded.current === true
-            useEffect(() => {
-                if (!isLoaded.current) return;
-                saveProductsToGoogleSheets(products);
-            }, [products]);
-
-            // Save categories — ทำงานเฉพาะเมื่อ isLoaded.current === true
-            useEffect(() => {
-                if (!isLoaded.current) return;
-                saveCategoriesToGoogleSheets(customCategories);
-            }, [customCategories]);
+            useEffect(() => { loadFromGoogleSheets(); }, []);
+            useEffect(() => { if (!isLoaded.current) return; saveProductsToGoogleSheets(products); }, [products]);
+            useEffect(() => { if (!isLoaded.current) return; saveCategoriesToGoogleSheets(customCategories); }, [customCategories]);
 
             const loadFromGoogleSheets = async () => {
                 try {
                     const response = await fetch(`${GOOGLE_SCRIPT}?action=load`);
                     const data = await response.json();
-                    const loadedProducts = (data.products && data.products.length > 0) ? data.products : DEFAULT_PRODUCTS;
-                    const loadedCategories = (data.categories && data.categories.length > 0) ? data.categories : DEFAULT_CATEGORIES;
-
-                    // set state ก่อน...
-                    setProducts(loadedProducts);
-                    setCustomCategories(loadedCategories);
-                    setFormData({ name: '', emoji: '', price: '', category: loadedCategories[0] || '' });
+                    setProducts(data.products?.length > 0 ? data.products : DEFAULT_PRODUCTS);
+                    setCustomCategories(data.categories?.length > 0 ? data.categories : DEFAULT_CATEGORIES);
+                    setFormData({ name: '', emoji: '', price: '', category: data.categories?.[0] || DEFAULT_CATEGORIES[0] });
                 } catch (error) {
-                    console.log('โหลดจาก Google Sheets ไม่ได้ ใช้ค่า default:', error);
+                    console.log('Using defaults:', error);
                     setProducts(DEFAULT_PRODUCTS);
                     setCustomCategories(DEFAULT_CATEGORIES);
                     setFormData({ name: '', emoji: '', price: '', category: DEFAULT_CATEGORIES[0] });
                 } finally {
-                    // ✅ เปิด flag หลังจาก set state เสร็จหมดแล้ว
-                    // useEffect ของ save จะยิงได้ตั้งแต่การเปลี่ยนแปลงครั้งถัดไปเท่านั้น
-                    setTimeout(() => {
-                        isLoaded.current = true;
-                        setIsLoading(false);
-                    }, 100);
+                    setTimeout(() => { isLoaded.current = true; setIsLoading(false); }, 100);
                 }
             };
 
             const saveProductsToGoogleSheets = (data) => {
                 fetch(GOOGLE_SCRIPT, {
-                    method: 'POST',
-                    mode: 'no-cors',
+                    method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        action: 'saveProducts',
-                        data: JSON.stringify(data)
-                    })
-                }).catch(err => console.log('save products error:', err));
+                    body: new URLSearchParams({ action: 'saveProducts', data: JSON.stringify(data) })
+                }).catch(err => console.log('save error:', err));
             };
 
             const saveCategoriesToGoogleSheets = (data) => {
                 fetch(GOOGLE_SCRIPT, {
-                    method: 'POST',
-                    mode: 'no-cors',
+                    method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        action: 'saveCategories',
-                        data: JSON.stringify(data)
-                    })
-                }).catch(err => console.log('save categories error:', err));
+                    body: new URLSearchParams({ action: 'saveCategories', data: JSON.stringify(data) })
+                }).catch(err => console.log('save error:', err));
             };
 
             const categories = ['ทั้งหมด', ...customCategories];
-            const filteredProducts = selectedCategory === 'ทั้งหมด'
-                ? products
-                : products.filter(p => p.category === selectedCategory);
+            const filteredProducts = selectedCategory === 'ทั้งหมด' ? products : products.filter(p => p.category === selectedCategory);
 
             const addToCart = (product) => {
                 const existing = cart.find(item => item.id === product.id);
                 if (existing) {
-                    setCart(cart.map(item =>
-                        item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-                    ));
+                    setCart(cart.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item));
                 } else {
                     setCart([...cart, { ...product, quantity: 1 }]);
                 }
@@ -147,31 +202,21 @@
 
             const removeFromCart = (id) => setCart(cart.filter(item => item.id !== id));
             const getTotal = () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const getTotalItems = () => cart.reduce((sum, item) => sum + item.quantity, 0);
 
             const handleAddProduct = () => {
                 if (!formData.name || !formData.emoji || !formData.price) return;
-                const newProduct = {
-                    id: Date.now(),
-                    name: formData.name,
-                    emoji: formData.emoji,
-                    price: parseFloat(formData.price),
-                    category: formData.category
-                };
-                setProducts([...products, newProduct]);
-                setFormData({ name: '', emoji: '', price: '', category: customCategories[0] || '' });
+                setProducts([...products, { id: Date.now(), name: formData.name, emoji: formData.emoji, price: parseFloat(formData.price), category: formData.category }]);
+                setFormData({ name: '', emoji: '', price: '', category: customCategories[0] });
                 setShowAddProduct(false);
             };
 
             const handleEditProduct = () => {
                 if (!formData.name || !formData.emoji || !formData.price) return;
-                setProducts(products.map(p =>
-                    p.id === editingProduct.id
-                        ? { ...p, name: formData.name, emoji: formData.emoji, price: parseFloat(formData.price), category: formData.category }
-                        : p
-                ));
+                setProducts(products.map(p => p.id === editingProduct.id ? { ...p, name: formData.name, emoji: formData.emoji, price: parseFloat(formData.price), category: formData.category } : p));
                 setShowEditProduct(false);
                 setEditingProduct(null);
-                setFormData({ name: '', emoji: '', price: '', category: customCategories[0] || '' });
+                setFormData({ name: '', emoji: '', price: '', category: customCategories[0] });
             };
 
             const deleteProduct = (id) => {
@@ -223,15 +268,22 @@
                 const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
                 const itemsList = cart.map(item => `${item.emoji} ${item.name} x${item.quantity}`).join(', ');
 
-                // บันทึกยอดขายลง Sheets
+                const receipt = {
+                    timestamp,
+                    items: cart,
+                    total,
+                    receiptNumber: 'R' + Date.now().toString().slice(-8)
+                };
+                setLastReceipt(receipt);
+
+                // Save to Sheets
                 fetch(GOOGLE_SCRIPT, {
-                    method: 'POST',
-                    mode: 'no-cors',
+                    method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({ action: 'saveSale', timestamp, items: itemsList, total: total.toFixed(2) })
-                }).catch(err => console.log('save sale error:', err));
+                }).catch(err => console.log('save error:', err));
 
-                // ส่ง Discord
+                // Discord
                 try {
                     await fetch(DISCORD_WEBHOOK, {
                         method: 'POST',
@@ -239,8 +291,7 @@
                         body: JSON.stringify({
                             embeds: [{
                                 title: '🛒 รายการขายใหม่',
-                                // color: 0x3498db,
-                                color: Math.floor(Math.random() * 16777215), // สุ่มสี
+                                color: 0x667eea,
                                 fields: [
                                     { name: '📅 เวลา', value: timestamp },
                                     { name: '🛍️ รายการสินค้า', value: cart.map(item => `${item.emoji} ${item.name} x${item.quantity} = ฿${(item.price * item.quantity).toFixed(2)}`).join('\n') },
@@ -252,69 +303,79 @@
                     });
                 } catch (e) { console.log('Discord error:', e); }
 
-                alert(`✅ บันทึกรายการสำเร็จ!\nยอดรวม: ฿${total.toFixed(2)}`);
                 setCart([]);
+                setShowReceipt(true);
+            };
+
+            const printReceipt = () => {
+                window.print();
             };
 
             if (isLoading) {
                 return (
                     <div className="min-h-screen flex items-center justify-center">
                         <div className="text-center">
-                            <div className="text-5xl mb-4">⏳</div>
-                            <div className="text-xl text-gray-600">กำลังโหลดข้อมูล...</div>
+                            <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white mb-4"></div>
+                            <div className="text-2xl text-white font-semibold">กำลังโหลด...</div>
                         </div>
                     </div>
                 );
             }
 
             return (
-                <div className="min-h-screen p-4">
+                <div className="min-h-screen p-4 md:p-6">
                     <div className="max-w-7xl mx-auto">
-                        {/* Header */}
-                        <div className="flex justify-between items-center mb-6">
-                            <h1 className="text-4xl font-bold text-gray-800">🏪 ชาโก้คาเฟ่</h1>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setShowAddProduct(true)}
-                                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow transition"
-                                >
-                                    ➕ เพิ่มสินค้าใหม่
-                                </button>
-                                <button
-                                    onClick={() => setShowCategoryManager(true)}
-                                    className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg shadow transition"
-                                >
-                                    📁 จัดการหมวดหมู่
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        if (!document.fullscreenElement) {
-                                            document.documentElement.requestFullscreen();
-                                        } else {
-                                            document.exitFullscreen();
-                                        }
-                                    }}
-                                    className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow transition"
-                                >
-                                    🖥️ เต็มจอ
-                                </button>
+                        {/* Modern Header */}
+                        <div className="glass rounded-2xl shadow-2xl p-6 mb-6">
+                            <div className="flex flex-wrap items-center justify-between gap-4">
+                                <div>
+                                    <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                        ชาโก้
+                                    </h1>
+                                    <p className="text-gray-600 mt-1">ชาโก้คาเฟ่</p>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    <button onClick={() => setShowAddProduct(true)} className="gradient-btn text-white px-4 py-2 rounded-xl font-semibold shadow-lg flex items-center gap-2">
+                                        <span className="text-xl">➕</span> เพิ่มสินค้า
+                                    </button>
+                                    <button onClick={() => setShowCategoryManager(true)} className="bg-white text-purple-600 px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition flex items-center gap-2 border-2 border-purple-200">
+                                        <span className="text-xl">📁</span> หมวดหมู่
+                                    </button>
+                                    {lastReceipt && (
+                                        <button onClick={() => setShowReceipt(true)} className="bg-white text-green-600 px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition flex items-center gap-2 border-2 border-green-200">
+                                            <span className="text-xl">🧾</span> ใบเสร็จ
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => {
+                                            if (!document.fullscreenElement) {
+                                                document.documentElement.requestFullscreen();
+                                            } else {
+                                                document.exitFullscreen();
+                                            }
+                                        }}
+                                        className="bg-gray-700 text-white px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition"
+                                    >
+                                        🖥️
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            {/* Left - Products */}
-                            <div className="lg:col-span-2 space-y-4">
-                                {/* Category tabs */}
-                                <div className="bg-white rounded-lg shadow p-4">
+                            {/* Products Section */}
+                            <div className="lg:col-span-2 space-y-6">
+                                {/* Category Tabs */}
+                                <div className="glass rounded-2xl shadow-xl p-4">
                                     <div className="flex flex-wrap gap-2">
                                         {categories.map(cat => (
                                             <button
                                                 key={cat}
                                                 onClick={() => setSelectedCategory(cat)}
-                                                className={`px-4 py-2 rounded-lg font-medium transition ${
+                                                className={`category-tab px-6 py-3 rounded-xl font-semibold ${
                                                     selectedCategory === cat
-                                                        ? 'bg-blue-500 text-white'
-                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                        ? 'active bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                                                        : 'bg-white text-gray-700 hover:bg-gray-50'
                                                 }`}
                                             >
                                                 {cat}
@@ -323,72 +384,80 @@
                                     </div>
                                 </div>
 
-                                {/* Products grid */}
+                                {/* Products Grid */}
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                     {filteredProducts.map(product => (
                                         <div
                                             key={product.id}
-                                            className="bg-white rounded-lg shadow p-4 product-item cursor-pointer relative group"
+                                            className="product-card glass rounded-2xl shadow-xl p-5 relative group overflow-hidden"
                                         >
                                             <div onClick={() => addToCart(product)}>
-                                                <div className="emoji-display text-center mb-2">{product.emoji}</div>
-                                                <h3 className="font-bold text-center text-gray-800 mb-1">{product.name}</h3>
-                                                <p className="text-center text-blue-600 font-semibold">฿{product.price}</p>
-                                                <p className="text-center text-xs text-gray-500 mt-1">{product.category}</p>
+                                                <div className="emoji-display text-center mb-3">{product.emoji}</div>
+                                                <h3 className="font-bold text-center text-gray-800 mb-2 text-lg">{product.name}</h3>
+                                                <p className="text-center text-purple-600 font-bold text-xl">฿{product.price}</p>
+                                                <p className="text-center text-xs text-gray-500 mt-2 bg-gray-100 rounded-full px-3 py-1 inline-block">{product.category}</p>
                                             </div>
-                                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition flex gap-1">
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); openEditModal(product); }}
-                                                    className="bg-yellow-500 hover:bg-yellow-600 text-white p-1 rounded text-xs"
-                                                >✏️</button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); deleteProduct(product.id); }}
-                                                    className="bg-red-500 hover:bg-red-600 text-white p-1 rounded text-xs"
-                                                >🗑️</button>
+                                            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition flex gap-1">
+                                                <button onClick={(e) => { e.stopPropagation(); openEditModal(product); }} className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-lg shadow-lg">✏️</button>
+                                                <button onClick={(e) => { e.stopPropagation(); deleteProduct(product.id); }} className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg shadow-lg">🗑️</button>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Right - Cart */}
+                            {/* Cart Section */}
                             <div className="lg:col-span-1">
-                                <div className="bg-white rounded-lg shadow p-4 sticky top-4">
-                                    <h2 className="text-2xl font-bold mb-4 text-gray-800">🛒 ตะกร้า</h2>
+                                <div className="glass rounded-2xl shadow-2xl p-6 sticky top-6">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h2 className="text-2xl font-bold text-gray-800">🛒 ตะกร้า</h2>
+                                        {cart.length > 0 && (
+                                            <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                                {getTotalItems()} รายการ
+                                            </span>
+                                        )}
+                                    </div>
+
                                     {cart.length === 0 ? (
-                                        <p className="text-gray-500 text-center py-8">ไม่มีสินค้าในตะกร้า</p>
+                                        <div className="text-center py-16">
+                                            <div className="text-6xl mb-4 opacity-20">🛍️</div>
+                                            <p className="text-gray-400 font-medium">ยังไม่มีสินค้าในตะกร้า</p>
+                                        </div>
                                     ) : (
                                         <>
-                                            <div className="space-y-3 mb-4 max-h-96 overflow-y-auto">
+                                            <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
                                                 {cart.map(item => (
-                                                    <div key={item.id} className="flex items-center justify-between border-b pb-3">
-                                                        <div className="flex items-center gap-2 flex-1">
-                                                            <span className="text-2xl">{item.emoji}</span>
+                                                    <div key={item.id} className="cart-item bg-gray-50 rounded-xl p-4 flex items-center justify-between">
+                                                        <div className="flex items-center gap-3 flex-1">
+                                                            <span className="text-3xl">{item.emoji}</span>
                                                             <div className="flex-1">
-                                                                <p className="font-medium text-gray-800">{item.name}</p>
-                                                                <p className="text-sm text-gray-600">฿{item.price}</p>
+                                                                <p className="font-semibold text-gray-800">{item.name}</p>
+                                                                <p className="text-sm text-purple-600 font-medium">฿{item.price}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center gap-1">
-                                                            <button onClick={() => updateCartQuantity(item.id, -1)} className="bg-gray-200 hover:bg-gray-300 w-7 h-7 rounded">-</button>
-                                                            <span className="w-8 text-center font-bold">{item.quantity}</span>
-                                                            <button onClick={() => updateCartQuantity(item.id, 1)} className="bg-gray-200 hover:bg-gray-300 w-7 h-7 rounded">+</button>
-                                                            <button onClick={() => removeFromCart(item.id)} className="bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded ml-1">×</button>
+                                                        <div className="flex items-center gap-2">
+                                                            <button onClick={() => updateCartQuantity(item.id, -1)} className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-lg font-bold transition">-</button>
+                                                            <span className="w-10 text-center font-bold text-lg">{item.quantity}</span>
+                                                            <button onClick={() => updateCartQuantity(item.id, 1)} className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-lg font-bold transition">+</button>
+                                                            <button onClick={() => removeFromCart(item.id)} className="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-lg ml-1 transition">×</button>
                                                         </div>
                                                     </div>
                                                 ))}
                                             </div>
-                                            <div className="border-t pt-4">
-                                                <div className="flex justify-between items-center mb-4">
-                                                    <span className="text-xl font-bold text-gray-800">ยอดรวม:</span>
-                                                    <span className="text-2xl font-bold text-blue-600">฿{getTotal().toFixed(2)}</span>
+
+                                            <div className="border-t-2 border-gray-200 pt-6 space-y-4">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xl font-bold text-gray-800">ยอดรวม</span>
+                                                    <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                                        ฿{getTotal().toFixed(2)}
+                                                    </span>
                                                 </div>
                                                 <button
                                                     onClick={processPayment}
-                                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-lg shadow transition flex items-center justify-center gap-2"
+                                                    className="w-full gradient-btn text-white font-bold py-4 rounded-xl shadow-2xl hover:shadow-3xl transition flex items-center justify-center gap-3 text-lg"
                                                 >
                                                     <span className="text-2xl">💳</span>
-                                                    <span>บันทึกรายการ</span>
+                                                    <span>ชำระเงิน</span>
                                                 </button>
                                             </div>
                                         </>
@@ -398,25 +467,86 @@
                         </div>
                     </div>
 
+                    {/* Receipt Modal */}
+                    {showReceipt && lastReceipt && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+                                <div className="p-6 border-b">
+                                    <div className="flex justify-between items-center">
+                                        <h2 className="text-2xl font-bold">🧾 ใบเสร็จ</h2>
+                                        <button onClick={() => setShowReceipt(false)} className="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+                                    </div>
+                                </div>
+                                
+                                <div className="receipt p-8" id="receipt">
+                                    <div className="text-center mb-6">
+                                        <h1 className="text-2xl font-bold mb-2">Modern POS</h1>
+                                        <p className="text-sm text-gray-600">ใบเสร็จรับเงิน</p>
+                                        <p className="text-xs text-gray-500 mt-1">Receipt No: {lastReceipt.receiptNumber}</p>
+                                    </div>
+                                    
+                                    <div className="border-t-2 border-b-2 border-dashed border-gray-300 py-4 mb-4">
+                                        <p className="text-xs text-gray-600">วันที่: {lastReceipt.timestamp}</p>
+                                    </div>
+                                    
+                                    <div className="space-y-2 mb-4">
+                                        {lastReceipt.items.map((item, idx) => (
+                                            <div key={idx} className="flex justify-between text-sm">
+                                                <div className="flex-1">
+                                                    <span>{item.emoji} {item.name}</span>
+                                                    <span className="text-gray-500 ml-2">x{item.quantity}</span>
+                                                </div>
+                                                <div className="font-mono">฿{(item.price * item.quantity).toFixed(2)}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                    <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                                        <div className="flex justify-between font-bold text-lg">
+                                            <span>รวมทั้งสิ้น</span>
+                                            <span className="font-mono">฿{lastReceipt.total.toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="text-center mt-6 text-xs text-gray-500">
+                                        <p>ขอบคุณที่ใช้บริการ</p>
+                                        <p className="mt-1">โปรดเก็บใบเสร็จนี้ไว้เป็นหลักฐาน</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="p-6 border-t flex gap-3">
+                                    <button onClick={printReceipt} className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 rounded-xl hover:shadow-xl transition">
+                                        🖨️ พิมพ์
+                                    </button>
+                                    <button onClick={() => setShowReceipt(false)} className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300 transition">
+                                        ปิด
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Category Manager Modal */}
                     {showCategoryManager && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                                <h2 className="text-2xl font-bold mb-4">📁 จัดการหมวดหมู่</h2>
-                                <div className="flex gap-2 mb-4">
+                        <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 z-50">
+                            <div className="glass rounded-2xl shadow-2xl max-w-md w-full p-6">
+                                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                                    <span>📁</span> จัดการหมวดหมู่
+                                </h2>
+                                <div className="flex gap-2 mb-6">
                                     <input
                                         type="text"
                                         placeholder="ชื่อหมวดหมู่ใหม่"
                                         value={newCategoryName}
                                         onChange={(e) => setNewCategoryName(e.target.value)}
                                         onKeyPress={(e) => e.key === 'Enter' && addCategory()}
-                                        className="flex-1 px-4 py-2 border rounded-lg"
+                                        className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
                                     />
-                                    <button onClick={addCategory} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">เพิ่ม</button>
+                                    <button onClick={addCategory} className="gradient-btn text-white px-6 py-3 rounded-xl font-semibold shadow-lg">เพิ่ม</button>
                                 </div>
-                                <div className="space-y-2 mb-4 max-h-64 overflow-y-auto">
+                                <div className="space-y-2 mb-6 max-h-80 overflow-y-auto">
                                     {customCategories.map(cat => (
-                                        <div key={cat} className="bg-gray-50 p-3 rounded-lg">
+                                        <div key={cat} className="bg-white rounded-xl p-4 shadow">
                                             {editingCategory === cat ? (
                                                 <div className="flex gap-2">
                                                     <input
@@ -425,43 +555,45 @@
                                                         onChange={(e) => setEditingCategoryName(e.target.value)}
                                                         onKeyPress={(e) => e.key === 'Enter' && renameCategory(cat)}
                                                         autoFocus
-                                                        className="flex-1 px-3 py-1 border rounded-lg text-sm"
+                                                        className="flex-1 px-3 py-2 border-2 border-purple-300 rounded-lg focus:outline-none"
                                                     />
-                                                    <button onClick={() => renameCategory(cat)} className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">บันทึก</button>
-                                                    <button onClick={() => { setEditingCategory(null); setEditingCategoryName(''); }} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1 rounded text-sm">ยกเลิก</button>
+                                                    <button onClick={() => renameCategory(cat)} className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600">บันทึก</button>
+                                                    <button onClick={() => { setEditingCategory(null); setEditingCategoryName(''); }} className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-400">ยกเลิก</button>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center justify-between">
-                                                    <span className="font-medium">{cat}</span>
+                                                    <span className="font-semibold text-gray-800">{cat}</span>
                                                     <div className="flex gap-2">
-                                                        <button onClick={() => { setEditingCategory(cat); setEditingCategoryName(cat); }} className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm">แก้ไข</button>
-                                                        <button onClick={() => deleteCategory(cat)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">ลบ</button>
+                                                        <button onClick={() => { setEditingCategory(cat); setEditingCategoryName(cat); }} className="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-600">แก้ไข</button>
+                                                        <button onClick={() => deleteCategory(cat)} className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600">ลบ</button>
                                                     </div>
                                                 </div>
                                             )}
                                         </div>
                                     ))}
                                 </div>
-                                <button onClick={() => setShowCategoryManager(false)} className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-lg">ปิด</button>
+                                <button onClick={() => setShowCategoryManager(false)} className="w-full bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300 transition">ปิด</button>
                             </div>
                         </div>
                     )}
 
                     {/* Add Product Modal */}
                     {showAddProduct && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                                <h2 className="text-2xl font-bold mb-4">➕ เพิ่มสินค้าใหม่</h2>
+                        <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 z-50">
+                            <div className="glass rounded-2xl shadow-2xl max-w-md w-full p-6">
+                                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                                    <span>➕</span> เพิ่มสินค้าใหม่
+                                </h2>
                                 <div className="space-y-4">
-                                    <input type="text" placeholder="ชื่อสินค้า" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
-                                    <input type="text" placeholder="อิโมจิ (เช่น 🍕)" value={formData.emoji} onChange={(e) => setFormData({ ...formData, emoji: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
-                                    <input type="number" placeholder="ราคา" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
-                                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 border rounded-lg">
+                                    <input type="text" placeholder="ชื่อสินค้า" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    <input type="text" placeholder="อิโมจิ (เช่น 🍕)" value={formData.emoji} onChange={(e) => setFormData({ ...formData, emoji: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    <input type="number" placeholder="ราคา" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
                                         {customCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
-                                    <div className="flex gap-2">
-                                        <button onClick={handleAddProduct} className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg">เพิ่ม</button>
-                                        <button onClick={() => { setShowAddProduct(false); setFormData({ name: '', emoji: '', price: '', category: customCategories[0] || '' }); }} className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-lg">ยกเลิก</button>
+                                    <div className="flex gap-3 pt-2">
+                                        <button onClick={handleAddProduct} className="flex-1 gradient-btn text-white font-bold py-3 rounded-xl shadow-lg">เพิ่ม</button>
+                                        <button onClick={() => { setShowAddProduct(false); setFormData({ name: '', emoji: '', price: '', category: customCategories[0] }); }} className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300">ยกเลิก</button>
                                     </div>
                                 </div>
                             </div>
@@ -470,19 +602,21 @@
 
                     {/* Edit Product Modal */}
                     {showEditProduct && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                                <h2 className="text-2xl font-bold mb-4">✏️ แก้ไขสินค้า</h2>
+                        <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 z-50">
+                            <div className="glass rounded-2xl shadow-2xl max-w-md w-full p-6">
+                                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                                    <span>✏️</span> แก้ไขสินค้า
+                                </h2>
                                 <div className="space-y-4">
-                                    <input type="text" placeholder="ชื่อสินค้า" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
-                                    <input type="text" placeholder="อิโมจิ" value={formData.emoji} onChange={(e) => setFormData({ ...formData, emoji: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
-                                    <input type="number" placeholder="ราคา" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-2 border rounded-lg" />
-                                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 border rounded-lg">
+                                    <input type="text" placeholder="ชื่อสินค้า" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    <input type="text" placeholder="อิโมจิ" value={formData.emoji} onChange={(e) => setFormData({ ...formData, emoji: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    <input type="number" placeholder="ราคา" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
                                         {customCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
-                                    <div className="flex gap-2">
-                                        <button onClick={handleEditProduct} className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 rounded-lg">บันทึก</button>
-                                        <button onClick={() => { setShowEditProduct(false); setEditingProduct(null); setFormData({ name: '', emoji: '', price: '', category: customCategories[0] || '' }); }} className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-lg">ยกเลิก</button>
+                                    <div className="flex gap-3 pt-2">
+                                        <button onClick={handleEditProduct} className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-xl shadow-lg">บันทึก</button>
+                                        <button onClick={() => { setShowEditProduct(false); setEditingProduct(null); setFormData({ name: '', emoji: '', price: '', category: customCategories[0] }); }} className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300">ยกเลิก</button>
                                     </div>
                                 </div>
                             </div>
@@ -493,7 +627,7 @@
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<POSSystem />);
+        root.render(<ModernPOS />);
     </script>
 </body>
 </html>
