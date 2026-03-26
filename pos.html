@@ -3,106 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ชาโก้</title>
+    <title>Modern POS System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
         * { font-family: 'Inter', sans-serif; }
-        
-        body { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        .glass {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .product-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-        
-        .product-card:active {
-            transform: translateY(-4px);
-        }
-        
-        .gradient-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: all 0.3s;
-        }
-        
-        .gradient-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-        
-        .category-tab {
-            transition: all 0.3s;
-            position: relative;
-        }
-        
-        .category-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 2px;
-        }
-        
-        .cart-item {
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .modal-backdrop {
-            backdrop-filter: blur(8px);
-        }
-        
-        .emoji-display {
-            font-size: 3.5rem;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-        }
-        
-        .receipt {
-            background: white;
-            font-family: 'Courier New', monospace;
-        }
-        
-        @media print {
-            body * { visibility: hidden; }
-            .receipt, .receipt * { visibility: visible; }
-            .receipt { position: absolute; left: 0; top: 0; width: 100%; }
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border-left: 4px solid #667eea;
-        }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .product-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .product-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); }
+        .product-card:active { transform: translateY(-4px); }
+        .gradient-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: all 0.3s; }
+        .gradient-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+        .category-tab { transition: all 0.3s; position: relative; }
+        .category-tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 3px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 2px; }
+        .cart-item { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .modal-backdrop { backdrop-filter: blur(8px); }
+        .product-image { width: 100%; height: 120px; object-fit: cover; border-radius: 12px; background: #f3f4f6; }
+        .emoji-display { font-size: 3.5rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+        .receipt { background: white; font-family: 'Courier New', monospace; }
+        @media print { body * { visibility: hidden; } .receipt, .receipt * { visibility: visible; } .receipt { position: absolute; left: 0; top: 0; width: 100%; } }
+        .image-upload-area { border: 2px dashed #d1d5db; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .image-upload-area:hover { border-color: #667eea; background: #f9fafb; }
+        .image-upload-area.has-image { border: 2px solid #667eea; }
     </style>
 </head>
 <body>
@@ -115,35 +42,40 @@
         const GOOGLE_SCRIPT = 'https://script.google.com/macros/s/AKfycbxLaLE-9JQj62_UJX-5cV5KoImY1rkGvOpAss_waNKh3qGuG2EBnxaMD5tSRBx0J0_R/exec';
 
         const DEFAULT_PRODUCTS = [
-            { id: 1, name: 'กาแฟ', emoji: '☕', price: 45, category: 'เครื่องดื่ม' },
-            { id: 2, name: 'ชาเขียว', emoji: '🍵', price: 40, category: 'เครื่องดื่ม' },
-            { id: 3, name: 'แฮมเบอร์เกอร์', emoji: '🍔', price: 85, category: 'อาหาร' },
-            { id: 4, name: 'พิซซ่า', emoji: '🍕', price: 120, category: 'อาหาร' },
-            { id: 5, name: 'ไอศกรีม', emoji: '🍦', price: 35, category: 'ของหวาน' },
+            { id: 1, name: 'กาแฟ', emoji: '☕', price: 45, category: 'เครื่องดื่ม', image: '' },
+            { id: 2, name: 'ชาเขียว', emoji: '🍵', price: 40, category: 'เครื่องดื่ม', image: '' },
+            { id: 3, name: 'แฮมเบอร์เกอร์', emoji: '🍔', price: 85, category: 'อาหาร', image: '' },
+            { id: 4, name: 'พิซซ่า', emoji: '🍕', price: 120, category: 'อาหาร', image: '' },
+            { id: 5, name: 'ไอศกรีม', emoji: '🍦', price: 35, category: 'ของหวาน', image: '' },
         ];
         const DEFAULT_CATEGORIES = ['เครื่องดื่ม', 'อาหาร', 'ของหวาน'];
 
         function ModernPOS() {
             const [products, setProducts] = useState([]);
             const [customCategories, setCustomCategories] = useState([]);
+            const [storeName, setStoreName] = useState('Modern POS');
             const [cart, setCart] = useState([]);
             const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด');
             const [showAddProduct, setShowAddProduct] = useState(false);
             const [showEditProduct, setShowEditProduct] = useState(false);
             const [showCategoryManager, setShowCategoryManager] = useState(false);
+            const [showMenuManager, setShowMenuManager] = useState(false);
+            const [showSettings, setShowSettings] = useState(false);
             const [showReceipt, setShowReceipt] = useState(false);
             const [lastReceipt, setLastReceipt] = useState(null);
             const [editingProduct, setEditingProduct] = useState(null);
             const [editingCategory, setEditingCategory] = useState(null);
             const [editingCategoryName, setEditingCategoryName] = useState('');
             const [newCategoryName, setNewCategoryName] = useState('');
+            const [tempStoreName, setTempStoreName] = useState('');
             const [isLoading, setIsLoading] = useState(true);
-            const [formData, setFormData] = useState({ name: '', emoji: '', price: '', category: '' });
+            const [formData, setFormData] = useState({ name: '', emoji: '', price: '', category: '', image: '' });
+            const [previewImage, setPreviewImage] = useState('');
             const isLoaded = useRef(false);
+            const fileInputRef = useRef(null);
 
             useEffect(() => { loadFromGoogleSheets(); }, []);
-            useEffect(() => { if (!isLoaded.current) return; saveProductsToGoogleSheets(products); }, [products]);
-            useEffect(() => { if (!isLoaded.current) return; saveCategoriesToGoogleSheets(customCategories); }, [customCategories]);
+            useEffect(() => { if (!isLoaded.current) return; saveToGoogleSheets(); }, [products, customCategories, storeName]);
 
             const loadFromGoogleSheets = async () => {
                 try {
@@ -151,31 +83,53 @@
                     const data = await response.json();
                     setProducts(data.products?.length > 0 ? data.products : DEFAULT_PRODUCTS);
                     setCustomCategories(data.categories?.length > 0 ? data.categories : DEFAULT_CATEGORIES);
-                    setFormData({ name: '', emoji: '', price: '', category: data.categories?.[0] || DEFAULT_CATEGORIES[0] });
+                    setStoreName(data.storeName || 'Modern POS');
+                    setFormData({ name: '', emoji: '', price: '', category: data.categories?.[0] || DEFAULT_CATEGORIES[0], image: '' });
                 } catch (error) {
                     console.log('Using defaults:', error);
                     setProducts(DEFAULT_PRODUCTS);
                     setCustomCategories(DEFAULT_CATEGORIES);
-                    setFormData({ name: '', emoji: '', price: '', category: DEFAULT_CATEGORIES[0] });
+                    setStoreName('Modern POS');
+                    setFormData({ name: '', emoji: '', price: '', category: DEFAULT_CATEGORIES[0], image: '' });
                 } finally {
                     setTimeout(() => { isLoaded.current = true; setIsLoading(false); }, 100);
                 }
             };
 
-            const saveProductsToGoogleSheets = (data) => {
+            const saveToGoogleSheets = () => {
                 fetch(GOOGLE_SCRIPT, {
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ action: 'saveProducts', data: JSON.stringify(data) })
+                    body: new URLSearchParams({
+                        action: 'saveAll',
+                        products: JSON.stringify(products),
+                        categories: JSON.stringify(customCategories),
+                        storeName: storeName
+                    })
                 }).catch(err => console.log('save error:', err));
             };
 
-            const saveCategoriesToGoogleSheets = (data) => {
-                fetch(GOOGLE_SCRIPT, {
-                    method: 'POST', mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ action: 'saveCategories', data: JSON.stringify(data) })
-                }).catch(err => console.log('save error:', err));
+            const handleImageUpload = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert('ไฟล์รูปภาพต้องมีขนาดไม่เกิน 2MB');
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        const base64 = reader.result;
+                        setFormData({ ...formData, image: base64 });
+                        setPreviewImage(base64);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const clearImage = () => {
+                setFormData({ ...formData, image: '' });
+                setPreviewImage('');
+                if (fileInputRef.current) fileInputRef.current.value = '';
             };
 
             const categories = ['ทั้งหมด', ...customCategories];
@@ -205,18 +159,40 @@
             const getTotalItems = () => cart.reduce((sum, item) => sum + item.quantity, 0);
 
             const handleAddProduct = () => {
-                if (!formData.name || !formData.emoji || !formData.price) return;
-                setProducts([...products, { id: Date.now(), name: formData.name, emoji: formData.emoji, price: parseFloat(formData.price), category: formData.category }]);
-                setFormData({ name: '', emoji: '', price: '', category: customCategories[0] });
+                if (!formData.name || !formData.price) {
+                    alert('กรุณากรอกชื่อและราคาสินค้า');
+                    return;
+                }
+                setProducts([...products, {
+                    id: Date.now(),
+                    name: formData.name,
+                    emoji: formData.emoji,
+                    price: parseFloat(formData.price),
+                    category: formData.category,
+                    image: formData.image
+                }]);
+                setFormData({ name: '', emoji: '', price: '', category: customCategories[0], image: '' });
+                setPreviewImage('');
                 setShowAddProduct(false);
             };
 
             const handleEditProduct = () => {
-                if (!formData.name || !formData.emoji || !formData.price) return;
-                setProducts(products.map(p => p.id === editingProduct.id ? { ...p, name: formData.name, emoji: formData.emoji, price: parseFloat(formData.price), category: formData.category } : p));
+                if (!formData.name || !formData.price) {
+                    alert('กรุณากรอกชื่อและราคาสินค้า');
+                    return;
+                }
+                setProducts(products.map(p => p.id === editingProduct.id ? {
+                    ...p,
+                    name: formData.name,
+                    emoji: formData.emoji,
+                    price: parseFloat(formData.price),
+                    category: formData.category,
+                    image: formData.image
+                } : p));
                 setShowEditProduct(false);
                 setEditingProduct(null);
-                setFormData({ name: '', emoji: '', price: '', category: customCategories[0] });
+                setFormData({ name: '', emoji: '', price: '', category: customCategories[0], image: '' });
+                setPreviewImage('');
             };
 
             const deleteProduct = (id) => {
@@ -227,7 +203,14 @@
 
             const openEditModal = (product) => {
                 setEditingProduct(product);
-                setFormData({ name: product.name, emoji: product.emoji, price: product.price.toString(), category: product.category });
+                setFormData({
+                    name: product.name,
+                    emoji: product.emoji,
+                    price: product.price.toString(),
+                    category: product.category,
+                    image: product.image || ''
+                });
+                setPreviewImage(product.image || '');
                 setShowEditProduct(true);
             };
 
@@ -263,38 +246,44 @@
                 setEditingCategoryName('');
             };
 
+            const saveStoreName = () => {
+                if (tempStoreName.trim()) {
+                    setStoreName(tempStoreName.trim());
+                    setShowSettings(false);
+                }
+            };
+
             const processPayment = async () => {
                 const total = getTotal();
                 const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
-                const itemsList = cart.map(item => `${item.emoji} ${item.name} x${item.quantity}`).join(', ');
+                const itemsList = cart.map(item => `${item.emoji || '📦'} ${item.name} x${item.quantity}`).join(', ');
 
                 const receipt = {
                     timestamp,
                     items: cart,
                     total,
-                    receiptNumber: 'R' + Date.now().toString().slice(-8)
+                    receiptNumber: 'R' + Date.now().toString().slice(-8),
+                    storeName
                 };
                 setLastReceipt(receipt);
 
-                // Save to Sheets
                 fetch(GOOGLE_SCRIPT, {
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({ action: 'saveSale', timestamp, items: itemsList, total: total.toFixed(2) })
                 }).catch(err => console.log('save error:', err));
 
-                // Discord
                 try {
                     await fetch(DISCORD_WEBHOOK, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             embeds: [{
-                                title: '🛒 รายการขายใหม่',
+                                title: '🛒 รายการขายใหม่ - ' + storeName,
                                 color: 0x667eea,
                                 fields: [
                                     { name: '📅 เวลา', value: timestamp },
-                                    { name: '🛍️ รายการสินค้า', value: cart.map(item => `${item.emoji} ${item.name} x${item.quantity} = ฿${(item.price * item.quantity).toFixed(2)}`).join('\n') },
+                                    { name: '🛍️ รายการสินค้า', value: cart.map(item => `${item.emoji || '📦'} ${item.name} x${item.quantity} = ฿${(item.price * item.quantity).toFixed(2)}`).join('\n') },
                                     { name: '💰 ยอดรวม', value: `฿${total.toFixed(2)}` }
                                 ],
                                 timestamp: new Date().toISOString()
@@ -307,9 +296,7 @@
                 setShowReceipt(true);
             };
 
-            const printReceipt = () => {
-                window.print();
-            };
+            const printReceipt = () => { window.print(); };
 
             if (isLoading) {
                 return (
@@ -325,47 +312,37 @@
             return (
                 <div className="min-h-screen p-4 md:p-6">
                     <div className="max-w-7xl mx-auto">
-                        {/* Modern Header */}
+                        {/* Header */}
                         <div className="glass rounded-2xl shadow-2xl p-6 mb-6">
                             <div className="flex flex-wrap items-center justify-between gap-4">
                                 <div>
                                     <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                                        ชาโก้
+                                        {storeName}
                                     </h1>
-                                    <p className="text-gray-600 mt-1">ชาโก้คาเฟ่</p>
+                                    <p className="text-gray-600 mt-1">ระบบขายหน้าร้านสมัยใหม่</p>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
-                                    <button onClick={() => setShowAddProduct(true)} className="gradient-btn text-white px-4 py-2 rounded-xl font-semibold shadow-lg flex items-center gap-2">
-                                        <span className="text-xl">➕</span> เพิ่มสินค้า
+                                    <button onClick={() => setShowMenuManager(true)} className="gradient-btn text-white px-4 py-2 rounded-xl font-semibold shadow-lg flex items-center gap-2">
+                                        <span className="text-xl">📋</span> จัดการเมนู
                                     </button>
                                     <button onClick={() => setShowCategoryManager(true)} className="bg-white text-purple-600 px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition flex items-center gap-2 border-2 border-purple-200">
                                         <span className="text-xl">📁</span> หมวดหมู่
+                                    </button>
+                                    <button onClick={() => { setTempStoreName(storeName); setShowSettings(true); }} className="bg-white text-blue-600 px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition flex items-center gap-2 border-2 border-blue-200">
+                                        <span className="text-xl">⚙️</span> ตั้งค่า
                                     </button>
                                     {lastReceipt && (
                                         <button onClick={() => setShowReceipt(true)} className="bg-white text-green-600 px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition flex items-center gap-2 border-2 border-green-200">
                                             <span className="text-xl">🧾</span> ใบเสร็จ
                                         </button>
                                     )}
-                                    <button
-                                        onClick={() => {
-                                            if (!document.fullscreenElement) {
-                                                document.documentElement.requestFullscreen();
-                                            } else {
-                                                document.exitFullscreen();
-                                            }
-                                        }}
-                                        className="bg-gray-700 text-white px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transition"
-                                    >
-                                        🖥️
-                                    </button>
                                 </div>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            {/* Products Section */}
+                            {/* Products */}
                             <div className="lg:col-span-2 space-y-6">
-                                {/* Category Tabs */}
                                 <div className="glass rounded-2xl shadow-xl p-4">
                                     <div className="flex flex-wrap gap-2">
                                         {categories.map(cat => (
@@ -384,29 +361,25 @@
                                     </div>
                                 </div>
 
-                                {/* Products Grid */}
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                     {filteredProducts.map(product => (
-                                        <div
-                                            key={product.id}
-                                            className="product-card glass rounded-2xl shadow-xl p-5 relative group overflow-hidden"
-                                        >
-                                            <div onClick={() => addToCart(product)}>
-                                                <div className="emoji-display text-center mb-3">{product.emoji}</div>
+                                        <div key={product.id} className="product-card glass rounded-2xl shadow-xl overflow-hidden">
+                                            <div onClick={() => addToCart(product)} className="p-5">
+                                                {product.image ? (
+                                                    <img src={product.image} alt={product.name} className="product-image mb-3" />
+                                                ) : (
+                                                    <div className="emoji-display text-center mb-3">{product.emoji || '📦'}</div>
+                                                )}
                                                 <h3 className="font-bold text-center text-gray-800 mb-2 text-lg">{product.name}</h3>
                                                 <p className="text-center text-purple-600 font-bold text-xl">฿{product.price}</p>
                                                 <p className="text-center text-xs text-gray-500 mt-2 bg-gray-100 rounded-full px-3 py-1 inline-block">{product.category}</p>
-                                            </div>
-                                            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition flex gap-1">
-                                                <button onClick={(e) => { e.stopPropagation(); openEditModal(product); }} className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-lg shadow-lg">✏️</button>
-                                                <button onClick={(e) => { e.stopPropagation(); deleteProduct(product.id); }} className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg shadow-lg">🗑️</button>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Cart Section */}
+                            {/* Cart */}
                             <div className="lg:col-span-1">
                                 <div className="glass rounded-2xl shadow-2xl p-6 sticky top-6">
                                     <div className="flex items-center justify-between mb-6">
@@ -429,7 +402,11 @@
                                                 {cart.map(item => (
                                                     <div key={item.id} className="cart-item bg-gray-50 rounded-xl p-4 flex items-center justify-between">
                                                         <div className="flex items-center gap-3 flex-1">
-                                                            <span className="text-3xl">{item.emoji}</span>
+                                                            {item.image ? (
+                                                                <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-lg" />
+                                                            ) : (
+                                                                <span className="text-3xl">{item.emoji || '📦'}</span>
+                                                            )}
                                                             <div className="flex-1">
                                                                 <p className="font-semibold text-gray-800">{item.name}</p>
                                                                 <p className="text-sm text-purple-600 font-medium">฿{item.price}</p>
@@ -452,10 +429,7 @@
                                                         ฿{getTotal().toFixed(2)}
                                                     </span>
                                                 </div>
-                                                <button
-                                                    onClick={processPayment}
-                                                    className="w-full gradient-btn text-white font-bold py-4 rounded-xl shadow-2xl hover:shadow-3xl transition flex items-center justify-center gap-3 text-lg"
-                                                >
+                                                <button onClick={processPayment} className="w-full gradient-btn text-white font-bold py-4 rounded-xl shadow-2xl hover:shadow-3xl transition flex items-center justify-center gap-3 text-lg">
                                                     <span className="text-2xl">💳</span>
                                                     <span>ชำระเงิน</span>
                                                 </button>
@@ -466,6 +440,78 @@
                             </div>
                         </div>
                     </div>
+
+                    {/* Settings Modal */}
+                    {showSettings && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 z-50">
+                            <div className="glass rounded-2xl shadow-2xl max-w-md w-full p-6">
+                                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                                    <span>⚙️</span> ตั้งค่าร้าน
+                                </h2>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">ชื่อร้าน</label>
+                                        <input
+                                            type="text"
+                                            value={tempStoreName}
+                                            onChange={(e) => setTempStoreName(e.target.value)}
+                                            placeholder="ชื่อร้านของคุณ"
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
+                                        />
+                                    </div>
+                                    <div className="flex gap-3 pt-2">
+                                        <button onClick={saveStoreName} className="flex-1 gradient-btn text-white font-bold py-3 rounded-xl shadow-lg">บันทึก</button>
+                                        <button onClick={() => setShowSettings(false)} className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300">ยกเลิก</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Menu Manager Modal */}
+                    {showMenuManager && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 z-50">
+                            <div className="glass rounded-2xl shadow-2xl max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl font-bold flex items-center gap-2">
+                                        <span>📋</span> จัดการเมนูทั้งหมด
+                                    </h2>
+                                    <button onClick={() => setShowAddProduct(true)} className="gradient-btn text-white px-4 py-2 rounded-xl font-semibold shadow-lg">
+                                        ➕ เพิ่มสินค้า
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {products.map(product => (
+                                        <div key={product.id} className="bg-white rounded-xl shadow p-4 hover:shadow-lg transition">
+                                            <div className="text-center mb-3">
+                                                {product.image ? (
+                                                    <img src={product.image} alt={product.name} className="w-full h-32 object-cover rounded-lg mb-2" />
+                                                ) : (
+                                                    <div className="text-5xl mb-2">{product.emoji || '📦'}</div>
+                                                )}
+                                                <h3 className="font-bold text-gray-800">{product.name}</h3>
+                                                <p className="text-purple-600 font-semibold text-lg">฿{product.price}</p>
+                                                <p className="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-1 inline-block mt-1">{product.category}</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button onClick={() => openEditModal(product)} className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded-lg font-semibold text-sm">
+                                                    ✏️ แก้ไข
+                                                </button>
+                                                <button onClick={() => deleteProduct(product.id)} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-semibold text-sm">
+                                                    🗑️ ลบ
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="mt-6">
+                                    <button onClick={() => setShowMenuManager(false)} className="w-full bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300">ปิด</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Receipt Modal */}
                     {showReceipt && lastReceipt && (
@@ -478,9 +524,9 @@
                                     </div>
                                 </div>
                                 
-                                <div className="receipt p-8" id="receipt">
+                                <div className="receipt p-8">
                                     <div className="text-center mb-6">
-                                        <h1 className="text-2xl font-bold mb-2">Modern POS</h1>
+                                        <h1 className="text-2xl font-bold mb-2">{lastReceipt.storeName}</h1>
                                         <p className="text-sm text-gray-600">ใบเสร็จรับเงิน</p>
                                         <p className="text-xs text-gray-500 mt-1">Receipt No: {lastReceipt.receiptNumber}</p>
                                     </div>
@@ -493,7 +539,7 @@
                                         {lastReceipt.items.map((item, idx) => (
                                             <div key={idx} className="flex justify-between text-sm">
                                                 <div className="flex-1">
-                                                    <span>{item.emoji} {item.name}</span>
+                                                    <span>{item.emoji || '📦'} {item.name}</span>
                                                     <span className="text-gray-500 ml-2">x{item.quantity}</span>
                                                 </div>
                                                 <div className="font-mono">฿{(item.price * item.quantity).toFixed(2)}</div>
@@ -510,12 +556,11 @@
                                     
                                     <div className="text-center mt-6 text-xs text-gray-500">
                                         <p>ขอบคุณที่ใช้บริการ</p>
-                                        <p className="mt-1">โปรดเก็บใบเสร็จนี้ไว้เป็นหลักฐาน</p>
                                     </div>
                                 </div>
                                 
                                 <div className="p-6 border-t flex gap-3">
-                                    <button onClick={printReceipt} className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 rounded-xl hover:shadow-xl transition">
+                                    <button onClick={printReceipt} className="flex-1 gradient-btn text-white font-bold py-3 rounded-xl hover:shadow-xl transition">
                                         🖨️ พิมพ์
                                     </button>
                                     <button onClick={() => setShowReceipt(false)} className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300 transition">
@@ -526,7 +571,7 @@
                         </div>
                     )}
 
-                    {/* Category Manager Modal */}
+                    {/* Category Manager */}
                     {showCategoryManager && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 z-50">
                             <div className="glass rounded-2xl shadow-2xl max-w-md w-full p-6">
@@ -572,12 +617,12 @@
                                         </div>
                                     ))}
                                 </div>
-                                <button onClick={() => setShowCategoryManager(false)} className="w-full bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300 transition">ปิด</button>
+                                <button onClick={() => setShowCategoryManager(false)} className="w-full bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300">ปิด</button>
                             </div>
                         </div>
                     )}
 
-                    {/* Add Product Modal */}
+                    {/* Add Product */}
                     {showAddProduct && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 z-50">
                             <div className="glass rounded-2xl shadow-2xl max-w-md w-full p-6">
@@ -585,22 +630,56 @@
                                     <span>➕</span> เพิ่มสินค้าใหม่
                                 </h2>
                                 <div className="space-y-4">
-                                    <input type="text" placeholder="ชื่อสินค้า" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
-                                    <input type="text" placeholder="อิโมจิ (เช่น 🍕)" value={formData.emoji} onChange={(e) => setFormData({ ...formData, emoji: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
-                                    <input type="number" placeholder="ราคา" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    <input type="text" placeholder="ชื่อสินค้า *" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">รูปภาพสินค้า</label>
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            className="hidden"
+                                        />
+                                        <div
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className={`image-upload-area ${previewImage ? 'has-image' : ''}`}
+                                        >
+                                            {previewImage ? (
+                                                <div className="relative">
+                                                    <img src={previewImage} alt="Preview" className="max-h-40 mx-auto rounded-lg" />
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); clearImage(); }}
+                                                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="text-4xl mb-2">📸</div>
+                                                    <p className="text-gray-600 text-sm">คลิกเพื่ออัปโหลดรูปภาพ</p>
+                                                    <p className="text-gray-400 text-xs mt-1">รองรับ JPG, PNG (สูงสุด 2MB)</p>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                    <input type="text" placeholder="อิโมจิ (ถ้าไม่มีรูป)" value={formData.emoji} onChange={(e) => setFormData({ ...formData, emoji: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    <input type="number" placeholder="ราคา *" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
                                     <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
                                         {customCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
                                     <div className="flex gap-3 pt-2">
                                         <button onClick={handleAddProduct} className="flex-1 gradient-btn text-white font-bold py-3 rounded-xl shadow-lg">เพิ่ม</button>
-                                        <button onClick={() => { setShowAddProduct(false); setFormData({ name: '', emoji: '', price: '', category: customCategories[0] }); }} className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300">ยกเลิก</button>
+                                        <button onClick={() => { setShowAddProduct(false); setFormData({ name: '', emoji: '', price: '', category: customCategories[0], image: '' }); setPreviewImage(''); }} className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300">ยกเลิก</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Edit Product Modal */}
+                    {/* Edit Product */}
                     {showEditProduct && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 z-50">
                             <div className="glass rounded-2xl shadow-2xl max-w-md w-full p-6">
@@ -608,15 +687,49 @@
                                     <span>✏️</span> แก้ไขสินค้า
                                 </h2>
                                 <div className="space-y-4">
-                                    <input type="text" placeholder="ชื่อสินค้า" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
-                                    <input type="text" placeholder="อิโมจิ" value={formData.emoji} onChange={(e) => setFormData({ ...formData, emoji: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
-                                    <input type="number" placeholder="ราคา" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    <input type="text" placeholder="ชื่อสินค้า *" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">รูปภาพสินค้า</label>
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            className="hidden"
+                                        />
+                                        <div
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className={`image-upload-area ${previewImage ? 'has-image' : ''}`}
+                                        >
+                                            {previewImage ? (
+                                                <div className="relative">
+                                                    <img src={previewImage} alt="Preview" className="max-h-40 mx-auto rounded-lg" />
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); clearImage(); }}
+                                                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="text-4xl mb-2">📸</div>
+                                                    <p className="text-gray-600 text-sm">คลิกเพื่ออัปโหลดรูปภาพ</p>
+                                                    <p className="text-gray-400 text-xs mt-1">รองรับ JPG, PNG (สูงสุด 2MB)</p>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                    <input type="text" placeholder="อิโมจิ (ถ้าไม่มีรูป)" value={formData.emoji} onChange={(e) => setFormData({ ...formData, emoji: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
+                                    <input type="number" placeholder="ราคา *" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none" />
                                     <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
                                         {customCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
                                     <div className="flex gap-3 pt-2">
                                         <button onClick={handleEditProduct} className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-xl shadow-lg">บันทึก</button>
-                                        <button onClick={() => { setShowEditProduct(false); setEditingProduct(null); setFormData({ name: '', emoji: '', price: '', category: customCategories[0] }); }} className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300">ยกเลิก</button>
+                                        <button onClick={() => { setShowEditProduct(false); setEditingProduct(null); setFormData({ name: '', emoji: '', price: '', category: customCategories[0], image: '' }); setPreviewImage(''); }} className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300">ยกเลิก</button>
                                     </div>
                                 </div>
                             </div>
