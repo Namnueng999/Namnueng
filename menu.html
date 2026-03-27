@@ -123,7 +123,6 @@
   <div class="header-right">
     <div class="line-profile" id="lineProfile" title="โปรไฟล์ LINE">
       <div class="line-avatar-placeholder" id="lineAvatarWrap">👤</div>
-      <span class="line-name" id="lineName"></span>
     </div>
     <button class="cart-btn" onclick="toggleCart()">
       🛒 <span class="cart-count" id="cartCount">0</span>
@@ -201,8 +200,7 @@ async function initLiff() {
       displayName: profile.displayName,
       pictureUrl:  profile.pictureUrl || ''
     };
-    // แสดงโปรไฟล์ใน header
-    document.getElementById('lineName').textContent = profile.displayName;
+    // แสดงรูปโปรไฟล์ใน header
     if (profile.pictureUrl) {
       document.getElementById('lineAvatarWrap').innerHTML =
         '<img class="line-avatar" src="' + profile.pictureUrl + '" alt="avatar">';
