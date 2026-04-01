@@ -42,15 +42,19 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
 .table-chip.active{border-color:var(--accent);background:#2a2010;}
 .table-chip.has-order{border-color:var(--green);background:#051a12;}
 .table-chip.has-order.active{border-color:var(--accent);}
+.table-chip.all-done{border-color:var(--blue);background:#051020;}
+.table-chip.all-done.active{border-color:var(--accent);}
 .table-chip.closed{opacity:0.5;background:var(--card2);}
 .table-chip-num{font-family:'Prompt',sans-serif;font-size:1.05rem;font-weight:700;}
 .table-chip.active .table-chip-num{color:var(--accent);}
 .table-chip.has-order .table-chip-num{color:var(--green);}
+.table-chip.all-done .table-chip-num{color:var(--blue);}
 .table-chip.closed .table-chip-num{color:var(--red);}
 .table-chip-info{font-size:0.62rem;color:var(--muted);margin-top:1px;}
 .table-chip.has-order .table-chip-info{color:var(--green);}
+.table-chip.all-done .table-chip-info{color:var(--blue);}
 .tdot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--green);}
-.closed-x{position:absolute;top:4px;right:5px;font-size:0.65rem;color:var(--red);}
+.tdot.done{background:var(--blue);}
 
 /* ── Menu Panel ── */
 .menu-panel{flex:1;display:flex;flex-direction:column;min-height:0;}
@@ -368,15 +372,43 @@ function renderTableGrid() {
   const grid = document.getElementById('tableGrid');
   grid.innerHTML = '';
   for (let i = 1; i <= tableCount(); i++) {
-    const active   = i === currentTable;
-    const hasOrder = allOrders.some(o => String(o.table) === String(i) && !['เสร็จแล้ว','ชำระแล้ว'].includes(o.status));
-    const closed   = tableStates[String(i)] === false;
-    const billTotal = (bills[i]||[]).reduce((a,e)=>a+e.price*e.qty,0);
+    const active  = i === currentTable;
+    const closed  = tableStates[String(i)] === false;
+    const tOrders = allOrders.filter(o => String(o.table) === String(i) && o.status !== 'ชำระแล้ว');
+    const billTotal = (bills[i]||[]).reduce((a,e) => a+e.price*e.qty, 0);
+
+    // คำนวณสถานะโต๊ะ
+    const hasPending  = tOrders.some(o => o.status === 'รอดำเนินการ');
+    const hasCooking  = tOrders.some(o => o.status === 'กำลังทำ');
+    const hasActive   = hasPending || hasCooking; // ครัวยังทำอยู่
+    const allDone     = tOrders.length > 0 && tOrders.every(o => o.status === 'เสร็จแล้ว'); // ครัวเสร็จหมด รอชำระ
+
+    let chipClass = 'table-chip';
+    if (active)   chipClass += ' active';
+    if (closed)   chipClass += ' closed';
+    else if (hasActive) chipClass += ' has-order';
+    else if (allDone)   chipClass += ' all-done';
+
+    // dot indicator
+    let dot = '';
+    if (!closed) {
+      if (hasActive) dot = '<div class="tdot"></div>';
+      else if (allDone) dot = '<div class="tdot done"></div>';
+    }
+
+    // label ล่าง
+    let label = '';
+    if (closed)       label = 'ปิด';
+    else if (billTotal > 0 && hasActive) label = '฿'+billTotal.toLocaleString();
+    else if (hasActive)  label = hasCooking ? '🔥 กำลังทำ' : '⏳ รอครัว';
+    else if (allDone)    label = '💰 รอชำระ';
+    else if (billTotal > 0) label = '฿'+billTotal.toLocaleString();
+
     const chip = document.createElement('div');
-    chip.className = 'table-chip'+(active?' active':'')+(hasOrder?' has-order':'')+(closed?' closed':'');
-    chip.innerHTML = (hasOrder?'<div class="tdot"></div>':(closed?'<div class="closed-x">✕</div>':''))+
-      `<div class="table-chip-num">${i}</div>`+
-      `<div class="table-chip-info">${billTotal>0?'฿'+billTotal.toLocaleString():hasOrder?'มีออเดอร์':closed?'ปิด':''}</div>`;
+    chip.className = chipClass;
+    chip.innerHTML = dot +
+      `<div class="table-chip-num">${i}</div>` +
+      `<div class="table-chip-info">${label}</div>`;
     chip.onclick = () => selectTable(i);
     grid.appendChild(chip);
   }
