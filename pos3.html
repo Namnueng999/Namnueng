@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>POS - พนักงาน</title>
+<title>POS</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -15,28 +15,30 @@
 body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;height:100svh;overflow:hidden;display:flex;flex-direction:column;}
 
 /* ── Topbar ── */
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:10px;}
-.topbar h1{font-family:'Prompt',sans-serif;font-size:1rem;color:var(--accent);white-space:nowrap;}
-.tab-btns{display:flex;gap:3px;background:var(--card);border-radius:9px;padding:3px;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:10px;}
+.topbar h1{font-family:'Prompt',sans-serif;font-size:0.95rem;color:var(--accent);white-space:nowrap;flex-shrink:0;}
+.tab-group{display:flex;gap:3px;background:var(--card);border-radius:9px;padding:3px;}
 .tab-btn{padding:6px 13px;border:none;border-radius:7px;font-family:'Sarabun',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:all 0.15s;white-space:nowrap;}
 .tab-btn.active{background:var(--accent);color:#000;}
-.topbar-right{display:flex;align-items:center;gap:10px;}
+.tab-divider{width:1px;background:var(--border);margin:4px 2px;}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .clock{font-family:'Prompt',sans-serif;font-size:0.85rem;color:var(--muted);}
-.reload-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:7px;cursor:pointer;font-size:0.8rem;transition:all 0.15s;}
+.reload-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:7px;cursor:pointer;font-size:0.8rem;}
 .reload-btn:hover{border-color:var(--accent);color:var(--accent);}
 
 /* ── Main layout ── */
 .main-layout{display:flex;flex:1;min-height:0;}
 
 /* ── Table Panel ── */
-.table-panel{width:188px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;min-height:0;transition:width 0.25s ease;overflow:hidden;}
+.table-panel{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;min-height:0;width:188px;transition:width 0.25s ease;overflow:hidden;}
 .table-panel.hidden{width:0;border-right:none;}
-.table-toggle-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
-.table-toggle-btn:hover{background:var(--accent);color:#000;border-color:var(--accent);}
 .table-panel-top{padding:10px 12px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;}
 .table-panel-title{font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
-.table-count-select{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:3px 6px;border-radius:6px;font-size:0.72rem;font-family:'Sarabun',sans-serif;}
-.table-grid{padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:7px;overflow-y:auto;flex:1;min-height:0;align-content:start;}
+.tpanel-ctrl{display:flex;align-items:center;gap:5px;}
+.table-count-select{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:3px 5px;border-radius:6px;font-size:0.7rem;font-family:'Sarabun',sans-serif;}
+.hide-table-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);width:24px;height:24px;border-radius:6px;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;}
+.hide-table-btn:hover{border-color:var(--accent);color:var(--accent);}
+.table-grid{padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px;overflow-y:auto;flex:1;min-height:0;align-content:start;}
 .table-chip{border-radius:10px;padding:0;aspect-ratio:1;text-align:center;cursor:pointer;border:2px solid var(--border);background:var(--card);transition:all 0.15s;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .table-chip:hover{border-color:var(--accent);}
 .table-chip.active{border-color:var(--accent);background:#2a2010;}
@@ -45,96 +47,140 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
 .table-chip.all-done{border-color:var(--blue);background:#051020;}
 .table-chip.all-done.active{border-color:var(--accent);}
 .table-chip.closed{opacity:0.5;background:var(--card2);}
-.table-chip-num{font-family:'Prompt',sans-serif;font-size:1.05rem;font-weight:700;}
+.table-chip-num{font-family:'Prompt',sans-serif;font-size:1rem;font-weight:700;}
 .table-chip.active .table-chip-num{color:var(--accent);}
 .table-chip.has-order .table-chip-num{color:var(--green);}
 .table-chip.all-done .table-chip-num{color:var(--blue);}
 .table-chip.closed .table-chip-num{color:var(--red);}
-.table-chip-info{font-size:0.62rem;color:var(--muted);margin-top:1px;}
+.table-chip-info{font-size:0.58rem;color:var(--muted);margin-top:1px;}
 .table-chip.has-order .table-chip-info{color:var(--green);}
 .table-chip.all-done .table-chip-info{color:var(--blue);}
-.tdot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--green);}
+.tdot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--green);}
 .tdot.done{background:var(--blue);}
 
-/* ── Menu Panel ── */
-.menu-panel{flex:1;display:flex;flex-direction:column;min-height:0;}
-.menu-top{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
+/* ── Center Panel ── */
+.center-panel{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.show-table-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:0.85rem;display:none;align-items:center;justify-content:center;flex-shrink:0;}
+.show-table-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── Menu tab ── */
+.menu-search-bar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
 .menu-search{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:0.88rem;}
 .menu-search:focus{outline:none;border-color:var(--accent);}
-.cat-bar{display:flex;gap:7px;padding:9px 14px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cat-bar{display:flex;gap:7px;padding:8px 14px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);flex-shrink:0;}
 .cat-bar::-webkit-scrollbar{display:none;}
 .cat-chip{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:'Sarabun',sans-serif;font-size:0.8rem;cursor:pointer;white-space:nowrap;transition:all 0.13s;}
 .cat-chip.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700;}
-.menu-grid{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:10px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));grid-auto-rows:320px;gap:12px;}
-.mcard{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:default;transition:all 0.2s;user-select:none;display:flex;flex-direction:column;}
-.mcard:hover{border-color:var(--accent);transform:translateY(-3px);}
-.mcard:active{transform:scale(0.97);}
+.menu-grid{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:10px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));grid-auto-rows:300px;gap:12px;}
+.mcard{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:default;transition:all 0.2s;display:flex;flex-direction:column;}
+.mcard:hover{border-color:var(--accent);}
 .mcard.soldout{opacity:0.3;pointer-events:none;}
 .mcard-img{width:100%;height:130px;flex-shrink:0;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative;overflow:hidden;}
 .mcard-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .mcard-emoji{position:relative;z-index:1;pointer-events:none;}
-.mcard-body{padding:11px 12px 12px;flex:1;display:flex;flex-direction:column;min-height:0;}
-.mcard-name{font-size:0.88rem;font-weight:700;line-height:1.3;margin-bottom:4px;color:var(--text);}
-.mcard-desc{font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-.mcard-price{font-family:'Prompt',sans-serif;color:var(--accent);font-size:1rem;font-weight:700;margin-bottom:4px;}
-.mcard-opt{font-size:0.72rem;color:var(--accent2);font-weight:600;margin-bottom:8px;}
-.mcard-addbtn{width:100%;padding:9px;background:var(--accent);border:none;color:#000;font-weight:700;font-size:0.85rem;border-radius:9px;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all 0.15s;margin-top:auto;}
+.mcard-body{padding:10px 12px 12px;flex:1;display:flex;flex-direction:column;}
+.mcard-name{font-size:0.88rem;font-weight:700;line-height:1.3;margin-bottom:3px;}
+.mcard-desc{font-size:0.73rem;color:var(--muted);line-height:1.4;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1;}
+.mcard-price{font-family:'Prompt',sans-serif;color:var(--accent);font-size:0.95rem;font-weight:700;margin-bottom:4px;}
+.mcard-opt{font-size:0.7rem;color:var(--accent2);font-weight:600;margin-bottom:7px;}
+.mcard-addbtn{width:100%;padding:8px;background:var(--accent);border:none;color:#000;font-weight:700;font-size:0.85rem;border-radius:9px;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all 0.15s;margin-top:auto;}
 .mcard-addbtn:hover{background:var(--accent2);}
+
+/* ── Kitchen tab ── */
+.kitchen-wrap{flex:1;min-height:0;overflow-y:auto;padding:16px;}
+.kitchen-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;min-height:calc(100% - 8px);}
+.kcol-header{padding:11px 14px;border-radius:12px 12px 0 0;font-family:'Prompt',sans-serif;font-weight:700;font-size:0.95rem;display:flex;align-items:center;gap:8px;}
+.kcol-new .kcol-header{background:#0d2a18;color:var(--green);border-bottom:2px solid var(--green);}
+.kcol-cooking .kcol-header{background:#2a2000;color:var(--accent);border-bottom:2px solid var(--accent);}
+.kcol-done .kcol-header{background:#1e1e1e;color:#888;border-bottom:2px solid #333;}
+.kcol-count{background:rgba(255,255,255,0.1);padding:2px 9px;border-radius:20px;font-size:0.82rem;}
+.kcard{border-radius:0 0 12px 12px;padding:16px;margin-bottom:12px;border:1px solid var(--border);animation:slideIn 0.3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.kcol-new .kcard{background:#0d2218;border-color:#1a3a28;border-top:none;}
+.kcol-cooking .kcard{background:#1a1a08;border-color:#3a3010;border-top:none;}
+.kcol-done .kcard{background:#181818;border-top:none;opacity:0.6;}
+.kcard-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.kcard-table{font-family:'Prompt',sans-serif;font-size:1.4rem;font-weight:800;}
+.kcol-new .kcard-table{color:var(--green);}
+.kcol-cooking .kcard-table{color:var(--accent);}
+.kcard-meta{font-size:0.68rem;color:var(--muted);}
+.ktimer{font-family:'Prompt',sans-serif;font-size:0.88rem;padding:3px 9px;border-radius:6px;}
+.ktimer.normal{color:var(--green);}
+.ktimer.warning{color:var(--accent);animation:blink 1s infinite;}
+.ktimer.danger{color:var(--red);animation:blink 0.5s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.kcard-customer{display:flex;align-items:center;gap:7px;margin-bottom:8px;padding:6px 9px;background:rgba(255,255,255,0.04);border-radius:7px;}
+.kcard-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--green);}
+.kcard-avatar-ph{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+.kcard-cname{font-size:0.78rem;font-weight:600;}
+.kcard-items{margin:8px 0;}
+.kcard-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.kcard-item:last-child{border-bottom:none;}
+.kcard-item-name{font-size:0.88rem;font-weight:600;flex:1;}
+.kcard-item-qty{background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:6px;font-weight:700;font-size:0.82rem;white-space:nowrap;margin-left:6px;}
+.kcard-note{margin-top:6px;padding:7px 9px;background:rgba(255,255,255,0.04);border-radius:7px;font-size:0.78rem;color:var(--muted);}
+.kcard-actions{display:flex;gap:7px;margin-top:12px;}
+.kctn{flex:1;padding:9px 6px;border:none;border-radius:8px;font-family:'Sarabun',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;transition:all 0.15s;}
+.kctn:hover{transform:scale(1.03);}
+.kctn-start{background:var(--accent);color:#000;}
+.kctn-done{background:var(--green);color:#000;}
+.kctn-undo{background:#333;color:#aaa;}
+.kempty{text-align:center;padding:36px 16px;color:var(--muted);font-size:0.85rem;}
+.kempty i{font-size:2.2rem;display:block;margin-bottom:8px;font-style:normal;}
 
 /* ── Bill Panel ── */
 .bill-panel{width:290px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
-.bill-head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.bill-table-label{font-family:'Prompt',sans-serif;font-size:1rem;font-weight:700;}
+.bill-head{padding:11px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.bill-table-label{font-family:'Prompt',sans-serif;font-size:0.95rem;font-weight:700;}
 .bill-table-label em{color:var(--accent);font-style:normal;}
-.bill-head-btns{display:flex;gap:6px;}
-.hbtn{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 9px;border-radius:7px;font-size:0.72rem;cursor:pointer;transition:all 0.13s;font-family:'Sarabun',sans-serif;}
+.bill-head-btns{display:flex;gap:5px;}
+.hbtn{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 8px;border-radius:7px;font-size:0.7rem;cursor:pointer;transition:all 0.13s;font-family:'Sarabun',sans-serif;}
 .hbtn:hover{border-color:var(--red);color:var(--red);}
-.hbtn.toggle-open{border-color:var(--green);color:var(--green);}
-.hbtn.toggle-open:hover{background:var(--green);color:#000;}
-.hbtn.toggle-closed{border-color:var(--red);color:var(--red);}
-.hbtn.toggle-closed:hover{background:var(--red);color:#fff;}
-.bill-body{flex:1;overflow-y:auto;padding:10px;}
-.bill-empty{text-align:center;padding:30px 16px;color:var(--muted);font-size:0.83rem;}
-.bill-empty i{font-size:2rem;display:block;margin-bottom:8px;font-style:normal;}
-.brow{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);}
+.hbtn.open{border-color:var(--green);color:var(--green);}
+.hbtn.open:hover{background:var(--green);color:#000;}
+.hbtn.closed{border-color:var(--red);color:var(--red);}
+.hbtn.closed:hover{background:var(--red);color:#fff;}
+.bill-body{flex:1;overflow-y:auto;padding:9px;}
+.bill-empty{text-align:center;padding:28px 14px;color:var(--muted);font-size:0.82rem;}
+.bill-empty i{font-size:2rem;display:block;margin-bottom:7px;font-style:normal;}
+.brow{display:flex;align-items:flex-start;gap:7px;padding:7px 0;border-bottom:1px solid var(--border);}
 .brow:last-child{border-bottom:none;}
 .brow-info{flex:1;min-width:0;}
-.brow-name{font-size:0.83rem;font-weight:600;line-height:1.3;}
+.brow-name{font-size:0.82rem;font-weight:600;line-height:1.3;}
 .brow-opts{font-size:0.7rem;color:var(--accent);margin-top:1px;}
-.brow-price{font-size:0.78rem;color:var(--muted);margin-top:1px;}
+.brow-price{font-size:0.77rem;color:var(--muted);margin-top:1px;}
 .brow-ctrl{display:flex;align-items:center;gap:5px;flex-shrink:0;}
 .qbtn{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.13s;}
 .qbtn:hover{background:var(--accent);color:#000;border-color:var(--accent);}
 .qnum{font-weight:700;font-size:0.82rem;min-width:16px;text-align:center;}
-.bill-foot{padding:12px 14px;border-top:1px solid var(--border);flex-shrink:0;}
-.bill-note{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-family:'Sarabun',sans-serif;font-size:0.8rem;resize:none;margin-bottom:9px;}
+.bill-foot{padding:11px 13px;border-top:1px solid var(--border);flex-shrink:0;}
+.bill-note{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:7px;font-family:'Sarabun',sans-serif;font-size:0.8rem;resize:none;margin-bottom:8px;}
 .bill-note:focus{outline:none;border-color:var(--accent);}
-.bill-subtotal{display:flex;justify-content:space-between;font-size:0.8rem;color:var(--muted);margin-bottom:3px;}
-.bill-total-row{display:flex;justify-content:space-between;font-family:'Prompt',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:10px;}
+.bill-subtotal{display:flex;justify-content:space-between;font-size:0.78rem;color:var(--muted);margin-bottom:3px;}
+.bill-total-row{display:flex;justify-content:space-between;font-family:'Prompt',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:9px;}
 .bill-total-row em{color:var(--accent);font-style:normal;}
-.bill-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.bbtn{padding:10px 6px;border:none;border-radius:9px;font-family:'Sarabun',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;transition:all 0.15s;text-align:center;}
+.bill-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.bbtn{padding:10px 5px;border:none;border-radius:9px;font-family:'Sarabun',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;transition:all 0.15s;}
 .bbtn:active{transform:scale(0.96);}
 .bbtn-send{background:var(--accent);color:#000;grid-column:1/-1;}
 .bbtn-receipt{background:var(--card);border:1px solid var(--border);color:var(--text);}
 .bbtn-pay{background:var(--green);color:#000;}
 .bbtn:disabled{opacity:0.4;cursor:not-allowed;}
 
-/* ── Summary Tab ── */
+/* ── Summary ── */
 .sum-wrap{flex:1;overflow-y:auto;padding:18px;}
-.sum-filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.sum-filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
 .sum-filter-label{font-size:0.8rem;color:var(--muted);font-weight:600;}
-.sum-date-inp{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-family:'Sarabun',sans-serif;font-size:0.83rem;}
-.sum-date-inp:focus{outline:none;border-color:var(--accent);}
-.filter-btn{padding:7px 16px;border-radius:8px;border:none;font-family:'Sarabun',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;background:var(--accent);color:#000;transition:all 0.15s;}
+.sum-date-inp{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:8px;font-family:'Sarabun',sans-serif;font-size:0.82rem;}
+.filter-btn{padding:7px 14px;border-radius:8px;border:none;font-family:'Sarabun',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;background:var(--accent);color:#000;}
 .filter-btn.sec{background:var(--card);border:1px solid var(--border);color:var(--muted);}
-.sum-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:22px;}
-.scard{background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border);}
-.scard-num{font-family:'Prompt',sans-serif;font-size:1.7rem;font-weight:800;color:var(--accent);}
-.scard-label{font-size:0.77rem;color:var(--muted);margin-top:3px;}
-.sum-section{font-family:'Prompt',sans-serif;font-size:0.9rem;color:var(--muted);margin-bottom:10px;margin-top:20px;}
-.stable{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:20px;}
-.stable th{background:var(--card2);padding:9px 12px;text-align:left;font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;}
+.sum-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px;}
+.scard{background:var(--card);border-radius:14px;padding:15px;border:1px solid var(--border);}
+.scard-num{font-family:'Prompt',sans-serif;font-size:1.6rem;font-weight:800;color:var(--accent);}
+.scard-label{font-size:0.75rem;color:var(--muted);margin-top:3px;}
+.sum-section{font-family:'Prompt',sans-serif;font-size:0.88rem;color:var(--muted);margin-bottom:9px;margin-top:18px;}
+.stable{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:18px;}
+.stable th{background:var(--card2);padding:9px 12px;text-align:left;font-size:0.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;}
 .stable td{padding:9px 12px;font-size:0.82rem;border-top:1px solid var(--border);}
 .stable tr:hover td{background:#1e1e26;}
 .badge{padding:3px 9px;border-radius:20px;font-size:0.68rem;font-weight:700;}
@@ -142,42 +188,96 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
 .b-cooking{background:#2a2000;color:#f39c12;}
 .b-done{background:#051a12;color:var(--green);}
 .b-paid{background:#0a1f2a;color:var(--blue);}
-.top-menu-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border);}
-.top-menu-table th{background:var(--card2);padding:9px 12px;text-align:left;font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;}
-.top-menu-table td{padding:9px 12px;font-size:0.82rem;border-top:1px solid var(--border);}
-.rank-num{font-family:'Prompt',sans-serif;font-weight:800;color:var(--accent);font-size:1rem;}
+.rank-num{font-family:'Prompt',sans-serif;font-weight:800;color:var(--accent);font-size:0.95rem;}
+
+/* ── Manage Menu ── */
+.mgmt-wrap{flex:1;overflow-y:auto;padding:16px;}
+.mgmt-top{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;}
+.mgmt-search{flex:1;min-width:180px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 13px;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:0.87rem;}
+.mgmt-search:focus{outline:none;border-color:var(--accent);}
+
+/* ── Manage Tables ── */
+.tables-mgmt-wrap{flex:1;overflow-y:auto;padding:16px;}
+.tables-mgmt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:11px;margin-top:14px;}
+.tmc{background:var(--card);border:2px solid var(--border);border-radius:13px;padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.15s;}
+.tmc:hover{border-color:var(--accent);}
+.tmc.t-open{border-color:var(--green);background:#051a12;}
+.tmc.t-closed{border-color:var(--red);background:#1a0808;}
+.tmc-num{font-family:'Prompt',sans-serif;font-size:1.2rem;font-weight:800;}
+.tmc.t-open .tmc-num{color:var(--green);}
+.tmc.t-closed .tmc-num{color:var(--red);}
+.tmc-status{font-size:0.72rem;margin-top:5px;}
+
+/* ── Settings ── */
+.settings-wrap{flex:1;overflow-y:auto;padding:16px;}
+.settings-card{background:var(--card);border-radius:16px;padding:20px;border:1px solid var(--border);max-width:480px;margin-bottom:14px;}
+.settings-title{font-family:'Prompt',sans-serif;font-size:0.95rem;margin-bottom:16px;}
+.field-label{font-size:0.78rem;color:var(--muted);font-weight:700;display:block;margin-bottom:5px;}
+.field-input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:9px 13px;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:0.88rem;margin-bottom:12px;}
+.field-input:focus{outline:none;border-color:var(--accent);}
 
 /* ── Options Modal ── */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:200;display:none;align-items:center;justify-content:center;}
 .modal-bg.open{display:flex;}
-.opt-box{background:var(--surface);border-radius:18px;padding:22px;width:92%;max-width:380px;border:1px solid var(--border);}
+.opt-box{background:var(--surface);border-radius:18px;padding:22px;width:92%;max-width:400px;border:1px solid var(--border);max-height:90vh;overflow-y:auto;}
 .opt-box-title{font-family:'Prompt',sans-serif;font-size:1rem;margin-bottom:14px;display:flex;align-items:center;gap:9px;}
-.opt-glabel{font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:13px 0 7px;}
+.opt-glabel{font-size:0.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:12px 0 7px;}
 .opt-chips{display:flex;flex-wrap:wrap;gap:7px;}
 .opt-chip{padding:8px 15px;border-radius:50px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-family:'Sarabun',sans-serif;font-size:0.86rem;cursor:pointer;transition:all 0.13s;}
 .opt-chip.sel{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700;}
 .opt-box-actions{display:flex;gap:8px;margin-top:18px;}
-.opt-cancel{padding:11px 18px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;font-family:'Sarabun',sans-serif;cursor:pointer;}
+.opt-cancel{padding:11px 16px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;font-family:'Sarabun',sans-serif;cursor:pointer;}
 .opt-confirm{flex:1;padding:11px;background:var(--accent);color:#000;border:none;border-radius:9px;font-family:'Sarabun',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer;}
 .opt-confirm:disabled{background:var(--muted);cursor:not-allowed;}
 
+/* ── Menu Edit Modal ── */
+.edit-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:300;display:none;align-items:center;justify-content:center;}
+.edit-modal-bg.open{display:flex;}
+.edit-modal{background:var(--surface);border-radius:18px;padding:24px;width:92%;max-width:460px;border:1px solid var(--border);max-height:92vh;overflow-y:auto;}
+.edit-modal h3{font-family:'Prompt',sans-serif;font-size:1rem;margin-bottom:18px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-group{margin-bottom:13px;}
+.form-group label{font-size:0.75rem;color:var(--muted);font-weight:700;display:block;margin-bottom:5px;}
+.form-group input,.form-group textarea,.form-group select{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:0.87rem;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--accent);}
+/* Options groups builder */
+.opt-group-box{background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:13px;margin-bottom:9px;}
+.og-header{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.og-name-input{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:8px;font-family:'Sarabun',sans-serif;font-size:0.83rem;}
+.og-name-input:focus{outline:none;border-color:var(--accent);}
+.og-del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.95rem;padding:3px 6px;border-radius:6px;}
+.og-del-btn:hover{background:#2a0808;color:var(--red);}
+.og-choices{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px;}
+.og-chip{display:flex;align-items:center;gap:5px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:4px 11px;font-size:0.8rem;}
+.og-chip-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.8rem;padding:0;line-height:1;}
+.og-chip-del:hover{color:var(--red);}
+.og-add-row{display:flex;gap:6px;}
+.og-inp{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-family:'Sarabun',sans-serif;font-size:0.8rem;}
+.og-price-inp{width:85px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:8px;font-family:'Sarabun',sans-serif;font-size:0.8rem;}
+.og-add-btn{padding:6px 12px;background:var(--accent);color:#000;border:none;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:'Sarabun',sans-serif;font-weight:700;}
+.add-og-btn{width:100%;padding:9px;background:var(--bg);border:2px dashed var(--border);border-radius:10px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:0.83rem;cursor:pointer;transition:all 0.15s;margin-top:4px;}
+.add-og-btn:hover{border-color:var(--accent);color:var(--accent);}
+.edit-modal-actions{display:flex;gap:9px;margin-top:18px;}
+.em-save{flex:1;padding:12px;background:var(--accent);color:#000;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;}
+.em-cancel{padding:12px 18px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:10px;font-family:'Sarabun',sans-serif;cursor:pointer;}
+
 /* ── Receipt ── */
-.receipt-bg{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:300;display:none;align-items:center;justify-content:center;}
+.receipt-bg{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:400;display:none;align-items:center;justify-content:center;}
 .receipt-bg.open{display:flex;}
-.receipt-paper{background:#fff;color:#111;border-radius:4px;padding:22px;width:310px;font-family:'Sarabun',sans-serif;max-height:90vh;overflow-y:auto;}
+.receipt-paper{background:#fff;color:#111;border-radius:4px;padding:22px;width:300px;font-family:'Sarabun',sans-serif;max-height:90vh;overflow-y:auto;}
 .rh{text-align:center;border-bottom:1px dashed #bbb;padding-bottom:10px;margin-bottom:10px;}
 .rh h2{font-size:1rem;font-weight:700;}
-.rh p{font-size:0.75rem;color:#666;margin-top:2px;}
-.rrow{display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:3px;}
-.rrow.opts-row{font-size:0.7rem;color:#888;margin-left:10px;margin-bottom:2px;}
-.rrow.total{font-weight:700;font-size:0.92rem;border-top:1px dashed #bbb;padding-top:7px;margin-top:7px;}
-.rfoot{text-align:center;font-size:0.72rem;color:#999;margin-top:10px;border-top:1px dashed #bbb;padding-top:8px;}
+.rh p{font-size:0.73rem;color:#666;margin-top:2px;}
+.rrow{display:flex;justify-content:space-between;font-size:0.79rem;margin-bottom:3px;}
+.rrow.opts-row{font-size:0.69rem;color:#888;margin-left:8px;margin-bottom:2px;}
+.rrow.total{font-weight:700;font-size:0.9rem;border-top:1px dashed #bbb;padding-top:7px;margin-top:7px;}
+.rfoot{text-align:center;font-size:0.7rem;color:#999;margin-top:10px;border-top:1px dashed #bbb;padding-top:8px;}
 .receipt-actions{display:flex;gap:8px;margin-top:12px;}
 .r-print{flex:1;padding:9px;background:#111;color:#fff;border:none;border-radius:7px;font-family:'Sarabun',sans-serif;font-weight:700;cursor:pointer;}
 .r-close{padding:9px 14px;background:#eee;border:none;border-radius:7px;cursor:pointer;font-family:'Sarabun',sans-serif;}
 
 /* ── Toast ── */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surface);color:var(--text);padding:11px 22px;border-radius:12px;font-size:0.88rem;z-index:999;border:1px solid var(--border);opacity:0;transition:all 0.28s;pointer-events:none;white-space:nowrap;}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--surface);color:var(--text);padding:10px 20px;border-radius:12px;font-size:0.86rem;z-index:999;border:1px solid var(--border);opacity:0;transition:all 0.28s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 @media print{
@@ -189,13 +289,18 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
 </head>
 <body>
 
+<!-- Topbar -->
 <div class="topbar">
-  <div style="display:flex;align-items:center;gap:10px;">
-    <h1 id="posTitle">🧾 POS</h1>
-    <div class="tab-btns">
-      <button class="tab-btn active" onclick="gotoTab('pos',this)">🍽️ สั่งอาหาร</button>
-      <button class="tab-btn" onclick="gotoTab('summary',this)">📊 ยอดขาย</button>
-    </div>
+  <h1 id="posTitle">🧾 POS</h1>
+  <div class="tab-group">
+    <button class="tab-btn active" onclick="gotoTab('order',this)">🍽️ สั่งอาหาร</button>
+    <button class="tab-btn" onclick="gotoTab('kitchen',this)">👨‍🍳 ครัว</button>
+    <div class="tab-divider"></div>
+    <button class="tab-btn" onclick="gotoTab('summary',this)">📊 ยอดขาย</button>
+    <div class="tab-divider"></div>
+    <button class="tab-btn" onclick="gotoTab('mgmt-menu',this)">📋 เมนู</button>
+    <button class="tab-btn" onclick="gotoTab('mgmt-tables',this)">🪑 โต๊ะ</button>
+    <button class="tab-btn" onclick="gotoTab('settings',this)">⚙️</button>
   </div>
   <div class="topbar-right">
     <button class="reload-btn" onclick="loadData()">🔄</button>
@@ -203,49 +308,39 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
   </div>
 </div>
 
-<!-- POS Tab -->
-<div class="main-layout" id="tab-pos">
-
-  <!-- Table Panel -->
+<!-- POS: สั่งอาหาร -->
+<div class="main-layout" id="tab-order">
   <div class="table-panel" id="tablePanel">
     <div class="table-panel-top">
       <span class="table-panel-title">โต๊ะ</span>
-      <div style="display:flex;align-items:center;gap:6px;">
+      <div class="tpanel-ctrl">
         <select class="table-count-select" id="tableCountSel" onchange="renderTableGrid()">
           <option value="5">5</option><option value="8">8</option>
           <option value="10" selected>10</option><option value="15">15</option>
           <option value="20">20</option><option value="30">30</option>
         </select>
-        <button class="table-toggle-btn" onclick="toggleTablePanel()" title="ซ่อนโต๊ะ">◀</button>
+        <button class="hide-table-btn" onclick="toggleTablePanel()" title="ซ่อน">◀</button>
       </div>
     </div>
     <div class="table-grid" id="tableGrid"></div>
   </div>
-
-  <!-- Menu Panel -->
-  <div class="menu-panel">
-    <div class="menu-top">
-      <button class="table-toggle-btn" id="showTableBtn" onclick="toggleTablePanel()" title="แสดงโต๊ะ" style="display:none;flex-shrink:0;">▶</button>
+  <div class="center-panel">
+    <div class="menu-search-bar">
+      <button class="show-table-btn" id="showTableBtn" onclick="toggleTablePanel()">▶</button>
       <input class="menu-search" id="menuSearch" placeholder="🔍 ค้นหาเมนู..." oninput="renderMenu()">
     </div>
     <div class="cat-bar" id="catBar"></div>
-    <div class="menu-grid" id="menuGrid">
-      <div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);">กำลังโหลด...</div>
-    </div>
+    <div class="menu-grid" id="menuGrid"><div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);">กำลังโหลด...</div></div>
   </div>
-
-  <!-- Bill Panel -->
   <div class="bill-panel">
     <div class="bill-head">
       <div class="bill-table-label">โต๊ะ <em id="billNum">1</em></div>
       <div class="bill-head-btns">
-        <button class="hbtn toggle-open" id="tableToggleBtn" onclick="toggleCurrentTable()">เปิดอยู่</button>
-        <button class="hbtn" onclick="clearBill()">🗑 ล้าง</button>
+        <button class="hbtn open" id="tableToggleBtn" onclick="toggleCurrentTable()">เปิด</button>
+        <button class="hbtn" onclick="clearBill()">🗑</button>
       </div>
     </div>
-    <div class="bill-body" id="billBody">
-      <div class="bill-empty"><i>🛒</i>เลือกเมนูจากด้านซ้าย</div>
-    </div>
+    <div class="bill-body" id="billBody"><div class="bill-empty"><i>🛒</i>เลือกเมนูจากด้านซ้าย</div></div>
     <div class="bill-foot">
       <textarea class="bill-note" id="billNote" rows="2" placeholder="หมายเหตุ..."></textarea>
       <div class="bill-subtotal"><span>รายการ</span><span id="billCount">0 รายการ</span></div>
@@ -259,7 +354,27 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
   </div>
 </div>
 
-<!-- Summary Tab -->
+<!-- Kitchen -->
+<div class="main-layout" id="tab-kitchen" style="display:none;">
+  <div class="kitchen-wrap">
+    <div class="kitchen-cols">
+      <div class="kcol-new">
+        <div class="kcol-header">🔔 ออเดอร์ใหม่ <span class="kcol-count" id="kcnt-new">0</span></div>
+        <div id="klist-new"></div>
+      </div>
+      <div class="kcol-cooking">
+        <div class="kcol-header">🔥 กำลังทำ <span class="kcol-count" id="kcnt-cooking">0</span></div>
+        <div id="klist-cooking"></div>
+      </div>
+      <div class="kcol-done">
+        <div class="kcol-header">✅ เสร็จแล้ว <span class="kcol-count" id="kcnt-done">0</span></div>
+        <div id="klist-done"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary -->
 <div class="main-layout" id="tab-summary" style="display:none;">
   <div class="sum-wrap">
     <div class="sum-filter-bar">
@@ -277,22 +392,57 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
       <div class="scard"><div class="scard-num" id="sPaid">-</div><div class="scard-label">ชำระแล้ว (฿)</div></div>
       <div class="scard"><div class="scard-num" id="sPending">-</div><div class="scard-label">รอดำเนินการ</div></div>
     </div>
-
     <div class="sum-section">🏆 เมนูขายดี</div>
-    <table class="top-menu-table">
-      <thead><tr><th>#</th><th>เมนู</th><th>จำนวน</th><th>ยอด (฿)</th></tr></thead>
-      <tbody id="topMenuBody"></tbody>
-    </table>
-
+    <table class="stable"><thead><tr><th>#</th><th>เมนู</th><th>จำนวน</th><th>ยอด (฿)</th></tr></thead><tbody id="topMenuBody"></tbody></table>
     <div class="sum-section">📋 รายการออเดอร์</div>
-    <table class="stable">
-      <thead><tr><th>ออเดอร์</th><th>โต๊ะ</th><th>รายการ</th><th>รวม</th><th>สถานะ</th><th>เวลา</th></tr></thead>
-      <tbody id="orderTableBody"></tbody>
-    </table>
+    <table class="stable"><thead><tr><th>ออเดอร์</th><th>โต๊ะ</th><th>รายการ</th><th>รวม</th><th>สถานะ</th><th>เวลา</th></tr></thead><tbody id="orderTableBody"></tbody></table>
   </div>
 </div>
 
-<!-- Options Modal -->
+<!-- จัดการเมนู -->
+<div class="main-layout" id="tab-mgmt-menu" style="display:none;">
+  <div class="mgmt-wrap">
+    <div class="mgmt-top">
+      <input class="mgmt-search" id="mgmtSearch" placeholder="🔍 ค้นหา..." oninput="renderMgmtMenu()">
+      <button class="filter-btn" onclick="openMenuEditModal()">＋ เพิ่มเมนู</button>
+      <button class="filter-btn sec" onclick="loadData().then(renderMgmtMenu)">🔄</button>
+    </div>
+    <table class="stable"><thead><tr><th></th><th>ชื่อ</th><th>หมวด</th><th>ราคา</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody id="mgmtMenuBody"></tbody></table>
+  </div>
+</div>
+
+<!-- จัดการโต๊ะ -->
+<div class="main-layout" id="tab-mgmt-tables" style="display:none;">
+  <div class="tables-mgmt-wrap">
+    <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;">
+      <span class="sum-filter-label">จำนวนโต๊ะ:</span>
+      <select id="mgmtTableCount" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 11px;border-radius:8px;font-family:'Sarabun',sans-serif;" onchange="renderMgmtTables()">
+        <option value="5">5</option><option value="8">8</option><option value="10" selected>10</option>
+        <option value="15">15</option><option value="20">20</option><option value="30">30</option>
+      </select>
+      <button class="filter-btn" onclick="openAllMgmt()">✅ เปิดทั้งหมด</button>
+      <button class="filter-btn" style="background:var(--red);color:#fff;" onclick="closeAllMgmt()">🔒 ปิดทั้งหมด</button>
+      <button class="filter-btn sec" onclick="saveMgmtTables()">💾 บันทึก</button>
+    </div>
+    <div class="tables-mgmt-grid" id="mgmtTablesGrid"></div>
+  </div>
+</div>
+
+<!-- ตั้งค่า -->
+<div class="main-layout" id="tab-settings" style="display:none;">
+  <div class="settings-wrap">
+    <div class="settings-card">
+      <div class="settings-title">⚙️ ตั้งค่าร้าน</div>
+      <label class="field-label">ชื่อร้าน</label>
+      <input class="field-input" id="set-name" placeholder="ชื่อร้านอาหาร">
+      <label class="field-label">Discord Webhook URL</label>
+      <input class="field-input" id="set-discord" placeholder="https://discord.com/api/webhooks/...">
+      <button class="filter-btn" onclick="saveSettings()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Options Picker Modal (สั่งอาหาร) -->
 <div class="modal-bg" id="optModal">
   <div class="opt-box">
     <div class="opt-box-title"><span id="oEmoji"></span><span id="oName"></span></div>
@@ -304,14 +454,40 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
   </div>
 </div>
 
-<!-- Receipt Modal -->
+<!-- Menu Edit Modal -->
+<div class="edit-modal-bg" id="menuEditModal">
+  <div class="edit-modal">
+    <h3 id="editModalTitle">➕ เพิ่มเมนู</h3>
+    <input type="hidden" id="edit-id">
+    <div class="form-row">
+      <div class="form-group"><label>อีโมจิ</label><input id="edit-emoji" placeholder="🍜" maxlength="2"></div>
+      <div class="form-group"><label>หมวดหมู่</label><input id="edit-category" placeholder="อาหารหลัก..."></div>
+    </div>
+    <div class="form-group"><label>ชื่อเมนู *</label><input id="edit-name" placeholder="ชื่ออาหาร"></div>
+    <div class="form-group"><label>คำอธิบาย</label><textarea id="edit-desc" rows="2" placeholder="รายละเอียด..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>ราคา (฿) *</label><input id="edit-price" type="number" placeholder="0"></div>
+      <div class="form-group"><label>สถานะ</label>
+        <select id="edit-available"><option value="true">✅ มีขาย</option><option value="false">❌ หมด/ปิด</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>URL รูปภาพ</label><input id="edit-image" placeholder="https://..."></div>
+    <div class="form-group">
+      <label>🎛️ ตัวเลือกเสริม</label>
+      <div id="editOptGroups"></div>
+      <button type="button" class="add-og-btn" onclick="addOptGroup()">＋ เพิ่มกลุ่มตัวเลือก</button>
+    </div>
+    <div class="edit-modal-actions">
+      <button class="em-cancel" onclick="document.getElementById('menuEditModal').classList.remove('open')">ยกเลิก</button>
+      <button class="em-save" onclick="saveMenuEdit()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt -->
 <div class="receipt-bg" id="receiptBg">
   <div class="receipt-paper">
-    <div class="rh">
-      <h2 id="rName"></h2>
-      <p id="rDate"></p>
-      <p>โต๊ะ <strong id="rTable"></strong></p>
-    </div>
+    <div class="rh"><h2 id="rName"></h2><p id="rDate"></p><p>โต๊ะ <strong id="rTable"></strong></p></div>
     <div id="rItems"></div>
     <div class="rrow total"><span>รวมทั้งสิ้น</span><span id="rTotal"></span></div>
     <div class="rfoot">ขอบคุณที่ใช้บริการ 🙏</div>
@@ -327,138 +503,114 @@ body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;hei
 <script>
 const GAS = 'https://script.google.com/macros/s/AKfycbzX3F5pmXMe2lerCHLPDn9Ky3Tf8ToFR0AwpD8Q6rm5_GcjVWRdlRfp-UJZbVdFnKll/exec';
 
-let menu = [], allOrders = [], restaurantName = 'ร้านอาหาร';
-let tableStates = {}; // { '1': false = closed }
-let currentTable = 1, currentCat = 'ทั้งหมด';
-let bills = {}; // { tableNum: [cartEntry] }
-let optItem = null, optSel = {};
+let menu=[], allOrders=[], restaurantName='ร้านอาหาร', tableStates={};
+let currentTable=1, currentCat='ทั้งหมด';
+let bills={}; // { tableNum: [cartEntry] }
+let optItem=null, optSel={};
+let editOptGroups=[]; // [{ name, choices:[{label,extraPrice}] }]
+let kTimers={}, kStartTimes={}, kRefreshInterval;
 
 // ── Init ──────────────────────────────────────────────────────
 window.onload = () => {
   setInterval(() => document.getElementById('clock').textContent = new Date().toLocaleTimeString('th-TH'), 1000);
   setToday();
   loadData();
-  setInterval(loadData, 30000);
+  setInterval(loadData, 25000);
 };
 
 async function loadData() {
   try {
     const r = await fetch(GAS + '?action=getAll');
     const d = await r.json();
-    menu           = (d.menu || []).filter(m => m.name);
-    allOrders      = d.orders || [];
-    restaurantName = d.restaurantName || 'ร้านอาหาร';
+    menu          = (d.menu||[]).filter(m=>m.name);
+    allOrders     = d.orders||[];
+    restaurantName= d.restaurantName||'ร้านอาหาร';
     document.getElementById('posTitle').textContent = '🧾 ' + restaurantName;
     document.title = 'POS - ' + restaurantName;
-    try { tableStates = JSON.parse(d.settings?.tableStates || '{}'); } catch(e) { tableStates = {}; }
+    try { tableStates = JSON.parse(d.settings?.tableStates||'{}'); } catch(e){ tableStates={}; }
     renderTableGrid();
     renderCategories();
     renderMenu();
     renderBill();
+    renderKitchen();
   } catch(e) { toast('โหลดไม่ได้ ⚠️'); }
 }
 
-// ── Tables ────────────────────────────────────────────────────
-function toggleTablePanel() {
-  const panel  = document.getElementById('tablePanel');
-  const showBtn = document.getElementById('showTableBtn');
-  const hidden = panel.classList.toggle('hidden');
-  showBtn.style.display = hidden ? 'flex' : 'none';
+// ── Tab ───────────────────────────────────────────────────────
+const ALL_TABS = ['order','kitchen','summary','mgmt-menu','mgmt-tables','settings'];
+function gotoTab(tab, btn) {
+  ALL_TABS.forEach(t => document.getElementById('tab-'+t).style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).style.display = 'flex';
+  if (btn) btn.classList.add('active');
+  if (tab==='summary')      { setToday(); renderSummary(); }
+  if (tab==='mgmt-menu')    renderMgmtMenu();
+  if (tab==='mgmt-tables')  renderMgmtTables();
+  if (tab==='settings')     loadSettingsForm();
 }
 
-function tableCount() { return parseInt(document.getElementById('tableCountSel').value) || 10; }
+// ── Table Panel ───────────────────────────────────────────────
+function tableCount() { return parseInt(document.getElementById('tableCountSel').value)||10; }
+function toggleTablePanel() {
+  const p = document.getElementById('tablePanel');
+  const s = document.getElementById('showTableBtn');
+  const h = p.classList.toggle('hidden');
+  s.style.display = h ? 'flex' : 'none';
+}
 
 function renderTableGrid() {
   const grid = document.getElementById('tableGrid');
   grid.innerHTML = '';
   for (let i = 1; i <= tableCount(); i++) {
-    const active  = i === currentTable;
-    const closed  = tableStates[String(i)] === false;
-    const tOrders = allOrders.filter(o => String(o.table) === String(i) && o.status !== 'ชำระแล้ว');
-    const billTotal = (bills[i]||[]).reduce((a,e) => a+e.price*e.qty, 0);
-
-    // คำนวณสถานะโต๊ะ
-    const hasPending  = tOrders.some(o => o.status === 'รอดำเนินการ');
-    const hasCooking  = tOrders.some(o => o.status === 'กำลังทำ');
-    const hasActive   = hasPending || hasCooking; // ครัวยังทำอยู่
-    const allDone     = tOrders.length > 0 && tOrders.every(o => o.status === 'เสร็จแล้ว'); // ครัวเสร็จหมด รอชำระ
-
-    let chipClass = 'table-chip';
-    if (active)   chipClass += ' active';
-    if (closed)   chipClass += ' closed';
-    else if (hasActive) chipClass += ' has-order';
-    else if (allDone)   chipClass += ' all-done';
-
-    // dot indicator
-    let dot = '';
-    if (!closed) {
-      if (hasActive) dot = '<div class="tdot"></div>';
-      else if (allDone) dot = '<div class="tdot done"></div>';
-    }
-
-    // label ล่าง
-    let label = '';
-    if (closed)       label = 'ปิด';
-    else if (billTotal > 0 && hasActive) label = '฿'+billTotal.toLocaleString();
-    else if (hasActive)  label = hasCooking ? '🔥 กำลังทำ' : '⏳ รอครัว';
-    else if (allDone)    label = '💰 รอชำระ';
-    else if (billTotal > 0) label = '฿'+billTotal.toLocaleString();
-
-    const chip = document.createElement('div');
-    chip.className = chipClass;
-    chip.innerHTML = dot +
-      `<div class="table-chip-num">${i}</div>` +
-      `<div class="table-chip-info">${label}</div>`;
-    chip.onclick = () => selectTable(i);
+    const active  = i===currentTable, closed=tableStates[String(i)]===false;
+    const tOrders = allOrders.filter(o=>String(o.table)===String(i)&&o.status!=='ชำระแล้ว');
+    const billT   = (bills[i]||[]).reduce((a,e)=>a+e.price*e.qty,0);
+    const hasPend = tOrders.some(o=>o.status==='รอดำเนินการ');
+    const hasCook = tOrders.some(o=>o.status==='กำลังทำ');
+    const hasAct  = hasPend||hasCook;
+    const allDone = tOrders.length>0&&tOrders.every(o=>o.status==='เสร็จแล้ว');
+    let cls = 'table-chip'+(active?' active':'')+(closed?' closed':hasAct?' has-order':allDone?' all-done':'');
+    let dot = closed?'':(hasAct?'<div class="tdot"></div>':allDone?'<div class="tdot done"></div>':'');
+    let lbl = closed?'ปิด':billT>0&&hasAct?'฿'+billT.toLocaleString():hasCook?'🔥 กำลังทำ':hasPend?'⏳ รอครัว':allDone?'💰 รอชำระ':billT>0?'฿'+billT.toLocaleString():'';
+    const chip=document.createElement('div');
+    chip.className=cls;
+    chip.innerHTML=dot+`<div class="table-chip-num">${i}</div><div class="table-chip-info">${lbl}</div>`;
+    chip.onclick=()=>selectTable(i);
     grid.appendChild(chip);
   }
-  // update toggle btn
-  const closed = tableStates[String(currentTable)] === false;
-  const btn = document.getElementById('tableToggleBtn');
-  btn.textContent = closed ? 'ปิดอยู่' : 'เปิดอยู่';
-  btn.className = 'hbtn ' + (closed ? 'toggle-closed' : 'toggle-open');
+  const closed=tableStates[String(currentTable)]===false;
+  const btn=document.getElementById('tableToggleBtn');
+  btn.textContent=closed?'ปิด':'เปิด';
+  btn.className='hbtn '+(closed?'closed':'open');
 }
 
 function selectTable(t) {
-  currentTable = t;
-  document.getElementById('billNum').textContent = t;
-  renderTableGrid();
-  renderBill();
+  currentTable=t;
+  document.getElementById('billNum').textContent=t;
+  renderTableGrid(); renderBill();
 }
 
 async function toggleCurrentTable() {
-  const closed = tableStates[String(currentTable)] === false;
-  if (closed) { delete tableStates[String(currentTable)]; }
-  else { tableStates[String(currentTable)] = false; }
-  try {
-    await fetch(GAS, { method:'POST', body: JSON.stringify({
-      action:'saveSettings', settings:{ tableStates: JSON.stringify(tableStates) }
-    })});
-    toast((closed?'✅ เปิด':'🔒 ปิด') + ' โต๊ะ ' + currentTable);
-  } catch(e) {}
-  renderTableGrid();
+  if(tableStates[String(currentTable)]===false) delete tableStates[String(currentTable)];
+  else tableStates[String(currentTable)]=false;
+  try { await fetch(GAS,{method:'POST',body:JSON.stringify({action:'saveSettings',settings:{tableStates:JSON.stringify(tableStates)}})}); } catch(e){}
+  renderTableGrid(); toast((tableStates[String(currentTable)]===false?'🔒 ปิด':'✅ เปิด')+' โต๊ะ '+currentTable);
 }
 
 // ── Menu ──────────────────────────────────────────────────────
 function renderCategories() {
-  const cats = ['ทั้งหมด', ...new Set(menu.map(m=>m.category).filter(Boolean))];
-  document.getElementById('catBar').innerHTML = cats.map(c=>
-    `<div class="cat-chip ${c===currentCat?'active':''}" onclick="selCat('${c}')">${c}</div>`
-  ).join('');
+  const cats=['ทั้งหมด',...new Set(menu.map(m=>m.category).filter(Boolean))];
+  document.getElementById('catBar').innerHTML=cats.map(c=>`<div class="cat-chip ${c===currentCat?'active':''}" onclick="selCat('${c}')">${c}</div>`).join('');
 }
-function selCat(c) { currentCat=c; renderCategories(); renderMenu(); }
-
-function renderMenu() {
-  const q = (document.getElementById('menuSearch').value||'').toLowerCase();
-  let items = currentCat==='ทั้งหมด'?menu:menu.filter(m=>m.category===currentCat);
-  if (q) items = items.filter(m=>m.name.toLowerCase().includes(q));
-  if (!items.length) {
-    document.getElementById('menuGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);">ไม่พบเมนู</div>';
-    return;
-  }
-  document.getElementById('menuGrid').innerHTML = items.map(item => {
-    const sold = item.available===false||item.available==='false';
-    const opts = hasOpts(item);
+function selCat(c){currentCat=c;renderCategories();renderMenu();}
+function renderMenu(){
+  const q=(document.getElementById('menuSearch').value||'').toLowerCase();
+  let items=currentCat==='ทั้งหมด'?menu:menu.filter(m=>m.category===currentCat);
+  if(q) items=items.filter(m=>m.name.toLowerCase().includes(q));
+  if(!items.length){document.getElementById('menuGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);">ไม่พบเมนู</div>';return;}
+  document.getElementById('menuGrid').innerHTML=items.map(item=>{
+    const sold=item.available===false||item.available==='false';
+    const opts=hasOpts(item);
     return `<div class="mcard ${sold?'soldout':''}">
       <div class="mcard-img"><span class="mcard-emoji">${item.emoji||'🍽️'}</span>${item.image?`<img src="${item.image}" onload="this.previousSibling.style.display='none'" onerror="this.style.visibility='hidden'">`:''}</div>
       <div class="mcard-body">
@@ -471,72 +623,59 @@ function renderMenu() {
     </div>`;
   }).join('');
 }
-
-function hasOpts(item) {
-  try { return !!(item.options&&JSON.parse(item.options).filter(g=>g.name&&g.choices?.length).length); } catch(e) { return false; }
-}
+function hasOpts(item){try{return !!(item.options&&JSON.parse(item.options).filter(g=>g.name&&g.choices?.length).length);}catch(e){return false;}}
 
 // ── Add to Bill ───────────────────────────────────────────────
-function clickMenu(id) {
-  if (tableStates[String(currentTable)]===false) { toast('⛔ โต๊ะนี้ปิดอยู่'); return; }
-  const item = menu.find(m=>m.id===id); if (!item) return;
-  let groups = [];
-  try { groups = item.options?JSON.parse(item.options).filter(g=>g.name&&g.choices?.length):[]; } catch(e) {}
-  if (groups.length) openOptModal(item, groups);
-  else pushBill(item, {});
+function clickMenu(id){
+  if(tableStates[String(currentTable)]===false){toast('⛔ โต๊ะนี้ปิดอยู่');return;}
+  const item=menu.find(m=>m.id===id);if(!item)return;
+  let groups=[];try{groups=item.options?JSON.parse(item.options).filter(g=>g.name&&g.choices?.length):[];}catch(e){}
+  if(groups.length) openOptModal(item,groups); else pushBill(item,{});
 }
-
-function pushBill(item, opts) {
-  if (!bills[currentTable]) bills[currentTable] = [];
-  const extra = Object.values(opts).reduce((a,s)=>a+(s?.extraPrice||0),0);
-  const price = item.price + extra;
-  const key   = JSON.stringify(opts);
-  const ex    = bills[currentTable].find(e=>e.id===item.id&&JSON.stringify(e.opts)===key);
-  if (ex) { ex.qty++; } else {
-    bills[currentTable].push({cartId:item.id+'-'+Date.now(),id:item.id,name:item.name,emoji:item.emoji||'',price,qty:1,opts});
-  }
+function pushBill(item,opts){
+  if(!bills[currentTable])bills[currentTable]=[];
+  const extra=Object.values(opts).reduce((a,s)=>a+(s?.extraPrice||0),0);
+  const price=item.price+extra, key=JSON.stringify(opts);
+  const ex=bills[currentTable].find(e=>e.id===item.id&&JSON.stringify(e.opts)===key);
+  if(ex)ex.qty++; else bills[currentTable].push({cartId:item.id+'-'+Date.now(),id:item.id,name:item.name,emoji:item.emoji||'',price,qty:1,opts});
   renderBill(); renderTableGrid();
 }
 
 // ── Options Modal ─────────────────────────────────────────────
-function openOptModal(item, groups) {
-  optItem={item,groups}; optSel={};
+function openOptModal(item,groups){
+  optItem={item,groups};optSel={};
   document.getElementById('oEmoji').textContent=item.emoji||'🍽️';
   document.getElementById('oName').textContent=item.name;
-  renderOGroups(groups); updateOConfirm();
+  renderOGroups(groups);updateOConfirm();
   document.getElementById('optModal').classList.add('open');
 }
-function closeOptModal() { document.getElementById('optModal').classList.remove('open'); optItem=null; optSel={}; }
-
-function renderOGroups(groups) {
-  document.getElementById('oGroups').innerHTML = groups.map(g=>`
+function closeOptModal(){document.getElementById('optModal').classList.remove('open');optItem=null;optSel={};}
+function renderOGroups(groups){
+  document.getElementById('oGroups').innerHTML=groups.map(g=>`
     <div class="opt-glabel">${g.name}</div>
     <div class="opt-chips">${g.choices.map(c=>{
-      const lb=typeof c==='object'?c.label:c, ep=typeof c==='object'?(c.extraPrice||0):0;
+      const lb=typeof c==='object'?c.label:c,ep=typeof c==='object'?(c.extraPrice||0):0;
       const sel=optSel[g.name]?.label===lb;
       return `<div class="opt-chip ${sel?'sel':''}" onclick="selOpt('${g.name.replace(/'/g,"\\'")}','${lb.replace(/'/g,"\\'")}',${ep})">${lb}${ep>0?` <small>+฿${ep}</small>`:''}</div>`;
-    }).join('')}</div>
-  `).join('');
+    }).join('')}</div>`).join('');
 }
-function selOpt(gn,lb,ep) { optSel[gn]={label:lb,extraPrice:ep}; if(optItem) renderOGroups(optItem.groups); updateOConfirm(); }
-function updateOConfirm() {
-  if (!optItem) return;
+function selOpt(gn,lb,ep){optSel[gn]={label:lb,extraPrice:ep};if(optItem)renderOGroups(optItem.groups);updateOConfirm();}
+function updateOConfirm(){
+  if(!optItem)return;
   const done=optItem.groups.every(g=>optSel[g.name]);
-  const btn=document.getElementById('oConfirm');
-  btn.disabled=!done;
-  if (done) { const ex=Object.values(optSel).reduce((a,s)=>a+(s.extraPrice||0),0); btn.textContent=`+ เพิ่ม ฿${(optItem.item.price+ex).toLocaleString()}`; }
+  const btn=document.getElementById('oConfirm'); btn.disabled=!done;
+  if(done){const ex=Object.values(optSel).reduce((a,s)=>a+(s.extraPrice||0),0);btn.textContent=`+ เพิ่ม ฿${(optItem.item.price+ex).toLocaleString()}`;}
   else btn.textContent='+ เพิ่ม';
 }
-function confirmOpt() { if(!optItem)return; pushBill(optItem.item,{...optSel}); closeOptModal(); }
+function confirmOpt(){if(!optItem)return;pushBill(optItem.item,{...optSel});closeOptModal();}
 
 // ── Bill ──────────────────────────────────────────────────────
-function renderBill() {
-  const bill=bills[currentTable]||[];
-  const body=document.getElementById('billBody');
-  if (!bill.length) { body.innerHTML='<div class="bill-empty"><i>🛒</i>เลือกเมนูจากด้านซ้าย</div>'; document.getElementById('billTotal').textContent='฿0'; document.getElementById('billCount').textContent='0 รายการ'; return; }
-  let total=0, count=0;
+function renderBill(){
+  const bill=bills[currentTable]||[], body=document.getElementById('billBody');
+  if(!bill.length){body.innerHTML='<div class="bill-empty"><i>🛒</i>เลือกเมนูจากด้านซ้าย</div>';document.getElementById('billTotal').textContent='฿0';document.getElementById('billCount').textContent='0 รายการ';return;}
+  let total=0,count=0;
   body.innerHTML=bill.map(e=>{
-    total+=e.price*e.qty; count+=e.qty;
+    total+=e.price*e.qty;count+=e.qty;
     const ot=Object.values(e.opts).map(s=>typeof s==='object'?s.label:s).join(', ');
     return `<div class="brow">
       <div class="brow-info">
@@ -554,86 +693,54 @@ function renderBill() {
   document.getElementById('billTotal').textContent='฿'+total.toLocaleString();
   document.getElementById('billCount').textContent=count+' รายการ';
 }
-
-function chgQty(cartId, d) {
-  const bill=bills[currentTable]||[]; const idx=bill.findIndex(e=>e.cartId===cartId); if(idx===-1)return;
-  bill[idx].qty+=d; if(bill[idx].qty<=0) bill.splice(idx,1);
-  renderBill(); renderTableGrid();
+function chgQty(cartId,d){
+  const bill=bills[currentTable]||[],idx=bill.findIndex(e=>e.cartId===cartId);if(idx===-1)return;
+  bill[idx].qty+=d;if(bill[idx].qty<=0)bill.splice(idx,1);
+  renderBill();renderTableGrid();
+}
+function clearBill(){
+  if(!(bills[currentTable]?.length))return;
+  if(!confirm('ล้างรายการโต๊ะ '+currentTable+'?'))return;
+  bills[currentTable]=[];document.getElementById('billNote').value='';
+  renderBill();renderTableGrid();
 }
 
-function clearBill() {
-  if (!(bills[currentTable]?.length)) return;
-  if (!confirm('ล้างรายการโต๊ะ '+currentTable+'?')) return;
-  bills[currentTable]=[]; document.getElementById('billNote').value='';
-  renderBill(); renderTableGrid();
-}
-
-// ── Send Order ────────────────────────────────────────────────
-async function sendOrder() {
+// ── Send / Pay / Receipt ──────────────────────────────────────
+async function sendOrder(){
   const bill=bills[currentTable]||[];
-  if (!bill.length) { toast('ยังไม่มีรายการ'); return; }
+  if(!bill.length){toast('ยังไม่มีรายการ');return;}
   const items=bill.map(e=>{
     const ol=Object.values(e.opts).map(s=>typeof s==='object'?s.label:s);
-    return {id:e.id,name:e.name+(ol.length?` (${ol.join(', ')})`:``),emoji:e.emoji,qty:e.qty,price:e.price,total:e.price*e.qty,opts:e.opts};
+    return{id:e.id,name:e.name+(ol.length?` (${ol.join(', ')})`:''),emoji:e.emoji,qty:e.qty,price:e.price,total:e.price*e.qty,opts:e.opts};
   });
-  const orderId='POS-'+Date.now();
-  const grand=items.reduce((a,b)=>a+b.total,0);
-  const payload={action:'addOrder',orderId,table:currentTable,items,note:document.getElementById('billNote').value,total:grand,status:'รอดำเนินการ',time:new Date().toLocaleString('th-TH'),customer:{name:'พนักงาน (POS)',userId:'pos-staff'}};
+  const payload={action:'addOrder',orderId:'POS-'+Date.now(),table:currentTable,items,note:document.getElementById('billNote').value,total:items.reduce((a,b)=>a+b.total,0),status:'รอดำเนินการ',time:new Date().toLocaleString('th-TH'),customer:{name:'พนักงาน (POS)',userId:'pos-staff'}};
   document.getElementById('sendBtn').disabled=true;
-  try {
-    await fetch(GAS,{method:'POST',body:JSON.stringify(payload)});
-    bills[currentTable]=[]; document.getElementById('billNote').value='';
-    renderBill(); await loadData(); toast('✅ ส่งครัวแล้ว — โต๊ะ '+currentTable);
-  } catch(e) { toast('ส่งไม่ได้ ⚠️'); }
+  try{await fetch(GAS,{method:'POST',body:JSON.stringify(payload)});bills[currentTable]=[];document.getElementById('billNote').value='';renderBill();await loadData();toast('✅ ส่งครัวแล้ว — โต๊ะ '+currentTable);}
+  catch(e){toast('ส่งไม่ได้ ⚠️');}
   document.getElementById('sendBtn').disabled=false;
 }
-
-// ── Mark Paid ─────────────────────────────────────────────────
-async function markPaid() {
-  const bill = bills[currentTable] || [];
-  const tableOrders = allOrders.filter(o => String(o.table) === String(currentTable) && !['ชำระแล้ว'].includes(o.status));
-  if (!tableOrders.length && !bill.length) { toast('ไม่มีออเดอร์'); return; }
-  if (!confirm('ยืนยันชำระเงินโต๊ะ ' + currentTable + '?')) return;
-
-  // ถ้า bill ยังมีรายการที่ยังไม่ส่งครัว ให้ส่งพร้อมสถานะ "ชำระแล้ว" เลย
-  if (bill.length) {
-    const items = bill.map(e => {
-      const ol = Object.values(e.opts).map(s => typeof s === 'object' ? s.label : s);
-      return { id:e.id, name:e.name+(ol.length?` (${ol.join(', ')})`:``), emoji:e.emoji, qty:e.qty, price:e.price, total:e.price*e.qty, opts:e.opts };
-    });
-    const grand = items.reduce((a,b) => a+b.total, 0);
-    const payload = {
-      action:'addOrder', orderId:'POS-'+Date.now(), table:currentTable,
-      items, note:document.getElementById('billNote').value,
-      total:grand, status:'ชำระแล้ว',
-      time:new Date().toLocaleString('th-TH'),
-      customer:{name:'พนักงาน (POS)', userId:'pos-staff'}
-    };
-    await fetch(GAS, { method:'POST', body:JSON.stringify(payload) });
-  }
-
-  // update ออเดอร์เก่าที่มีอยู่ใน sheet
-  for (const o of tableOrders) {
-    await fetch(GAS, { method:'POST', body:JSON.stringify({ action:'updateOrderStatus', orderId:o.orderId, status:'ชำระแล้ว' }) });
-  }
-
-  bills[currentTable] = [];
-  document.getElementById('billNote').value = '';
-  renderBill(); await loadData();
-  toast('💰 ชำระแล้ว — โต๊ะ ' + currentTable);
-}
-
-// ── Receipt ───────────────────────────────────────────────────
-function showReceipt() {
+async function markPaid(){
   const bill=bills[currentTable]||[];
-  const tableOrders=allOrders.filter(o=>String(o.table)===String(currentTable)&&o.status!=='ชำระแล้ว');
+  const tOrders=allOrders.filter(o=>String(o.table)===String(currentTable)&&o.status!=='ชำระแล้ว');
+  if(!tOrders.length&&!bill.length){toast('ไม่มีออเดอร์');return;}
+  if(!confirm('ยืนยันชำระเงินโต๊ะ '+currentTable+'?'))return;
+  if(bill.length){
+    const items=bill.map(e=>{const ol=Object.values(e.opts).map(s=>typeof s==='object'?s.label:s);return{id:e.id,name:e.name+(ol.length?` (${ol.join(', ')})`:''),emoji:e.emoji,qty:e.qty,price:e.price,total:e.price*e.qty,opts:e.opts};});
+    await fetch(GAS,{method:'POST',body:JSON.stringify({action:'addOrder',orderId:'POS-'+Date.now(),table:currentTable,items,note:'',total:items.reduce((a,b)=>a+b.total,0),status:'ชำระแล้ว',time:new Date().toLocaleString('th-TH'),customer:{name:'พนักงาน (POS)',userId:'pos-staff'}})});
+  }
+  for(const o of tOrders) await fetch(GAS,{method:'POST',body:JSON.stringify({action:'updateOrderStatus',orderId:o.orderId,status:'ชำระแล้ว'})});
+  bills[currentTable]=[];document.getElementById('billNote').value='';
+  renderBill();await loadData();toast('💰 ชำระแล้ว — โต๊ะ '+currentTable);
+}
+function showReceipt(){
+  const bill=bills[currentTable]||[];
+  const tOrders=allOrders.filter(o=>String(o.table)===String(currentTable)&&o.status!=='ชำระแล้ว');
   let all=[...bill];
-  tableOrders.forEach(o=>{
-    const raw=o.items;
-    const items=Array.isArray(raw)?raw:(typeof raw==='string'&&raw.startsWith('[')?JSON.parse(raw):[]);
-    if (Array.isArray(items)) items.forEach(i=>all.push({name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty,opts:{}}));
+  tOrders.forEach(o=>{
+    const raw=o.items,items=Array.isArray(raw)?raw:(typeof raw==='string'&&raw.startsWith('[')?JSON.parse(raw):[]);
+    if(Array.isArray(items))items.forEach(i=>all.push({name:i.name,emoji:i.emoji||'',price:i.price,qty:i.qty,opts:{}}));
   });
-  if (!all.length) { toast('ไม่มีรายการ'); return; }
+  if(!all.length){toast('ไม่มีรายการ');return;}
   const total=all.reduce((a,e)=>a+e.price*e.qty,0);
   document.getElementById('rName').textContent=restaurantName;
   document.getElementById('rDate').textContent=new Date().toLocaleString('th-TH');
@@ -641,144 +748,240 @@ function showReceipt() {
   document.getElementById('rTotal').textContent='฿'+total.toLocaleString();
   document.getElementById('rItems').innerHTML=all.map(e=>{
     const ot=Object.values(e.opts||{}).map(s=>typeof s==='object'?s.label:s).filter(Boolean).join(', ');
-    return `<div class="rrow"><span>${e.emoji} ${e.name}</span><span>฿${(e.price*e.qty).toLocaleString()}</span></div>`+
-           (ot?`<div class="rrow opts-row"><span>${ot}</span><span>×${e.qty}</span></div>`:'');
+    return `<div class="rrow"><span>${e.emoji} ${e.name}</span><span>฿${(e.price*e.qty).toLocaleString()}</span></div>`+(ot?`<div class="rrow opts-row"><span>${ot}</span><span>×${e.qty}</span></div>`:'');
   }).join('');
   document.getElementById('receiptBg').classList.add('open');
 }
 
+// ── Kitchen ───────────────────────────────────────────────────
+function renderKitchen(){
+  const pending=allOrders.filter(o=>o.status==='รอดำเนินการ');
+  const cooking=allOrders.filter(o=>o.status==='กำลังทำ');
+  const done   =allOrders.filter(o=>o.status==='เสร็จแล้ว');
+  document.getElementById('kcnt-new').textContent=pending.length;
+  document.getElementById('kcnt-cooking').textContent=cooking.length;
+  document.getElementById('kcnt-done').textContent=done.length;
+  document.getElementById('klist-new').innerHTML=pending.length?pending.map(o=>kCard(o,'new')).join(''):'<div class="kempty"><i>✨</i>ไม่มีออเดอร์รอ</div>';
+  document.getElementById('klist-cooking').innerHTML=cooking.length?cooking.map(o=>kCard(o,'cooking')).join(''):'<div class="kempty"><i>🕐</i>ไม่มีออเดอร์กำลังทำ</div>';
+  document.getElementById('klist-done').innerHTML=done.length?[...done].slice(-10).map(o=>kCard(o,'done')).join(''):'<div class="kempty"><i>🎉</i>ยังไม่มีที่เสร็จ</div>';
+  // timers
+  setTimeout(()=>{
+    document.querySelectorAll('.ktimer[data-id]').forEach(el=>{
+      const id=el.dataset.id;
+      if(!kStartTimes[id])kStartTimes[id]=Date.now();
+      const s=Math.floor((Date.now()-kStartTimes[id])/1000);
+      const m=Math.floor(s/60);
+      el.textContent=`${m}:${String(s%60).padStart(2,'0')}`;
+      el.className='ktimer '+(s<300?'normal':s<600?'warning':'danger');
+    });
+  },100);
+}
+function kCard(o,col){
+  const raw=o.items;
+  let itemsHtml='';
+  try{
+    const parsed=Array.isArray(raw)?raw:(typeof raw==='string'&&raw.trim().startsWith('[')?JSON.parse(raw):null);
+    if(parsed)itemsHtml=parsed.map(i=>`<div class="kcard-item"><span class="kcard-item-name">${i.emoji||''}${i.name}</span><span class="kcard-item-qty">×${i.qty}</span></div>`).join('');
+    else itemsHtml=(typeof raw==='string'?raw:'').split('\n').filter(Boolean).map(s=>`<div class="kcard-item"><span class="kcard-item-name">${s}</span></div>`).join('');
+  }catch(e){itemsHtml=`<div class="kcard-item"><span class="kcard-item-name">${raw||''}</span></div>`;}
+  const cust=o.customer,custName=typeof cust==='object'?cust?.name:(typeof cust==='string'?cust:'');
+  const custPic=typeof cust==='object'?cust?.pictureUrl:'';
+  const custHtml=(custName&&custName!=='พนักงาน (POS)')?`<div class="kcard-customer">${custPic?`<img class="kcard-avatar" src="${custPic}" onerror="this.style.display='none'">`:`<div class="kcard-avatar-ph">👤</div>`}<span class="kcard-cname">${custName}</span></div>`:'' ;
+  return `<div class="kcard">
+    <div class="kcard-head">
+      <div>
+        <div class="kcard-table" style="color:${col==='cooking'?'var(--accent)':'var(--green)'}">โต๊ะ ${o.table}</div>
+        <div class="kcard-meta">${o.orderId||''}</div>
+        <div class="kcard-meta">${o.time||''}</div>
+      </div>
+      ${col==='cooking'?`<span class="ktimer normal" data-id="${o.orderId}">0:00</span>`:''}
+    </div>
+    ${custHtml}
+    <div class="kcard-items">${itemsHtml}</div>
+    ${o.note?`<div class="kcard-note">📝 ${o.note}</div>`:''}
+    <div class="kcard-actions">
+      ${col==='new'?`<button class="kctn kctn-start" onclick="kUpdateStatus('${o.orderId}','กำลังทำ')">🔥 เริ่มทำ</button>`:''}
+      ${col==='cooking'?`<button class="kctn kctn-done" onclick="kUpdateStatus('${o.orderId}','เสร็จแล้ว')">✅ เสร็จแล้ว</button>`:''}
+      ${col==='done'?`<button class="kctn kctn-undo" onclick="kUpdateStatus('${o.orderId}','กำลังทำ')">↩️ ย้อนกลับ</button>`:''}
+    </div>
+  </div>`;
+}
+async function kUpdateStatus(orderId,status){
+  if(status==='กำลังทำ')kStartTimes[orderId]=Date.now();
+  try{await fetch(GAS,{method:'POST',body:JSON.stringify({action:'updateOrderStatus',orderId,status})});const o=allOrders.find(x=>x.orderId===orderId);if(o)o.status=status;renderKitchen();renderTableGrid();}
+  catch(e){toast('อัปเดตไม่ได้ ⚠️');}
+}
+
 // ── Summary ───────────────────────────────────────────────────
-function setToday() {
-  const d=new Date().toISOString().split('T')[0];
-  document.getElementById('dateFrom').value=d;
-  document.getElementById('dateTo').value=d;
-}
-function setThisMonth() {
-  const now=new Date();
-  const from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
-  const to  =new Date(now.getFullYear(),now.getMonth()+1,0).toISOString().split('T')[0];
-  document.getElementById('dateFrom').value=from;
-  document.getElementById('dateTo').value=to;
-}
-
-function parseOrderDate(o) {
-  try {
-    // ลอง parse จาก orderId timestamp ก่อน (ดีที่สุด)
-    const match = String(o.orderId||'').match(/(\d{13})/);
-    if (match) {
-      const d = new Date(parseInt(match[1]));
-      if (!isNaN(d)) return d;
-    }
-    // ลอง parse จาก o.time — format ไทย เช่น "18/3/2568 BE, 20:34:06"
-    if (o.time) {
-      const t = String(o.time);
-      // แปลง พ.ศ. → ค.ศ.
-      const thMatch = t.match(/(\d+)\/(\d+)\/(\d+)[^,]*,\s*(\d+):(\d+)/);
-      if (thMatch) {
-        let [,d,m,y,hr,min] = thMatch;
-        y = parseInt(y); if (y > 2400) y -= 543; // พ.ศ. → ค.ศ.
-        return new Date(y, parseInt(m)-1, parseInt(d), parseInt(hr), parseInt(min));
-      }
-      const d = new Date(t);
-      if (!isNaN(d)) return d;
-    }
+function setToday(){const d=new Date().toISOString().split('T')[0];document.getElementById('dateFrom').value=d;document.getElementById('dateTo').value=d;}
+function setThisMonth(){const now=new Date(),from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0],to=new Date(now.getFullYear(),now.getMonth()+1,0).toISOString().split('T')[0];document.getElementById('dateFrom').value=from;document.getElementById('dateTo').value=to;}
+function parseOrderDate(o){
+  try{
+    const m=String(o.orderId||'').match(/(\d{13})/);
+    if(m){const d=new Date(parseInt(m[1]));if(!isNaN(d))return d;}
+    if(o.time){const t=String(o.time),tm=t.match(/(\d+)\/(\d+)\/(\d+)[^,]*,\s*(\d+):(\d+)/);
+      if(tm){let[,d,mo,y,hr,min]=tm;y=parseInt(y);if(y>2400)y-=543;return new Date(y,parseInt(mo)-1,parseInt(d),parseInt(hr),parseInt(min));}
+      const d=new Date(t);if(!isNaN(d))return d;}
     return null;
-  } catch(e) { return null; }
+  }catch(e){return null;}
+}
+function parseItemsFromOrder(o){
+  const raw=o.items;
+  if(Array.isArray(raw))return raw;
+  if(typeof raw==='string'){const tr=raw.trim();if(tr.startsWith('[')){try{return JSON.parse(tr);}catch(e){}}
+    return tr.split('\n').filter(Boolean).map(line=>{const m=line.match(/^(.*?)×?\s*(\d+)\s*$/);return m?{name:m[1].replace(/×\d+/,'').trim(),qty:parseInt(m[2])||1,price:0}:{name:line.trim(),qty:1,price:0};});}
+  return[];
+}
+function renderSummary(){
+  const fromV=document.getElementById('dateFrom').value,toV=document.getElementById('dateTo').value;
+  const from=fromV?new Date(fromV+'T00:00:00'):null,to=toV?new Date(toV+'T23:59:59'):null;
+  const fil=allOrders.filter(o=>{if(!from&&!to)return true;const d=parseOrderDate(o);if(!d)return true;if(from&&d<from)return false;if(to&&d>to)return false;return true;});
+  document.getElementById('sOrders').textContent=fil.length;
+  document.getElementById('sRevenue').textContent=fil.reduce((a,o)=>a+(Number(o.total)||0),0).toLocaleString();
+  document.getElementById('sPaid').textContent=fil.filter(o=>o.status==='ชำระแล้ว').reduce((a,o)=>a+(Number(o.total)||0),0).toLocaleString();
+  document.getElementById('sPending').textContent=fil.filter(o=>o.status==='รอดำเนินการ').length;
+  const mc={};
+  fil.forEach(o=>parseItemsFromOrder(o).forEach(i=>{const k=(i.name||'?').replace(/\s*\(.*?\)\s*/g,'').trim();if(!mc[k])mc[k]={qty:0,total:0};mc[k].qty+=Number(i.qty)||1;mc[k].total+=(Number(i.price)||0)*(Number(i.qty)||1);}));
+  document.getElementById('topMenuBody').innerHTML=Object.entries(mc).sort((a,b)=>b[1].qty-a[1].qty).slice(0,10).map(([n,v],i)=>`<tr><td><span class="rank-num">${i+1}</span></td><td>${n}</td><td>${v.qty}</td><td>${v.total>0?'฿'+v.total.toLocaleString():'-'}</td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:14px;">ไม่มีข้อมูล</td></tr>';
+  const sc={รอดำเนินการ:'b-pending',กำลังทำ:'b-cooking',เสร็จแล้ว:'b-done',ชำระแล้ว:'b-paid'};
+  document.getElementById('orderTableBody').innerHTML=[...fil].reverse().map(o=>{
+    const items=parseItemsFromOrder(o),prev=items.map(i=>i.name).join(', ').substring(0,30)+(items.length>2?'...':'');
+    return `<tr><td style="font-size:0.7rem;color:var(--muted);">${(o.orderId||'').slice(-10)}</td><td>โต๊ะ ${o.table}</td><td style="font-size:0.73rem;color:var(--muted);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${prev||'-'}</td><td>฿${Number(o.total).toLocaleString()}</td><td><span class="badge ${sc[o.status]||''}">${o.status||'-'}</span></td><td style="font-size:0.7rem;color:var(--muted);">${(o.time||'').substring(0,16)}</td></tr>`;
+  }).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:16px;">ไม่มีออเดอร์ในช่วงนี้</td></tr>';
 }
 
-function parseItemsFromOrder(o) {
-  const raw = o.items;
-  // JSON array
-  if (Array.isArray(raw)) return raw;
-  if (typeof raw === 'string') {
-    const trimmed = raw.trim();
-    if (trimmed.startsWith('[')) {
-      try { return JSON.parse(trimmed); } catch(e) {}
-    }
-    // plain string เช่น "🍤ข้าวผัดกุ้ง (หวานน้อย) ×1\n🧋โกโก้ ×2"
-    return trimmed.split('\n').filter(Boolean).map(line => {
-      const m = line.match(/^(.*?)×?\s*(\d+)\s*$/);
-      if (m) return { name: m[1].replace(/×\d+/, '').trim(), qty: parseInt(m[2]) || 1, price: 0 };
-      return { name: line.trim(), qty: 1, price: 0 };
-    });
-  }
-  return [];
-}
-
-function renderSummary() {
-  const fromVal = document.getElementById('dateFrom').value;
-  const toVal   = document.getElementById('dateTo').value;
-  const from    = fromVal ? new Date(fromVal + 'T00:00:00') : null;
-  const to      = toVal   ? new Date(toVal   + 'T23:59:59') : null;
-
-  const filtered = allOrders.filter(o => {
-    if (!from && !to) return true;
-    const d = parseOrderDate(o);
-    if (!d) return true; // parse ไม่ได้แสดงทั้งหมด
-    if (from && d < from) return false;
-    if (to   && d > to)   return false;
-    return true;
-  });
-
-  const revenue = filtered.reduce((a,o) => a+(Number(o.total)||0), 0);
-  const paid    = filtered.filter(o => o.status==='ชำระแล้ว').reduce((a,o) => a+(Number(o.total)||0), 0);
-  const pending = filtered.filter(o => o.status==='รอดำเนินการ').length;
-
-  document.getElementById('sOrders').textContent  = filtered.length;
-  document.getElementById('sRevenue').textContent = revenue.toLocaleString();
-  document.getElementById('sPaid').textContent    = paid.toLocaleString();
-  document.getElementById('sPending').textContent = pending;
-
-  // Top menus — ใช้ parseItemsFromOrder
-  const menuCount = {};
-  filtered.forEach(o => {
-    const items = parseItemsFromOrder(o);
-    items.forEach(i => {
-      // ตัด options ออกจากชื่อ เช่น "ชาเขียว (หวานน้อย)" → "ชาเขียว"
-      const key = (i.name||'?').replace(/\s*\(.*?\)\s*/g, '').trim() || '?';
-      if (!menuCount[key]) menuCount[key] = { qty:0, total:0 };
-      menuCount[key].qty   += Number(i.qty)   || 1;
-      menuCount[key].total += (Number(i.price)||0) * (Number(i.qty)||1);
-    });
-  });
-  const topMenus = Object.entries(menuCount).sort((a,b) => b[1].qty - a[1].qty).slice(0,10);
-  document.getElementById('topMenuBody').innerHTML = topMenus.length
-    ? topMenus.map(([name,v],i) =>
-        `<tr><td><span class="rank-num">${i+1}</span></td><td>${name}</td><td>${v.qty}</td><td>${v.total>0?'฿'+v.total.toLocaleString():'-'}</td></tr>`
-      ).join('')
-    : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:16px;">ไม่มีข้อมูล</td></tr>';
-
-  // Orders table
-  const sc = { รอดำเนินการ:'b-pending', กำลังทำ:'b-cooking', เสร็จแล้ว:'b-done', ชำระแล้ว:'b-paid' };
-  document.getElementById('orderTableBody').innerHTML = [...filtered].reverse().map(o => {
-    const items = parseItemsFromOrder(o);
-    const prev  = items.map(i => i.name).join(', ').substring(0,35) + (items.length>2?'...':'');
+// ── จัดการเมนู ────────────────────────────────────────────────
+function renderMgmtMenu(){
+  const q=(document.getElementById('mgmtSearch').value||'').toLowerCase();
+  const items=menu.filter(m=>!q||m.name.toLowerCase().includes(q)||(m.category||'').toLowerCase().includes(q));
+  document.getElementById('mgmtMenuBody').innerHTML=items.map(item=>{
+    const sold=item.available===false||item.available==='false';
     return `<tr>
-      <td style="font-size:0.72rem;color:var(--muted);">${(o.orderId||'').slice(-10)}</td>
-      <td>โต๊ะ ${o.table}</td>
-      <td style="font-size:0.75rem;color:var(--muted);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${prev||'-'}</td>
-      <td>฿${Number(o.total).toLocaleString()}</td>
-      <td><span class="badge ${sc[o.status]||''}">${o.status||'-'}</span></td>
-      <td style="font-size:0.72rem;color:var(--muted);">${(o.time||'').substring(0,16)}</td>
+      <td style="font-size:1.3rem;width:40px;">${item.emoji||'🍽️'}</td>
+      <td><strong style="font-size:0.83rem;">${item.name}</strong><br><span style="font-size:0.7rem;color:var(--muted);">${item.description||''}</span></td>
+      <td style="font-size:0.78rem;color:var(--muted);">${item.category||'-'}</td>
+      <td style="font-family:'Prompt',sans-serif;color:var(--accent);font-weight:700;">฿${Number(item.price).toLocaleString()}</td>
+      <td><span style="padding:3px 8px;border-radius:20px;font-size:0.68rem;font-weight:700;${sold?'background:#2a0808;color:#ef4565;':'background:#051a12;color:#06d6a0;'}">${sold?'หมด':'มีขาย'}</span></td>
+      <td style="white-space:nowrap;">
+        <button onclick='openMenuEditModal(${JSON.stringify(item).replace(/'/g,"&#39;")})' style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:7px;font-size:0.72rem;cursor:pointer;margin-right:3px;">✏️</button>
+        <button onclick="deleteMgmtMenu('${item.id}')" style="background:#2a0808;border:1px solid var(--red);color:var(--red);padding:5px 9px;border-radius:7px;font-size:0.72rem;cursor:pointer;">🗑️</button>
+      </td>
     </tr>`;
-  }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px;">ไม่มีออเดอร์ในช่วงนี้</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px;">ไม่มีเมนู</td></tr>';
+}
+async function deleteMgmtMenu(id){
+  if(!confirm('ลบเมนูนี้?'))return;
+  try{await fetch(GAS,{method:'POST',body:JSON.stringify({action:'deleteMenu',id})});await loadData();renderMgmtMenu();toast('ลบเมนูแล้ว');}
+  catch(e){toast('ลบไม่ได้ ⚠️');}
 }
 
-// ── Tab ───────────────────────────────────────────────────────
-function gotoTab(tab, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-pos').style.display     = tab==='pos'?'flex':'none';
-  document.getElementById('tab-summary').style.display = tab==='summary'?'flex':'none';
-  if (tab==='summary') renderSummary();
+// ── Menu Edit Modal + Options Builder ────────────────────────
+function openMenuEditModal(item=null){
+  editOptGroups=[];
+  if(item){
+    document.getElementById('editModalTitle').textContent='✏️ แก้ไขเมนู';
+    document.getElementById('edit-id').value=item.id;
+    document.getElementById('edit-name').value=item.name||'';
+    document.getElementById('edit-desc').value=item.description||'';
+    document.getElementById('edit-price').value=item.price||'';
+    document.getElementById('edit-emoji').value=item.emoji||'';
+    document.getElementById('edit-category').value=item.category||'';
+    document.getElementById('edit-image').value=item.image||'';
+    document.getElementById('edit-available').value=String(item.available)!=='false'?'true':'false';
+    try{editOptGroups=item.options?JSON.parse(item.options).map(g=>({name:g.name,choices:[...g.choices]})):[];}catch(e){editOptGroups=[];}
+  } else {
+    document.getElementById('editModalTitle').textContent='➕ เพิ่มเมนู';
+    document.getElementById('edit-id').value='';
+    ['edit-name','edit-desc','edit-price','edit-emoji','edit-category','edit-image'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('edit-available').value='true';
+  }
+  renderEditOptGroups();
+  document.getElementById('menuEditModal').classList.add('open');
+}
+
+function renderEditOptGroups(){
+  document.getElementById('editOptGroups').innerHTML=editOptGroups.map((g,gi)=>`
+    <div class="opt-group-box">
+      <div class="og-header">
+        <input class="og-name-input" placeholder="ชื่อกลุ่ม เช่น ขนาด, ความหวาน" value="${g.name}" oninput="editOptGroups[${gi}].name=this.value">
+        <button type="button" class="og-del-btn" onclick="delOptGroup(${gi})">🗑️</button>
+      </div>
+      <div class="og-choices">${g.choices.map((c,ci)=>{
+        const lb=typeof c==='object'?c.label:c, ep=typeof c==='object'?(c.extraPrice||0):0;
+        return `<div class="og-chip"><span>${lb}${ep>0?` +฿${ep}`:''}</span><button type="button" class="og-chip-del" onclick="delOptChoice(${gi},${ci})">✕</button></div>`;
+      }).join('')}</div>
+      <div class="og-add-row">
+        <input class="og-inp" id="og-inp-${gi}" placeholder="ตัวเลือก เช่น แก้วใหญ่" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('og-price-${gi}').focus()}">
+        <input class="og-price-inp" id="og-price-${gi}" type="number" min="0" placeholder="+฿ (0=ฟรี)" onkeydown="if(event.key==='Enter'){event.preventDefault();addOptChoice(${gi})}">
+        <button type="button" class="og-add-btn" onclick="addOptChoice(${gi})">＋</button>
+      </div>
+    </div>
+  `).join('');
+}
+function addOptGroup(){editOptGroups.push({name:'',choices:[]});renderEditOptGroups();setTimeout(()=>{const ins=document.querySelectorAll('.og-name-input');if(ins.length)ins[ins.length-1].focus();},40);}
+function delOptGroup(gi){editOptGroups.splice(gi,1);renderEditOptGroups();}
+function addOptChoice(gi){
+  const inp=document.getElementById(`og-inp-${gi}`),prInp=document.getElementById(`og-price-${gi}`);
+  const label=inp.value.trim();if(!label)return;
+  const extraPrice=Math.max(0,parseInt(prInp.value)||0);
+  if(!editOptGroups[gi].choices.find(c=>(typeof c==='object'?c.label:c)===label))
+    editOptGroups[gi].choices.push({label,extraPrice});
+  inp.value='';prInp.value='';renderEditOptGroups();
+  setTimeout(()=>{const el=document.getElementById(`og-inp-${gi}`);if(el)el.focus();},30);
+}
+function delOptChoice(gi,ci){editOptGroups[gi].choices.splice(ci,1);renderEditOptGroups();}
+
+async function saveMenuEdit(){
+  const id=document.getElementById('edit-id').value||`item-${Date.now()}`;
+  const item={
+    id, name:document.getElementById('edit-name').value,
+    description:document.getElementById('edit-desc').value,
+    price:document.getElementById('edit-price').value,
+    emoji:document.getElementById('edit-emoji').value,
+    category:document.getElementById('edit-category').value,
+    image:document.getElementById('edit-image').value,
+    available:document.getElementById('edit-available').value,
+    options:editOptGroups.filter(g=>g.name&&g.choices.length).length?JSON.stringify(editOptGroups.filter(g=>g.name&&g.choices.length)):'',
+  };
+  if(!item.name||!item.price){toast('กรุณาใส่ชื่อและราคา');return;}
+  const action=document.getElementById('edit-id').value?'updateMenu':'addMenu';
+  try{
+    await fetch(GAS,{method:'POST',body:JSON.stringify({action,item})});
+    document.getElementById('menuEditModal').classList.remove('open');
+    await loadData();renderMgmtMenu();renderMenu();toast('✅ บันทึกเมนูแล้ว');
+  }catch(e){toast('บันทึกไม่ได้ ⚠️');}
+}
+
+// ── จัดการโต๊ะ ────────────────────────────────────────────────
+function renderMgmtTables(){
+  const count=parseInt(document.getElementById('mgmtTableCount').value)||10;
+  document.getElementById('tableCountSel').value=String(count);
+  const grid=document.getElementById('mgmtTablesGrid'); grid.innerHTML='';
+  for(let i=1;i<=count;i++){
+    const closed=tableStates[String(i)]===false;
+    const div=document.createElement('div');
+    div.className='tmc '+(closed?'t-closed':'t-open');
+    div.innerHTML=`<div class="tmc-num">โต๊ะ ${i}</div><div class="tmc-status">${closed?'🔴 ปิด':'🟢 เปิด'}</div>`;
+    div.onclick=()=>{if(tableStates[String(i)]===false)delete tableStates[String(i)];else tableStates[String(i)]=false;renderMgmtTables();renderTableGrid();};
+    grid.appendChild(div);
+  }
+}
+function openAllMgmt(){tableStates={};renderMgmtTables();renderTableGrid();}
+function closeAllMgmt(){const count=parseInt(document.getElementById('mgmtTableCount').value)||10;for(let i=1;i<=count;i++)tableStates[String(i)]=false;renderMgmtTables();renderTableGrid();}
+async function saveMgmtTables(){
+  try{await fetch(GAS,{method:'POST',body:JSON.stringify({action:'saveSettings',settings:{tableStates:JSON.stringify(tableStates),tableCount:document.getElementById('mgmtTableCount').value}})});toast('💾 บันทึกสถานะโต๊ะแล้ว');}
+  catch(e){toast('บันทึกไม่ได้ ⚠️');}
+}
+
+// ── Settings ──────────────────────────────────────────────────
+function loadSettingsForm(){document.getElementById('set-name').value=restaurantName||'';}
+async function saveSettings(){
+  try{await fetch(GAS,{method:'POST',body:JSON.stringify({action:'saveSettings',settings:{restaurantName:document.getElementById('set-name').value,discordUrl:document.getElementById('set-discord').value||''}})});restaurantName=document.getElementById('set-name').value;document.getElementById('posTitle').textContent='🧾 '+restaurantName;toast('💾 บันทึกการตั้งค่าแล้ว');}
+  catch(e){toast('บันทึกไม่ได้ ⚠️');}
 }
 
 // ── Toast ─────────────────────────────────────────────────────
-function toast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2400);
-}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);}
 
 // Init
 selectTable(1);
