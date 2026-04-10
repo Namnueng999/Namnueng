@@ -795,19 +795,25 @@ function showReceipt(){
   tOrders.forEach(o => {
     const raw = o.items;
     let items = [];
-    if (Array.isArray(raw)) items = raw;
-    else if (typeof raw === 'string' && raw.trim().startsWith('[')) {
+    if (Array.isArray(raw)) {
+      items = raw; // มี price ครบ
+    } else if (typeof raw === 'string' && raw.trim().startsWith('[')) {
       try { items = JSON.parse(raw); } catch(e) {}
     } else if (typeof raw === 'string') {
+      // plain string — ไม่มี price ต่อ item ใช้ total ของ order หาร
       items = raw.split('\n').filter(Boolean).map(s => {
         const m = s.match(/^(.*?)×\s*(\d+)\s*$/);
-        return { name: m ? m[1].trim() : s, emoji:'', qty: m ? parseInt(m[2]) : 1, price: 0 };
+        return { name: m ? m[1].trim() : s, emoji:'', qty: m ? parseInt(m[2]) : 1, price: -1 }; // -1 = ต้องคำนวณจาก total
       });
+      // กระจาย total ลงแต่ละ item ตามสัดส่วน qty
+      const totalQty = items.reduce((a, i) => a + i.qty, 0);
+      const orderTotal = Number(o.total) || 0;
+      items = items.map(i => ({ ...i, price: totalQty > 0 ? Math.round(orderTotal * i.qty / totalQty) : 0 }));
     }
     items.forEach(i => {
-      grandTotal += (Number(i.price)||0) * (Number(i.qty)||1);
-      // name มี opts ติดมาแล้ว แสดงในบรรทัดเดียว
-      allRows += `<div class="rrow"><span>${i.emoji||''} ${i.name}</span><span>฿${((Number(i.price)||0)*(Number(i.qty)||1)).toLocaleString()}</span></div>`;
+      const lineTotal = i.price >= 0 ? (Number(i.price)||0) * (Number(i.qty)||1) : 0;
+      grandTotal += lineTotal;
+      allRows += `<div class="rrow"><span>${i.emoji||''} ${i.name}</span><span>฿${lineTotal.toLocaleString()}</span></div>`;
     });
   });
 
