@@ -755,10 +755,15 @@ async function markPaid(){
   const bill=bills[currentTable]||[];
   const tOrders=allOrders.filter(o=>String(o.table)===String(currentTable)&&o.status!=='ชำระแล้ว');
   if(!tOrders.length&&!bill.length){toast('ไม่มีออเดอร์');return;}
-  // แสดงใบเสร็จก่อน แล้วค่อยยืนยัน
-  showReceipt();
-  // ปุ่ม "ชำระ" ใน receipt จะเรียก confirmPaid
-  pendingPayTable = currentTable;
+  if(!confirm('ยืนยันชำระเงินโต๊ะ '+currentTable+'?'))return;
+  // ชำระเลย ไม่มี popup
+  if(bill.length){
+    const items=bill.map(e=>{const ol=Object.values(e.opts).map(s=>typeof s==='object'?s.label:s);return{id:e.id,name:e.name+(ol.length?` (${ol.join(', ')})`:''),emoji:e.emoji,qty:e.qty,price:e.price,total:e.price*e.qty,opts:e.opts};});
+    await fetch(GAS,{method:'POST',body:JSON.stringify({action:'addOrder',orderId:'POS-'+Date.now(),table:currentTable,items,note:'',total:items.reduce((a,b)=>a+b.total,0),status:'ชำระแล้ว',time:new Date().toLocaleString('th-TH'),customer:{name:'พนักงาน (POS)',userId:'pos-staff'}})});
+  }
+  for(const o of tOrders) await fetch(GAS,{method:'POST',body:JSON.stringify({action:'updateOrderStatus',orderId:o.orderId,status:'ชำระแล้ว'})});
+  bills[currentTable]=[];document.getElementById('billNote').value='';
+  renderBill();await loadData();toast('💰 ชำระแล้ว — โต๊ะ '+currentTable);
 }
 
 let pendingPayTable = null;
@@ -776,20 +781,6 @@ async function confirmPaid(){
   pendingPayTable=null;
   renderBill();await loadData();toast('💰 ชำระแล้ว — โต๊ะ '+t);
 }
-function showReceiptFromBill(bill){
-  if(!bill||!bill.length){toast('ไม่มีรายการ');return;}
-  const total=bill.reduce((a,e)=>a+e.price*e.qty,0);
-  document.getElementById('rName').textContent=restaurantName;
-  document.getElementById('rDate').textContent=new Date().toLocaleString('th-TH');
-  document.getElementById('rTable').textContent=currentTable;
-  document.getElementById('rTotal').textContent='฿'+total.toLocaleString();
-  document.getElementById('rItems').innerHTML=bill.map(e=>{
-    const ot=Object.values(e.opts||{}).map(s=>typeof s==='object'?s.label:s).filter(Boolean).join(', ');
-    return `<div class="rrow"><span>${e.emoji} ${e.name}</span><span>฿${(e.price*e.qty).toLocaleString()}</span></div>`+(ot?`<div class="rrow opts-row"><span>${ot}</span><span>×${e.qty}</span></div>`:'');
-  }).join('');
-  document.getElementById('rPayBtn').style.display='none'; // ส่งครัวแล้ว ไม่ต้องชำระ
-  document.getElementById('receiptBg').classList.add('open');
-}
 
 function showReceipt(){
   const bill = bills[currentTable] || [];
@@ -800,7 +791,7 @@ function showReceipt(){
   let allRows = '';
   let grandTotal = 0;
 
-  // orders ในครัว/เสร็จแล้ว
+  // orders ในครัว — ชื่อมี opts ติดมาแล้วใน name เช่น "โกโก้ (แก้วเล็ก)"
   tOrders.forEach(o => {
     const raw = o.items;
     let items = [];
@@ -813,24 +804,20 @@ function showReceipt(){
         return { name: m ? m[1].trim() : s, emoji:'', qty: m ? parseInt(m[2]) : 1, price: 0 };
       });
     }
-    const statusLabel = o.status === 'เสร็จแล้ว' ? '✅' : o.status === 'กำลังทำ' ? '🔥' : '⏳';
-    allRows += `<div style="font-size:0.68rem;color:#999;margin:6px 0 2px;">${statusLabel} ${o.status}</div>`;
     items.forEach(i => {
       grandTotal += (Number(i.price)||0) * (Number(i.qty)||1);
+      // name มี opts ติดมาแล้ว แสดงในบรรทัดเดียว
       allRows += `<div class="rrow"><span>${i.emoji||''} ${i.name}</span><span>฿${((Number(i.price)||0)*(Number(i.qty)||1)).toLocaleString()}</span></div>`;
     });
   });
 
-  // bill ที่ยังไม่ส่ง
-  if (bill.length) {
-    allRows += `<div style="font-size:0.68rem;color:#999;margin:6px 0 2px;">📝 รายการใหม่</div>`;
-    bill.forEach(e => {
-      grandTotal += e.price * e.qty;
-      const ot = Object.values(e.opts||{}).map(s=>typeof s==='object'?s.label:s).filter(Boolean).join(', ');
-      allRows += `<div class="rrow"><span>${e.emoji||''} ${e.name}</span><span>฿${(e.price*e.qty).toLocaleString()}</span></div>`
-        + (ot ? `<div class="rrow opts-row"><span>${ot}</span></div>` : '');
-    });
-  }
+  // bill ที่ยังไม่ส่ง — opts แยกต่างหาก รวมเป็นบรรทัดเดียว
+  bill.forEach(e => {
+    grandTotal += e.price * e.qty;
+    const ot = Object.values(e.opts||{}).map(s=>typeof s==='object'?s.label:s).filter(Boolean).join(', ');
+    const displayName = ot ? `${e.name} (${ot})` : e.name;
+    allRows += `<div class="rrow"><span>${e.emoji||''} ${displayName}</span><span>฿${(e.price*e.qty).toLocaleString()}</span></div>`;
+  });
 
   if (!allRows) { toast('ไม่มีรายการในโต๊ะ '+currentTable); return; }
 
