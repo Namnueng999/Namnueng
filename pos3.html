@@ -741,11 +741,9 @@ async function sendOrder(){
   document.getElementById('sendBtn').disabled=true;
   try{
     await fetch(GAS,{method:'POST',body:JSON.stringify(payload)});
-    await loadData(); // โหลดก่อน เพื่อให้ order ใหม่อยู่ใน allOrders
-    // แสดงใบเสร็จรวมทุก order ของโต๊ะ (รวม order ที่เพิ่งส่ง)
+    await loadData();
     bills[currentTable]=[];document.getElementById('billNote').value='';
     renderBill();
-    showReceipt(); // จะดึงจาก allOrders ที่ refresh แล้ว
     toast('✅ ส่งครัวแล้ว — โต๊ะ '+currentTable);
   }catch(e){toast('ส่งไม่ได้ ⚠️');}
   document.getElementById('sendBtn').disabled=false;
