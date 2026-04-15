@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🪔 ลอยกระทงดิจิทัล</title>
+<script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Mitr:wght@400;600&display=swap');
+
+  :root {
+    --gold: #F4C842;
+    --deep-gold: #C8952A;
+    --orange: #E8843A;
+    --deep-blue: #0A1628;
+    --mid-blue: #0D2344;
+    --water: #0E3A6E;
+    --light-water: #1565C0;
+    --lotus: #E8739A;
+    --candle: #FFF3A0;
+    --leaf: #2E7D32;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--deep-blue);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* === WATER BACKGROUND === */
+  .water-bg {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg,
+      #0A0F1E 0%,
+      #0A1628 20%,
+      #0D2344 50%,
+      #0E3A6E 80%,
+      #1565C0 100%
+    );
+    z-index: 0;
+  }
+
+  .stars {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite;
+    opacity: 0;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: var(--o, 0.8); transform: scale(1); }
+  }
+
+  .moon {
+    position: fixed;
+    top: 30px;
+    right: 60px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle at 35% 35%, #FFFDE7, #F9A825);
+    border-radius: 50%;
+    box-shadow: 0 0 40px 15px rgba(249,168,37,0.4), 0 0 80px 30px rgba(249,168,37,0.15);
+    z-index: 2;
+    animation: moonGlow 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes moonGlow {
+    0% { box-shadow: 0 0 40px 15px rgba(249,168,37,0.4), 0 0 80px 30px rgba(249,168,37,0.15); }
+    100% { box-shadow: 0 0 60px 25px rgba(249,168,37,0.6), 0 0 100px 50px rgba(249,168,37,0.25); }
+  }
+
+  /* Reflection */
+  .moon-reflection {
+    position: fixed;
+    bottom: 0;
+    right: 60px;
+    width: 40px;
+    height: 120px;
+    background: linear-gradient(180deg, rgba(249,168,37,0.3) 0%, transparent 100%);
+    z-index: 2;
+    animation: ripple 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes ripple {
+    0% { transform: scaleX(1); }
+    100% { transform: scaleX(1.5); }
+  }
+
+  /* === WATER SURFACE === */
+  .water-surface {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 35%;
+    background: linear-gradient(180deg, transparent, rgba(14,58,110,0.6) 30%, rgba(10,22,40,0.9) 100%);
+    z-index: 3;
+    overflow: hidden;
+  }
+
+  .wave {
+    position: absolute;
+    width: 200%;
+    height: 60px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60'%3E%3Cpath d='M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z' fill='rgba(21,101,192,0.3)'/%3E%3C/svg%3E") repeat-x;
+    animation: waveMove var(--speed, 6s) linear infinite;
+  }
+
+  @keyframes waveMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* === FLOATING KRATONG (ambient) === */
+  .ambient-kratong {
+    position: fixed;
+    bottom: 5%;
+    z-index: 4;
+    font-size: 32px;
+    animation: floatAcross var(--dur, 20s) linear var(--delay, 0s) infinite;
+    filter: drop-shadow(0 0 8px rgba(244,200,66,0.6));
+  }
+
+  @keyframes floatAcross {
+    0% { transform: translateX(-100px) translateY(0); opacity: 0; }
+    5% { opacity: 1; }
+    95% { opacity: 1; }
+    100% { transform: translateX(calc(100vw + 100px)) translateY(-20px); opacity: 0; }
+  }
+
+  /* === MAIN UI === */
+  .container {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 16px 40px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-top: 10px;
+  }
+
+  .header-title {
+    font-family: 'Mitr', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #F4C842, #E8843A, #F4C842);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+    text-shadow: none;
+    line-height: 1.3;
+  }
+
+  .header-sub {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  /* User Card */
+  .user-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(244,200,66,0.3);
+    border-radius: 20px;
+    padding: 16px 20px;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+  }
+
+  .user-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .user-avatar-placeholder {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    background: rgba(244,200,66,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .user-info { flex: 1; }
+  .user-name {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .user-status {
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  /* Kratong Preview */
+  .kratong-preview {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(244,200,66,0.2);
+    border-radius: 24px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+  }
+
+  .kratong-canvas {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 16px;
+  }
+
+  .kratong-display {
+    font-size: 80px;
+    line-height: 1;
+    display: block;
+    animation: bobKratong 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 16px rgba(244,200,66,0.5));
+  }
+
+  @keyframes bobKratong {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-8px) rotate(3deg); }
+  }
+
+  .candle-glow {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, rgba(255,243,160,0.8) 0%, transparent 70%);
+    animation: flicker 0.3s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes flicker {
+    0% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+    100% { transform: translateX(-50%) scale(1.2); opacity: 1; }
+  }
+
+  .kratong-label {
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  /* Style selector */
+  .style-selector {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .style-btn {
+    background: rgba(255,255,255,0.08);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #fff;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .style-btn.active {
+    border-color: var(--gold);
+    background: rgba(244,200,66,0.15);
+    transform: scale(1.05);
+  }
+
+  .style-btn:hover { border-color: rgba(244,200,66,0.5); }
+
+  /* Form */
+  .form-card {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .form-input, .form-textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #fff;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 14px;
+    resize: none;
+  }
+
+  .form-input::placeholder, .form-textarea::placeholder {
+    color: rgba(255,255,255,0.3);
+  }
+
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--gold);
+  }
+
+  .char-count {
+    color: rgba(255,255,255,0.3);
+    font-size: 11px;
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 14px;
+  }
+
+  /* Submit Button */
+  .btn-float {
+    width: 100%;
+    max-width: 400px;
+    background: linear-gradient(135deg, #F4C842, #E8843A);
+    color: #1A0A00;
+    font-family: 'Mitr', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(244,200,66,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-float:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(244,200,66,0.6);
+  }
+
+  .btn-float:active { transform: scale(0.97); }
+
+  .btn-float:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-float::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.4s;
+  }
+
+  .btn-float:hover::after { transform: translateX(100%); }
+
+  /* Login Screen */
+  .login-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+  }
+
+  .login-icon { font-size: 80px; margin-bottom: 20px; animation: bobKratong 3s ease-in-out infinite; }
+
+  .login-title {
+    font-family: 'Mitr', sans-serif;
+    font-size: 26px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .login-desc {
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+    margin-bottom: 30px;
+    line-height: 1.6;
+  }
+
+  .btn-line {
+    background: #06C755;
+    color: #fff;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(6,199,85,0.4);
+  }
+
+  .btn-line:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(6,199,85,0.5); }
+
+  /* Success Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: linear-gradient(135deg, #0D2344, #1565C0);
+    border: 1px solid var(--gold);
+    border-radius: 28px;
+    padding: 36px 28px;
+    text-align: center;
+    max-width: 340px;
+    width: 100%;
+    animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes modalIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .modal-icon { font-size: 64px; margin-bottom: 16px; animation: bobKratong 2s ease-in-out infinite; }
+  .modal-title { font-family: 'Mitr', sans-serif; font-size: 22px; color: var(--gold); margin-bottom: 8px; }
+  .modal-desc { color: rgba(255,255,255,0.7); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+
+  .btn-close {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    padding: 10px 28px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-close:hover { background: rgba(255,255,255,0.2); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(20,40,80,0.95);
+    border: 1px solid var(--gold);
+    border-radius: 50px;
+    padding: 12px 24px;
+    color: #fff;
+    font-size: 14px;
+    z-index: 200;
+    transition: transform 0.3s;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Count badge */
+  .count-badge {
+    background: rgba(244,200,66,0.15);
+    border: 1px solid rgba(244,200,66,0.3);
+    border-radius: 50px;
+    padding: 6px 16px;
+    color: var(--gold);
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .loading-screen {
+    position: fixed;
+    inset: 0;
+    background: #0A1628;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+
+  .loading-kratong { font-size: 64px; animation: bobKratong 1.5s ease-in-out infinite; }
+  .loading-text { color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 16px; }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(244,200,66,0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-top: 20px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-kratong">🪔</div>
+  <div class="loading-text">กำลังเตรียมแม่น้ำ...</div>
+  <div class="spinner"></div>
+</div>
+
+<!-- Water BG -->
+<div class="water-bg"></div>
+<div class="stars" id="stars"></div>
+<div class="moon"></div>
+<div class="moon-reflection"></div>
+<div class="water-surface">
+  <div class="wave" style="--speed:8s; bottom:20px;"></div>
+  <div class="wave" style="--speed:12s; bottom:0px; opacity:0.5;"></div>
+</div>
+
+<!-- Ambient kratongs -->
+<div id="ambientKratongs"></div>
+
+<!-- Main Container -->
+<div class="container">
+  <div class="header">
+    <div class="header-title">🪔 ลอยกระทงดิจิทัล 🪔</div>
+    <div class="header-sub">วันลอยกระทง ขอให้โชคดีตลอดปี</div>
+  </div>
+
+  <!-- Login Screen (hidden when logged in) -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-icon">🪔</div>
+    <div class="login-title">ร่วมลอยกระทงดิจิทัล</div>
+    <div class="login-desc">เข้าสู่ระบบด้วย LINE เพื่อ<br>ลอยกระทงพร้อมชื่อและรูปของคุณ</div>
+    <button class="btn-line" onclick="liffLogin()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      เข้าสู่ระบบด้วย LINE
+    </button>
+  </div>
+
+  <!-- Main Screen (shown when logged in) -->
+  <div id="mainScreen" style="display:none; width:100%; max-width:400px;">
+    <!-- User Card -->
+    <div class="user-card" id="userCard">
+      <div class="user-avatar-placeholder" id="avatarPlaceholder">👤</div>
+      <img id="userAvatar" class="user-avatar" style="display:none" alt="avatar">
+      <div class="user-info">
+        <div class="user-name" id="userName">ผู้ใช้</div>
+        <div class="user-status">🟢 พร้อมลอยกระทง</div>
+      </div>
+    </div>
+
+    <!-- Total count -->
+    <div class="count-badge" id="countBadge">🪔 มีการลอยกระทงแล้ว 0 ดวง</div>
+
+    <!-- Kratong Preview -->
+    <div class="kratong-preview">
+      <div class="kratong-canvas">
+        <div class="candle-glow"></div>
+        <span class="kratong-display" id="kratongDisplay">🪔</span>
+      </div>
+      <div class="kratong-label">เลือกรูปแบบกระทง</div>
+      <div class="style-selector">
+        <button class="style-btn active" onclick="selectStyle('🪔')" data-emoji="🪔" title="กระทง">🪔</button>
+        <button class="style-btn" onclick="selectStyle('🌸')" data-emoji="🌸" title="ดอกไม้">🌸</button>
+        <button class="style-btn" onclick="selectStyle('🌺')" data-emoji="🌺" title="กระทงดอก">🌺</button>
+        <button class="style-btn" onclick="selectStyle('🏮')" data-emoji="🏮" title="โคม">🏮</button>
+        <button class="style-btn" onclick="selectStyle('⭐')" data-emoji="⭐" title="ดาว">⭐</button>
+        <button class="style-btn" onclick="selectStyle('🌙')" data-emoji="🌙" title="จันทร์">🌙</button>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="form-card">
+      <label class="form-label">📝 คำอธิษฐาน (ถึงสิ่งศักดิ์สิทธิ์)</label>
+      <textarea class="form-textarea" id="wishText" rows="3" maxlength="100"
+        placeholder="ขอให้มีสุขภาพดี โชคดีตลอดปี..."></textarea>
+      <div class="char-count"><span id="charCount">0</span>/100</div>
+
+      <label class="form-label">✉️ ฝากบอก (สิ่งที่อยากบอก)</label>
+      <input class="form-input" id="messageText" maxlength="50" placeholder="ขอบคุณสำหรับทุกสิ่ง...">
+    </div>
+
+    <button class="btn-float" onclick="floatKratong()" id="floatBtn">
+      🪔 ลอยกระทง
+    </button>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-icon" id="modalIcon">🪔</div>
+    <div class="modal-title">ลอยกระทงสำเร็จ! 🎉</div>
+    <div class="modal-desc" id="modalDesc">กระทงของคุณกำลังลอยไปตามแม่น้ำ<br>ขอให้ความปรารถนาทุกข้อสำเร็จผล</div>
+    <button class="btn-close" onclick="closeModal()">ปิด</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// === CONFIG ===
+const LIFF_ID = '2007719419-EiPmcUvS';
+const SHEET_ID = '1QQV69CJEYcKWoo7M3RJBpYQJgpI8wyi0lwdf-l3TRss';
+const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1493974391363735674/7MX3F-s_HyS2nqdZYxlPIYTV7YgCas0sny-dBgiS0hbtC6s-2-umXph4R3OdFIuDNZS3';
+
+// Google Apps Script Web App URL — ต้อง deploy script แล้วใส่ URL ที่นี่
+const GAS_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // ← ใส่ URL จาก Apps Script
+
+let currentUser = null;
+let selectedEmoji = '🪔';
+let totalCount = 0;
+
+// === INIT ===
+window.addEventListener('load', async () => {
+  createStars();
+  createAmbientKratongs();
+  await initLiff();
+});
+
+// === STARS ===
+function createStars() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2.5 + 0.5;
+    star.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      top:${Math.random()*60}%;
+      --d:${Math.random()*4+2}s;
+      --o:${Math.random()*0.7+0.3};
+      animation-delay:${Math.random()*4}s;
+    `;
+    container.appendChild(star);
+  }
+}
+
+// === AMBIENT KRATONGS ===
+function createAmbientKratongs() {
+  const emojis = ['🪔','🌸','🌺','⭐','🏮'];
+  const container = document.getElementById('ambientKratongs');
+  for (let i = 0; i < 5; i++) {
+    const k = document.createElement('div');
+    k.className = 'ambient-kratong';
+    k.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    k.style.cssText = `
+      bottom:${3 + Math.random()*12}%;
+      --dur:${15+Math.random()*20}s;
+      --delay:${Math.random()*15}s;
+      font-size:${24+Math.random()*20}px;
+      filter:drop-shadow(0 0 ${4+Math.random()*8}px rgba(244,200,66,${0.4+Math.random()*0.4}));
+    `;
+    container.appendChild(k);
+  }
+}
+
+// === LIFF ===
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (liff.isLoggedIn()) {
+      const profile = await liff.getProfile();
+      loginSuccess(profile);
+    } else {
+      showLoginScreen();
+    }
+  } catch (e) {
+    console.error('LIFF Error:', e);
+    // Dev mode fallback
+    showLoginScreen();
+  }
+  hideLoading();
+}
+
+function liffLogin() {
+  if (typeof liff !== 'undefined' && !liff.isLoggedIn()) {
+    liff.login();
+  } else {
+    // Demo mode
+    loginSuccess({
+      userId: 'demo_' + Date.now(),
+      displayName: 'ผู้ใช้ทดสอบ',
+      pictureUrl: ''
+    });
+  }
+}
+
+function loginSuccess(profile) {
+  currentUser = profile;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainScreen').style.display = 'block';
+  document.getElementById('userName').textContent = profile.displayName;
+
+  if (profile.pictureUrl) {
+    document.getElementById('userAvatar').src = profile.pictureUrl;
+    document.getElementById('userAvatar').style.display = 'block';
+    document.getElementById('avatarPlaceholder').style.display = 'none';
+  }
+
+  loadCount();
+}
+
+function showLoginScreen() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('mainScreen').style.display = 'none';
+}
+
+function hideLoading() {
+  const el = document.getElementById('loadingScreen');
+  el.style.opacity = '0';
+  el.style.transition = 'opacity 0.5s';
+  setTimeout(() => el.style.display = 'none', 500);
+}
+
+// === STYLE SELECT ===
+function selectStyle(emoji) {
+  selectedEmoji = emoji;
+  document.getElementById('kratongDisplay').textContent = emoji;
+  document.querySelectorAll('.style-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.emoji === emoji);
+  });
+}
+
+// === CHAR COUNT ===
+document.getElementById('wishText').addEventListener('input', function() {
+  document.getElementById('charCount').textContent = this.value.length;
+});
+
+// === FLOAT KRATONG ===
+async function floatKratong() {
+  if (!currentUser) return;
+  const wish = document.getElementById('wishText').value.trim();
+  const message = document.getElementById('messageText').value.trim();
+
+  if (!wish) {
+    showToast('💛 กรุณาใส่คำอธิษฐานก่อนนะ');
+    return;
+  }
+
+  const btn = document.getElementById('floatBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ กำลังลอยกระทง...';
+
+  const data = {
+    timestamp: new Date().toISOString(),
+    userId: currentUser.userId || '',
+    name: currentUser.displayName || '',
+    pictureUrl: currentUser.pictureUrl || '',
+    emoji: selectedEmoji,
+    wish: wish,
+    message: message,
+  };
+
+  try {
+    // Save to Google Sheets via Apps Script
+    await saveToSheet(data);
+    // Notify Discord
+    await notifyDiscord(data);
+    // Show success
+    totalCount++;
+    updateCount();
+    showSuccessModal();
+    // Reset form
+    document.getElementById('wishText').value = '';
+    document.getElementById('messageText').value = '';
+    document.getElementById('charCount').textContent = '0';
+  } catch (e) {
+    console.error(e);
+    showToast('❌ เกิดข้อผิดพลาด กรุณาลองใหม่');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🪔 ลอยกระทง';
+}
+
+async function saveToSheet(data) {
+  if (GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+    console.log('ℹ️ Dev mode: Sheet save skipped', data);
+    return;
+  }
+  const resp = await fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'addKratong', ...data })
+  });
+  return resp.json();
+}
+
+async function notifyDiscord(data) {
+  const embed = {
+    embeds: [{
+      title: `${data.emoji} กระทงใหม่จาก ${data.name}`,
+      color: 0xF4C842,
+      fields: [
+        { name: '📝 คำอธิษฐาน', value: data.wish, inline: false },
+        { name: '✉️ ฝากบอก', value: data.message || '—', inline: false },
+        { name: '⏰ เวลา', value: new Date(data.timestamp).toLocaleString('th-TH'), inline: true }
+      ],
+      thumbnail: data.pictureUrl ? { url: data.pictureUrl } : undefined,
+      footer: { text: '🪔 ระบบลอยกระทงดิจิทัล' }
+    }]
+  };
+  try {
+    await fetch(DISCORD_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(embed)
+    });
+  } catch (e) {
+    console.warn('Discord notify failed:', e);
+  }
+}
+
+async function loadCount() {
+  if (GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+    totalCount = 42; // Demo
+    updateCount();
+    return;
+  }
+  try {
+    const r = await fetch(GAS_URL + '?action=getCount');
+    const d = await r.json();
+    totalCount = d.count || 0;
+    updateCount();
+  } catch {}
+}
+
+function updateCount() {
+  document.getElementById('countBadge').textContent = `🪔 มีการลอยกระทงแล้ว ${totalCount} ดวง`;
+}
+
+function showSuccessModal() {
+  document.getElementById('modalIcon').textContent = selectedEmoji;
+  document.getElementById('successModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('successModal').classList.remove('active');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
