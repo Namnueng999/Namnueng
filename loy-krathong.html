@@ -364,6 +364,57 @@
     color: rgba(255,255,255,0.3);
   }
 
+  /* Krathong image picker */
+  .krathong-picker {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .krathong-picker::-webkit-scrollbar { width: 3px; }
+  .krathong-picker::-webkit-scrollbar-thumb { background: rgba(244,197,66,0.3); border-radius: 4px; }
+
+  .k-option {
+    aspect-ratio: 1;
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.04);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .k-option:hover { border-color: rgba(244,197,66,0.4); background: rgba(244,197,66,0.06); }
+  .k-option.selected { border-color: var(--gold); background: rgba(244,197,66,0.12); box-shadow: 0 0 12px rgba(244,197,66,0.25); }
+  .k-option img { width: 100%; height: 100%; object-fit: contain; }
+  .k-option .k-check {
+    position: absolute; top: 3px; right: 3px;
+    width: 14px; height: 14px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: #1a0a00;
+    font-weight: 900;
+  }
+  .k-option.selected .k-check { display: flex; }
+
+  .k-loading {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 16px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+  }
+
   /* Krathong style picker */
   .style-label {
     font-size: 12px;
@@ -746,7 +797,6 @@
 <div class="bank"></div>
 
 <!-- Counter -->
-<div id="krathong-counter">🪷 <span id="counter-num">0</span> กระทง</div>
 
 <!-- UI Panel -->
 <div id="ui-panel">
@@ -762,39 +812,8 @@
     <div class="form-title"><span>🪷</span> ลอยกระทง <span>🕯️</span></div>
 
     <div class="style-label">เลือกแบบกระทง</div>
-    <div class="style-picker">
-      <div class="style-option selected" data-style="0" onclick="selectStyle(0)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#228B22"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#2da44e"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>คลาสสิก</span>
-      </div>
-      <div class="style-option" data-style="1" onclick="selectStyle(1)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#FF69B4"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#FF1493"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>ชมพู</span>
-      </div>
-      <div class="style-option" data-style="2" onclick="selectStyle(2)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#9B59B6"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#8E44AD"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>ม่วง</span>
-      </div>
-      <div class="style-option" data-style="3" onclick="selectStyle(3)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#FFD700"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#FFC200"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>ทอง</span>
-      </div>
-      <div class="style-option" data-style="4" onclick="selectStyle(4)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#E74C3C"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#C0392B"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>แดง</span>
-      </div>
-      <div class="style-option" data-style="5" onclick="selectStyle(5)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#1ABC9C"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#16A085"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>เขียวมรกต</span>
-      </div>
-      <div class="style-option" data-style="6" onclick="selectStyle(6)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#F39C12"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#E67E22"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>ส้ม</span>
-      </div>
-      <div class="style-option" data-style="7" onclick="selectStyle(7)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#5DADE2"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#2E86C1"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>ฟ้า</span>
-      </div>
+    <div class="krathong-picker" id="krathong-picker">
+      <div class="k-loading">⏳ กำลังโหลดกระทง...</div>
     </div>
 
     <div class="input-group">
@@ -859,20 +878,12 @@ const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1430903614196416625/Sb
 // กรณียังไม่ได้ deploy ให้ใช้ mock mode
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwM6LgPjcoKS1ER-QeBGhfG9tJOj7qXvNigPeT6Pa_st0-GIY2CMl-D7rB4Dk5cP9QOOQ/exec";
 
-const KRATHONG_COLORS = [
-  { petals: ['#228B22','#2da44e','#1a6b30'], name: 'คลาสสิก' },
-  { petals: ['#FF69B4','#FF1493','#c01070'], name: 'ชมพู' },
-  { petals: ['#9B59B6','#8E44AD','#6c3483'], name: 'ม่วง' },
-  { petals: ['#FFD700','#FFC200','#e6a800'], name: 'ทอง' },
-  { petals: ['#E74C3C','#C0392B','#922b21'], name: 'แดง' },
-  { petals: ['#1ABC9C','#16A085','#0e6655'], name: 'เขียวมรกต' },
-  { petals: ['#F39C12','#E67E22','#ca6f1e'], name: 'ส้ม' },
-  { petals: ['#5DADE2','#2E86C1','#1a5276'], name: 'ฟ้า' },
-];
+// KRATHONG_COLORS removed — using uploaded images now
 
 // ===== STATE =====
 let userProfile = null;
-let selectedStyle = 0;
+let selectedKrathong = null; // { id, url, name }
+let availableKrathongs = []; // โหลดจาก Drive
 let krathongData = [];
 let floatCount = 0;
 
@@ -882,7 +893,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   startKhomLoi();
   initWishInput();
   await initLiff();
-  loadExistingKrathongs();
 });
 
 // ===== STARS =====
@@ -938,10 +948,35 @@ function initWishInput() {
   });
 }
 
-// ===== STYLE PICKER =====
-function selectStyle(idx) {
-  selectedStyle = idx;
-  document.querySelectorAll('.style-option').forEach((el, i) => {
+// ===== KRATHONG PICKER =====
+async function loadAvailableKrathongs() {
+  const picker = document.getElementById('krathong-picker');
+  try {
+    const res  = await fetch(`${GAS_URL}?action=listKrathongs&_=${Date.now()}`);
+    const data = await res.json();
+    availableKrathongs = (data.krathongs || []).filter(k => k.active);
+    if (!availableKrathongs.length) {
+      picker.innerHTML = '<div class="k-loading">ยังไม่มีกระทง กรุณาอัพโหลดในหน้าหลังบ้าน</div>';
+      return;
+    }
+    picker.innerHTML = availableKrathongs.map((k, i) => `
+      <div class="k-option" onclick="selectKrathong(${i})" id="kopt-${i}">
+        <img src="${k.url}" alt="${k.name}"
+          onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22><text y=%2248%22 font-size=%2248%22>🪷</text></svg>'">
+        <div class="k-check">✓</div>
+      </div>
+    `).join('');
+    // เลือกอันแรกอัตโนมัติ
+    selectKrathong(0);
+  } catch(e) {
+    picker.innerHTML = '<div class="k-loading">โหลดไม่ได้ ใช้กระทง default</div>';
+    console.warn('loadAvailableKrathongs error:', e.message);
+  }
+}
+
+function selectKrathong(idx) {
+  selectedKrathong = availableKrathongs[idx] || null;
+  document.querySelectorAll('.k-option').forEach((el, i) => {
     el.classList.toggle('selected', i === idx);
   });
 }
@@ -966,7 +1001,7 @@ async function initLiff() {
     document.getElementById('user-display-name').textContent = userProfile.displayName;
     document.getElementById('user-avatar').src = userProfile.pictureUrl;
     document.getElementById('login-screen').style.display = 'none';
-
+  
   } catch (err) {
     console.error('LIFF init error:', err);
     document.getElementById('login-screen').style.display = 'flex';
@@ -980,28 +1015,28 @@ function loginWithLine() {
 // ===== LOAD KRATHONGS FROM SHEET =====
 async function loadExistingKrathongs() {
   try {
-    if (!GAS_URL) return; // Skip if no GAS URL
+    if (!GAS_URL) return;
 
-    const res = await fetch(`${GAS_URL}?action=get&sheetId=${SHEET_ID}`);
+    const res = await fetch(`${GAS_URL}?sheetId=${SHEET_ID}&_=${Date.now()}`);
     const data = await res.json();
-    if (data.rows) {
-      data.rows.forEach(row => {
-        const k = {
-          userId: row[0],
-          displayName: row[1],
-          pictureUrl: row[2],
-          wish: row[3],
-          style: parseInt(row[4]) || 0,
-          timestamp: row[5],
-        };
-        krathongData.push(k);
-        renderKrathong(k);
-      });
-      updateCounter();
-      updateRecent();
-    }
+    console.log('Loaded rows:', data);
+    const rows = data.rows || [];
+    rows.forEach(row => {
+      const k = {
+        userId:      row[0] || '',
+        displayName: row[1] || '',
+        pictureUrl:  row[2] || '',
+        wish:        row[3] || '',
+        style:       parseInt(row[4]) || 0,
+        timestamp:   row[5] || '',
+      };
+      krathongData.push(k);
+      renderKrathong(k);
+    });
+    updateCounter();
+    updateRecent();
   } catch(e) {
-    console.log('Load existing krathongs error (expected if no GAS):', e.message);
+    console.error('Load krathongs error:', e.message);
   }
 }
 
@@ -1016,13 +1051,17 @@ async function floatKrathong() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> กำลังลอยกระทง...';
 
+  if (!selectedKrathong) { showToast('🪷 กรุณาเลือกแบบกระทงก่อน'); btn.disabled=false; btn.innerHTML='🪷 &nbsp;ลอยกระทง'; return; }
+
   const krathong = {
-    userId: userProfile.userId,
+    userId:      userProfile.userId,
     displayName: userProfile.displayName,
-    pictureUrl: userProfile.pictureUrl,
-    wish: wish,
-    style: selectedStyle,
-    timestamp: new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' }),
+    pictureUrl:  userProfile.pictureUrl,
+    wish:        wish,
+    krathongId:  selectedKrathong.id,
+    krathongUrl: selectedKrathong.url,
+    krathongName: selectedKrathong.name,
+    timestamp:   new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' }),
   };
 
   try {
@@ -1067,38 +1106,37 @@ async function floatKrathong() {
   btn.innerHTML = '🪷 &nbsp;ลอยกระทง';
 }
 
-// ===== SAVE TO SHEET (GET + no-cors เพื่อแก้ CORS ของ GAS) =====
+// ===== SAVE TO SHEET =====
 async function saveToSheet(k) {
-  const params = new URLSearchParams({
-    action: 'append',
-    sheetId: SHEET_ID,
-    userId: k.userId,
-    displayName: k.displayName,
-    pictureUrl: k.pictureUrl,
-    wish: k.wish,
-    style: String(k.style),
-    timestamp: k.timestamp,
-  });
-  await fetch(GAS_URL + '?' + params.toString(), {
-    method: 'GET',
-    mode: 'no-cors',
+  await fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action:      'append',
+      userId:      k.userId,
+      displayName: k.displayName,
+      pictureUrl:  k.pictureUrl,
+      wish:        k.wish,
+      krathongId:  k.krathongId  || '',
+      krathongUrl: k.krathongUrl || '',
+      timestamp:   k.timestamp,
+    }),
   });
   return { success: true };
 }
 
 // ===== DISCORD NOTIFICATION =====
 async function sendDiscordNotification(k) {
-  const colorMap = [0x228B22, 0xFF69B4, 0x9B59B6, 0xFFD700, 0xE74C3C, 0x1ABC9C, 0xF39C12, 0x5DADE2];
-  const styleNames = ['คลาสสิก', 'ชมพู', 'ม่วง', 'ทอง', 'แดง', 'เขียวมรกต', 'ส้ม', 'ฟ้า'];
+  const colorMap = [0xF4C542]; // ทอง default
 
   const body = {
     embeds: [{
       title: '🪷 กระทงใหม่ลอยมา!',
       description: `**${k.displayName}** ลอยกระทงพร้อมคำอธิษฐาน`,
-      color: colorMap[k.style] || 0x228B22,
+      color: 0xF4C542,
       fields: [
         { name: '💭 คำอธิษฐาน', value: k.wish, inline: false },
-        { name: '🎨 สไตล์กระทง', value: styleNames[k.style] || 'คลาสสิก', inline: true },
+        { name: '🪷 แบบกระทง', value: k.krathongName || '—', inline: true },
         { name: '🕐 เวลา', value: k.timestamp, inline: true },
       ],
       thumbnail: { url: k.pictureUrl },
@@ -1116,17 +1154,16 @@ async function sendDiscordNotification(k) {
 // ===== RENDER KRATHONG =====
 function renderKrathong(k) {
   const river = document.getElementById('river');
-  const col = KRATHONG_COLORS[k.style] || KRATHONG_COLORS[0];
-
   const wrapper = document.createElement('div');
   wrapper.className = 'krathong';
 
-  const startX = Math.random() * 80 + 5;
-  const startY = Math.random() * 50 + 20;
-  const driftX = (Math.random() - 0.3) * 200;
-  const driftY = (Math.random() - 0.5) * 60;
-  const dur = Math.random() * 2 + 1.5;
+  const startX  = Math.random() * 80 + 5;
+  const startY  = Math.random() * 50 + 20;
+  const driftX  = (Math.random() - 0.3) * 200;
+  const driftY  = (Math.random() - 0.5) * 60;
+  const dur     = Math.random() * 2 + 1.5;
   const crossDur = Math.random() * 60 + 40;
+  const imgUrl  = k.krathongUrl || '';
 
   wrapper.style.cssText = `
     --dur: ${dur}s;
@@ -1135,56 +1172,33 @@ function renderKrathong(k) {
     --start-y: ${startY}%;
     --drift-x: ${driftX}px;
     --drift-y: ${driftY}px;
-    width: 60px;
+    width: 70px;
   `;
 
-  wrapper.innerHTML = `
+  wrapper.innerHTML = imgUrl ? `
+    <img class="krathong-svg" src="${imgUrl}" width="70" height="70"
+      style="object-fit:contain;"
+      onerror="this.style.display='none'">
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+  ` : `
     <svg class="krathong-svg" width="60" height="55" viewBox="0 0 60 55" xmlns="http://www.w3.org/2000/svg">
-      <!-- Base/Trunk -->
       <ellipse cx="30" cy="46" rx="26" ry="8" fill="#6B3410"/>
-      <!-- Bottom petal layer -->
-      <ellipse cx="30" cy="40" rx="22" ry="7" fill="${col.petals[0]}"/>
-      <!-- Middle petal layer -->
-      <ellipse cx="30" cy="34" rx="18" ry="6" fill="${col.petals[1]}"/>
-      <!-- Top petal layer -->
-      <ellipse cx="30" cy="29" rx="14" ry="5.5" fill="${col.petals[2]}"/>
-      <!-- Decorative petals -->
-      <path d="M16,32 Q12,24 18,22 Q24,20 24,28 Z" fill="${col.petals[1]}" opacity="0.7"/>
-      <path d="M44,32 Q48,24 42,22 Q36,20 36,28 Z" fill="${col.petals[1]}" opacity="0.7"/>
-      <path d="M10,38 Q6,30 12,28 Q18,26 18,34 Z" fill="${col.petals[0]}" opacity="0.6"/>
-      <path d="M50,38 Q54,30 48,28 Q42,26 42,34 Z" fill="${col.petals[0]}" opacity="0.6"/>
-      <!-- Candle -->
-      <rect x="27" y="16" width="6" height="14" rx="3" fill="#FFF9C4"/>
-      <!-- Flame base -->
-      <ellipse cx="30" cy="15" rx="3.5" ry="2" fill="#FF8C00" class="candle-flame"/>
-      <!-- Flame -->
-      <path d="M30,4 Q34,8 32,14 Q30,16 28,14 Q26,8 30,4 Z" fill="#FFD700" class="candle-flame"/>
-      <path d="M30,7 Q32.5,10 31.5,13 Q30,14.5 28.5,13 Q27.5,10 30,7 Z" fill="#FFF176" opacity="0.9" class="candle-flame"/>
-      <!-- Incense sticks -->
-      <line x1="22" y1="10" x2="22" y2="30" stroke="#8B6914" stroke-width="1.5"/>
-      <line x1="38" y1="10" x2="38" y2="30" stroke="#8B6914" stroke-width="1.5"/>
-      <circle cx="22" cy="10" r="2" fill="#FF4500" opacity="0.8"/>
-      <circle cx="38" cy="10" r="2" fill="#FF4500" opacity="0.8"/>
-      <!-- Smoke dots -->
-      <circle cx="22" cy="7" r="1.5" fill="rgba(200,200,200,0.5)" class="candle-flame"/>
-      <circle cx="38" cy="7" r="1.5" fill="rgba(200,200,200,0.5)" class="candle-flame"/>
-      <!-- Flower decoration -->
+      <ellipse cx="30" cy="40" rx="22" ry="7" fill="#228B22"/>
+      <ellipse cx="30" cy="34" rx="18" ry="6" fill="#2da44e"/>
+      <ellipse cx="30" cy="29" rx="14" ry="5.5" fill="#1a6b30"/>
       <circle cx="30" cy="26" r="4" fill="#FF69B4"/>
       <circle cx="30" cy="26" r="2.5" fill="#FFD700"/>
-      <!-- Small flowers -->
-      <circle cx="20" cy="28" r="3" fill="#FFA0C0"/>
-      <circle cx="40" cy="28" r="3" fill="#FFA0C0"/>
+      <rect x="27" y="16" width="6" height="14" rx="3" fill="#FFF9C4"/>
+      <path d="M30,4 Q34,8 32,14 Q30,16 28,14 Q26,8 30,4 Z" fill="#FFD700" class="candle-flame"/>
     </svg>
-    <div class="ripple"></div>
     <div class="ripple"></div>
     <div class="ripple"></div>
   `;
 
   wrapper.addEventListener('click', () => showKrathongPopup(k));
-
   river.appendChild(wrapper);
-
-  // Auto remove after drift animation
   setTimeout(() => wrapper.remove(), crossDur * 1000 + 3000);
 }
 
@@ -1204,7 +1218,8 @@ function closePopup() {
 // ===== COUNTER =====
 function updateCounter() {
   floatCount = krathongData.length;
-  document.getElementById('counter-num').textContent = floatCount;
+  const el = document.getElementById('counter-num');
+  if (el) el.textContent = floatCount;
 }
 
 // ===== RECENT LIST =====
@@ -1288,7 +1303,7 @@ function celebrationEffect() {
 === Google Apps Script (deploy เป็น Web App) ===
 
 function doGet(e) {
-  var action = e.parameter.action;
+  var action = e.parameter.action || '';
   var sheetId = e.parameter.sheetId;
   var ss = SpreadsheetApp.openById(sheetId);
   var sheet = ss.getSheets()[0];
@@ -1320,5 +1335,121 @@ function doGet(e) {
 }
 -->
 
+
+<!-- GAS CODE:
+// ============================================================
+// GOOGLE APPS SCRIPT — ลอยกระทงดิจิทัล (Full Version)
+// ============================================================
+// Deploy as Web App: Execute as Me, Access: Anyone
+// ============================================================
+
+const SHEET_ID   = "1hp_8UMDA-cEAjx_pz4ICcxVmxYu5ZlDND6GxrB3u5fA";
+const FOLDER_NAME = "krathong-images"; // จะสร้างอัตโนมัติ
+
+// ===== หา/สร้าง folder =====
+function getOrCreateFolder() {
+  var folders = DriveApp.getFoldersByName(FOLDER_NAME);
+  if (folders.hasNext()) return folders.next();
+  return DriveApp.createFolder(FOLDER_NAME);
+}
+
+// ===== doGet — ดึงข้อมูล =====
+function doGet(e) {
+  var action = (e.parameter.action || '');
+
+  // --- ดึงรายการกระทงจาก Sheets ---
+  if (action === '' || action === 'list') {
+    var ss    = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheets()[0];
+    var data  = sheet.getDataRange().getValues();
+    var rows  = data.length > 1 ? data.slice(1) : [];
+    return json({ rows: rows });
+  }
+
+  // --- ดึงรายการไฟล์กระทง (สำหรับหลังบ้าน) ---
+  if (action === 'listKrathongs') {
+    var folder = getOrCreateFolder();
+    var files  = folder.getFiles();
+    var list   = [];
+    while (files.hasNext()) {
+      var f = files.next();
+      list.push({
+        id:      f.getId(),
+        name:    f.getName(),
+        url:     'https://drive.google.com/uc?export=view&id=' + f.getId(),
+        active:  f.getDescription() !== 'inactive',
+        size:    f.getSize(),
+        created: f.getDateCreated().toLocaleString('th-TH'),
+      });
+    }
+    return json({ krathongs: list, folderId: folder.getId() });
+  }
+
+  // --- เปิด/ปิดกระทง ---
+  if (action === 'toggle') {
+    var file = DriveApp.getFileById(e.parameter.fileId);
+    var isActive = file.getDescription() !== 'inactive';
+    file.setDescription(isActive ? 'inactive' : 'active');
+    return json({ success: true, active: !isActive });
+  }
+
+  // --- ลบกระทง ---
+  if (action === 'delete') {
+    DriveApp.getFileById(e.parameter.fileId).setTrashed(true);
+    return json({ success: true });
+  }
+
+  return json({ error: 'unknown action' });
+}
+
+// ===== doPost — อัพโหลดไฟล์ / บันทึกกระทง =====
+function doPost(e) {
+  var payload = JSON.parse(e.postData.contents);
+
+  // --- อัพโหลดรูปกระทง ---
+  if (payload.action === 'uploadKrathong') {
+    var folder  = getOrCreateFolder();
+    var bytes   = Utilities.base64Decode(payload.base64);
+    var blob    = Utilities.newBlob(bytes, payload.mimeType, payload.filename);
+    var file    = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    file.setDescription('active');
+    return json({
+      success: true,
+      id:   file.getId(),
+      url:  'https://drive.google.com/uc?export=view&id=' + file.getId(),
+      name: file.getName(),
+    });
+  }
+
+  // --- บันทึกการลอยกระทง ---
+  if (payload.action === 'append') {
+    var ss    = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheets()[0];
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['userId','displayName','pictureUrl','wish','krathongId','krathongUrl','timestamp']);
+    }
+    sheet.appendRow([
+      payload.userId      || '',
+      payload.displayName || '',
+      payload.pictureUrl  || '',
+      payload.wish        || '',
+      payload.krathongId  || '',
+      payload.krathongUrl || '',
+      payload.timestamp   || new Date().toLocaleString('th-TH'),
+    ]);
+    return json({ success: true });
+  }
+
+  return json({ error: 'unknown action' });
+}
+
+function json(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+-->
 </body>
 </html>
