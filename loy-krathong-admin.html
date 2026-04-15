@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>หลังบ้าน — จัดการกระทง</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Sarabun:wght@300;400;600&display=swap');
+
+  :root {
+    --gold: #F4C542;
+    --gold-dim: rgba(244,197,66,0.15);
+    --bg: #080f1e;
+    --surface: rgba(10,25,55,0.95);
+    --border: rgba(244,197,66,0.2);
+    --text: rgba(255,255,255,0.88);
+    --muted: rgba(255,255,255,0.4);
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --radius: 14px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    background: linear-gradient(135deg, #050d1e 0%, #0a1a3a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(20px);
+  }
+
+  .logo {
+    font-family: 'Mitr', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 0 20px rgba(244,197,66,0.4);
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .stat-pill {
+    background: var(--gold-dim);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: 'Mitr', sans-serif;
+    font-size: 13px;
+    color: var(--gold);
+  }
+
+  /* ===== LAYOUT ===== */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  .page-title {
+    font-family: 'Mitr', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .page-sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+
+  /* ===== UPLOAD ZONE ===== */
+  .upload-card {
+    background: var(--surface);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    transition: border-color 0.3s;
+  }
+  .upload-card:hover { border-color: rgba(244,197,66,0.5); }
+  .upload-card.drag-over {
+    border-color: var(--gold);
+    background: rgba(244,197,66,0.05);
+  }
+
+  .upload-header {
+    font-family: 'Mitr', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .drop-zone {
+    border: 2px dashed rgba(244,197,66,0.3);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .drop-zone:hover { border-color: var(--gold); background: rgba(244,197,66,0.03); }
+  .drop-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  }
+  .drop-zone-icon { font-size: 40px; margin-bottom: 10px; }
+  .drop-zone-text { font-size: 15px; color: var(--muted); margin-bottom: 6px; }
+  .drop-zone-sub  { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+  /* Preview list seleced files */
+  #preview-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .preview-item {
+    position: relative;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 1;
+  }
+
+  .preview-item img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    padding: 6px;
+  }
+
+  .preview-item .preview-name {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.7);
+    font-size: 9px;
+    padding: 3px 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .preview-item .remove-preview {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 18px; height: 18px;
+    background: rgba(231,76,60,0.9);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    font-family: 'Mitr', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 22px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-gold {
+    background: linear-gradient(135deg, #C89B0A, #F4C542);
+    color: #1a0a00;
+    font-weight: 600;
+  }
+  .btn-gold:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(244,197,66,0.4); }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-outline:hover { border-color: rgba(244,197,66,0.5); background: var(--gold-dim); }
+  .btn-danger {
+    background: rgba(231,76,60,0.15);
+    border: 1px solid rgba(231,76,60,0.3);
+    color: #e74c3c;
+  }
+  .btn-danger:hover { background: rgba(231,76,60,0.3); }
+  .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+
+  /* Upload progress */
+  .upload-progress {
+    display: none;
+    margin-top: 12px;
+  }
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    height: 6px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #C89B0A, #F4C542);
+    border-radius: 20px;
+    width: 0%;
+    transition: width 0.3s;
+  }
+  .progress-text { font-size: 12px; color: var(--muted); }
+
+  /* ===== KRATHONG GRID ===== */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Mitr', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #krathong-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .krathong-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.25s;
+    position: relative;
+  }
+  .krathong-card:hover { border-color: rgba(244,197,66,0.45); transform: translateY(-2px); }
+  .krathong-card.inactive { opacity: 0.45; }
+  .krathong-card.inactive .card-img-wrap { filter: grayscale(0.6); }
+
+  .card-img-wrap {
+    aspect-ratio: 1;
+    background: repeating-conic-gradient(rgba(255,255,255,0.04) 0% 25%, transparent 0% 50%) 0 0 / 16px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 10px;
+  }
+
+  .card-img-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s;
+  }
+  .krathong-card:hover .card-img-wrap img { transform: scale(1.06); }
+
+  .card-body {
+    padding: 10px 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-name {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+  }
+
+  .card-meta {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  /* Status badge */
+  .status-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-family: 'Mitr', sans-serif;
+    font-weight: 500;
+  }
+  .badge-active {
+    background: rgba(46,204,113,0.2);
+    border: 1px solid rgba(46,204,113,0.5);
+    color: #2ecc71;
+  }
+  .badge-inactive {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* ===== MODAL PREVIEW ===== */
+  #modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  #modal.show { opacity: 1; pointer-events: all; }
+
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid rgba(244,197,66,0.3);
+    border-radius: 20px;
+    padding: 28px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  #modal.show .modal-box { transform: scale(1); }
+
+  .modal-preview-bg {
+    background: repeating-conic-gradient(rgba(255,255,255,0.06) 0% 25%, transparent 0% 50%) 0 0 / 20px 20px;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-preview-bg img { max-height: 200px; max-width: 100%; object-fit: contain; }
+
+  .modal-name {
+    font-family: 'Mitr', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .modal-meta { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: center; }
+
+  /* ===== TOAST ===== */
+  #toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: rgba(5,15,35,0.97);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-family: 'Mitr', sans-serif;
+    font-size: 14px;
+    z-index: 200;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: nowrap;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    grid-column: 1/-1;
+  }
+  .empty-state-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+  .empty-state-text { font-size: 14px; }
+
+  /* Loading skeleton */
+  .skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 10px;
+  }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  .spinner-sm {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(26,10,0,0.3);
+    border-top-color: rgba(26,10,0,0.9);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* GAS URL input */
+  .gas-config {
+    background: rgba(244,197,66,0.06);
+    border: 1px solid rgba(244,197,66,0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .gas-config label { font-size: 13px; color: var(--gold); font-family: 'Mitr', sans-serif; white-space: nowrap; }
+  .gas-config input {
+    flex: 1;
+    min-width: 200px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: white;
+    font-size: 13px;
+    outline: none;
+    font-family: monospace;
+  }
+  .gas-config input:focus { border-color: rgba(244,197,66,0.5); }
+
+  /* Confirm dialog */
+  .confirm-msg { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🪷 หลังบ้าน — จัดการกระทง</div>
+  <div class="header-stats">
+    <div class="stat-pill">🖼️ กระทงทั้งหมด: <span id="total-count">—</span></div>
+    <div class="stat-pill">✅ เปิดใช้งาน: <span id="active-count">—</span></div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- GAS URL Config -->
+  <div class="gas-config">
+    <label>⚙️ GAS URL:</label>
+    <input type="text" id="gas-url-input"
+      placeholder="https://script.google.com/macros/s/..."
+      value="https://script.google.com/macros/s/AKfycbwM6LgPjcoKS1ER-QeBGhfG9tJOj7qXvNigPeT6Pa_st0-GIY2CMl-D7rB4Dk5cP9QOOQ/exec">
+    <button class="btn btn-outline" onclick="loadKrathongs()">🔄 โหลด</button>
+  </div>
+
+  <!-- Upload Section -->
+  <div class="upload-card" id="upload-card">
+    <div class="upload-header">📤 อัพโหลดรูปกระทง</div>
+
+    <div class="drop-zone" id="drop-zone">
+      <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp" multiple>
+      <div class="drop-zone-icon">🖼️</div>
+      <div class="drop-zone-text">ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์</div>
+      <div class="drop-zone-sub">รองรับ PNG, JPG, WebP (แนะนำ PNG พื้นหลังโปร่งใส)</div>
+    </div>
+
+    <div id="preview-list"></div>
+
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-gold" id="upload-btn" onclick="uploadFiles()" disabled>
+        📤 อัพโหลด
+      </button>
+      <button class="btn btn-outline" onclick="clearPreview()">ล้าง</button>
+      <span id="file-count" style="font-size:13px;color:var(--muted);"></span>
+    </div>
+
+    <div class="upload-progress" id="upload-progress">
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+      <div class="progress-text" id="progress-text">กำลังอัพโหลด...</div>
+    </div>
+  </div>
+
+  <!-- Krathong List -->
+  <div>
+    <div class="section-header">
+      <div class="section-title">🪷 รายการกระทงทั้งหมด</div>
+      <button class="btn btn-outline btn-sm" onclick="loadKrathongs()">🔄 รีเฟรช</button>
+    </div>
+    <div id="krathong-grid">
+      <div class="empty-state">
+        <div class="empty-state-icon">🔄</div>
+        <div class="empty-state-text">กำลังโหลด...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Preview -->
+<div id="modal" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-preview-bg">
+      <img id="modal-img" src="" alt="">
+    </div>
+    <div class="modal-name" id="modal-name"></div>
+    <div class="modal-meta" id="modal-meta"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline btn-sm" onclick="closeModal()">ปิด</button>
+      <button class="btn btn-sm" id="modal-toggle-btn" onclick="modalToggle()">เปิด/ปิด</button>
+      <button class="btn btn-danger btn-sm" onclick="modalDelete()">🗑️ ลบ</button>
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--muted);" id="modal-url-text"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+const GAS_URL_KEY = 'krathong_admin_gas_url';
+let krathongs = [];
+let selectedFiles = [];
+let modalKrathong = null;
+
+function getGasUrl() {
+  return document.getElementById('gas-url-input').value.trim();
+}
+
+// ===== LOAD KRATHONGS =====
+async function loadKrathongs() {
+  const grid = document.getElementById('krathong-grid');
+  grid.innerHTML = `
+    ${[1,2,3,4,5,6].map(()=>`
+      <div style="background:rgba(10,25,55,0.95);border:1px solid rgba(244,197,66,0.2);border-radius:14px;overflow:hidden;">
+        <div class="skeleton" style="aspect-ratio:1;"></div>
+        <div style="padding:10px 12px;">
+          <div class="skeleton" style="height:12px;border-radius:6px;margin-bottom:6px;"></div>
+          <div class="skeleton" style="height:10px;width:60%;border-radius:6px;"></div>
+        </div>
+      </div>`).join('')}
+  `;
+
+  try {
+    const res  = await fetch(`${getGasUrl()}?action=listKrathongs&_=${Date.now()}`);
+    const data = await res.json();
+    krathongs  = data.krathongs || [];
+    renderGrid();
+    updateStats();
+
+    if (data.folderId) {
+      document.getElementById('gas-url-input').title = 'Folder ID: ' + data.folderId;
+    }
+  } catch(e) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">❌</div><div class="empty-state-text">โหลดไม่ได้ ตรวจสอบ GAS URL<br><small style="font-size:11px;">${e.message}</small></div></div>`;
+  }
+}
+
+// ===== RENDER GRID =====
+function renderGrid() {
+  const grid = document.getElementById('krathong-grid');
+  if (!krathongs.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🪷</div><div class="empty-state-text">ยังไม่มีกระทง<br>อัพโหลดรูปก่อนเลย!</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = krathongs.map(k => `
+    <div class="krathong-card ${k.active ? '' : 'inactive'}" id="card-${k.id}">
+      <span class="status-badge ${k.active ? 'badge-active' : 'badge-inactive'}">
+        ${k.active ? '✅ เปิด' : '⏸ ปิด'}
+      </span>
+      <div class="card-img-wrap" onclick="openModal('${k.id}')">
+        <img src="${k.url}" alt="${esc(k.name)}"
+          onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22><text y=%2240%22 font-size=%2240%22>🪷</text></svg>'">
+      </div>
+      <div class="card-body">
+        <div class="card-name" title="${esc(k.name)}">${esc(k.name)}</div>
+        <div class="card-meta">${formatSize(k.size)} · ${k.created}</div>
+        <div class="card-actions">
+          <button class="btn btn-outline btn-sm" onclick="openModal('${k.id}')">👁 Preview</button>
+          <button class="btn btn-sm ${k.active ? 'btn-outline' : 'btn-gold'}" onclick="toggleKrathong('${k.id}')">
+            ${k.active ? '⏸' : '▶️'}
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteKrathong('${k.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== STATS =====
+function updateStats() {
+  document.getElementById('total-count').textContent  = krathongs.length;
+  document.getElementById('active-count').textContent = krathongs.filter(k => k.active).length;
+}
+
+// ===== FILE PICKER =====
+document.getElementById('file-input').addEventListener('change', function() {
+  handleFiles(Array.from(this.files));
+});
+
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  handleFiles(Array.from(e.dataTransfer.files));
+});
+
+function handleFiles(files) {
+  const valid = files.filter(f => f.type.startsWith('image/'));
+  selectedFiles = [...selectedFiles, ...valid];
+  renderPreview();
+}
+
+function renderPreview() {
+  const list = document.getElementById('preview-list');
+  list.innerHTML = selectedFiles.map((f, i) => {
+    const url = URL.createObjectURL(f);
+    return `
+      <div class="preview-item">
+        <img src="${url}" alt="">
+        <div class="preview-name">${esc(f.name)}</div>
+        <button class="remove-preview" onclick="removePreview(${i})">✕</button>
+      </div>`;
+  }).join('');
+  document.getElementById('upload-btn').disabled = selectedFiles.length === 0;
+  document.getElementById('file-count').textContent = selectedFiles.length > 0 ? `${selectedFiles.length} ไฟล์` : '';
+}
+
+function removePreview(i) {
+  selectedFiles.splice(i, 1);
+  renderPreview();
+}
+
+function clearPreview() {
+  selectedFiles = [];
+  document.getElementById('file-input').value = '';
+  renderPreview();
+}
+
+// ===== UPLOAD =====
+async function uploadFiles() {
+  if (!selectedFiles.length) return;
+
+  const btn      = document.getElementById('upload-btn');
+  const progress = document.getElementById('upload-progress');
+  const bar      = document.getElementById('progress-bar');
+  const txt      = document.getElementById('progress-text');
+
+  btn.disabled = true;
+  progress.style.display = 'block';
+
+  let done = 0;
+  for (const file of selectedFiles) {
+    txt.textContent = `กำลังอัพโหลด ${file.name}...`;
+    bar.style.width = (done / selectedFiles.length * 100) + '%';
+    try {
+      const base64 = await toBase64(file);
+      const res = await fetch(getGasUrl(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action:   'uploadKrathong',
+          base64:   base64,
+          mimeType: file.type,
+          filename: file.name,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        krathongs.unshift({ id: data.id, name: data.name, url: data.url, active: true, size: file.size, created: new Date().toLocaleString('th-TH') });
+        done++;
+        toast(`✅ อัพโหลด ${file.name} สำเร็จ`);
+      }
+    } catch(e) {
+      toast(`❌ อัพโหลด ${file.name} ล้มเหลว: ${e.message}`, true);
+    }
+  }
+
+  bar.style.width = '100%';
+  txt.textContent = `อัพโหลดเสร็จแล้ว ${done}/${selectedFiles.length} ไฟล์`;
+  setTimeout(() => { progress.style.display = 'none'; }, 2000);
+
+  clearPreview();
+  renderGrid();
+  updateStats();
+  btn.disabled = false;
+}
+
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload  = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// ===== TOGGLE =====
+async function toggleKrathong(id) {
+  const k = krathongs.find(x => x.id === id);
+  if (!k) return;
+  try {
+    await fetch(`${getGasUrl()}?action=toggle&fileId=${id}&_=${Date.now()}`);
+    k.active = !k.active;
+    renderGrid();
+    updateStats();
+    toast(`${k.active ? '✅ เปิด' : '⏸ ปิด'} กระทง "${k.name}" แล้ว`);
+  } catch(e) {
+    toast('❌ เกิดข้อผิดพลาด', true);
+  }
+}
+
+// ===== DELETE =====
+async function deleteKrathong(id) {
+  const k = krathongs.find(x => x.id === id);
+  if (!k) return;
+  if (!confirm(`ลบกระทง "${k.name}" จริงๆ ใช่ไหม?`)) return;
+  try {
+    await fetch(`${getGasUrl()}?action=delete&fileId=${id}&_=${Date.now()}`);
+    krathongs = krathongs.filter(x => x.id !== id);
+    renderGrid();
+    updateStats();
+    toast(`🗑️ ลบ "${k.name}" แล้ว`);
+    closeModal();
+  } catch(e) {
+    toast('❌ ลบไม่สำเร็จ', true);
+  }
+}
+
+// ===== MODAL =====
+function openModal(id) {
+  modalKrathong = krathongs.find(k => k.id === id);
+  if (!modalKrathong) return;
+  const k = modalKrathong;
+  document.getElementById('modal-img').src     = k.url;
+  document.getElementById('modal-name').textContent = k.name;
+  document.getElementById('modal-meta').textContent = `${formatSize(k.size)} · ${k.created}`;
+  document.getElementById('modal-url-text').textContent = 'URL: ' + k.url;
+
+  const tb = document.getElementById('modal-toggle-btn');
+  tb.textContent = k.active ? '⏸ ปิดใช้งาน' : '▶️ เปิดใช้งาน';
+  tb.className = `btn btn-sm ${k.active ? 'btn-outline' : 'btn-gold'}`;
+
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('show');
+    modalKrathong = null;
+  }
+}
+
+function modalToggle() {
+  if (modalKrathong) { toggleKrathong(modalKrathong.id); closeModal(); }
+}
+
+function modalDelete() {
+  if (modalKrathong) deleteKrathong(modalKrathong.id);
+}
+
+// ===== HELPERS =====
+function formatSize(bytes) {
+  if (!bytes) return '—';
+  if (bytes < 1024)       return bytes + ' B';
+  if (bytes < 1024*1024)  return (bytes/1024).toFixed(0) + ' KB';
+  return (bytes/1024/1024).toFixed(1) + ' MB';
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg, isErr) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.borderColor = isErr ? 'rgba(231,76,60,0.5)' : 'rgba(244,197,66,0.3)';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', loadKrathongs);
+</script>
+</body>
+</html>
