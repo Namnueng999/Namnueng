@@ -8,808 +8,403 @@
   @import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Sarabun:wght@300;400;600&display=swap');
 
   :root {
-    --gold: #F4C542;
-    --gold-dim: rgba(244,197,66,0.15);
-    --bg: #080f1e;
-    --surface: rgba(10,25,55,0.95);
-    --border: rgba(244,197,66,0.2);
-    --text: rgba(255,255,255,0.88);
-    --muted: rgba(255,255,255,0.4);
-    --green: #2ecc71;
-    --red: #e74c3c;
+    --gold: #F4C542; --gold-dim: rgba(244,197,66,0.12);
+    --bg: #080f1e; --surface: rgba(10,25,55,0.95);
+    --border: rgba(244,197,66,0.2); --text: rgba(255,255,255,0.88);
+    --muted: rgba(255,255,255,0.4); --green: #2ecc71; --red: #e74c3c;
     --radius: 14px;
   }
-
   * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
-  body {
-    font-family: 'Sarabun', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ===== HEADER ===== */
   header {
-    background: linear-gradient(135deg, #050d1e 0%, #0a1a3a 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 0 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-    position: sticky; top: 0; z-index: 50;
-    backdrop-filter: blur(20px);
+    background:linear-gradient(135deg,#050d1e,#0a1a3a);
+    border-bottom:1px solid var(--border);
+    padding:0 28px; height:60px;
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:50; backdrop-filter:blur(20px);
   }
+  .logo { font-family:'Mitr',sans-serif; font-size:17px; font-weight:600; color:var(--gold); display:flex; align-items:center; gap:8px; }
+  .stat-pill { background:var(--gold-dim); border:1px solid var(--border); border-radius:20px; padding:4px 14px; font-family:'Mitr',sans-serif; font-size:12px; color:var(--gold); }
+  .header-right { display:flex; gap:12px; }
 
-  .logo {
-    font-family: 'Mitr', sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--gold);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-shadow: 0 0 20px rgba(244,197,66,0.4);
-  }
+  .container { max-width:1100px; margin:0 auto; padding:28px 20px; }
+  .page-title { font-family:'Mitr',sans-serif; font-size:20px; font-weight:600; margin-bottom:4px; }
+  .page-sub { font-size:13px; color:var(--muted); margin-bottom:24px; }
 
-  .header-stats {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-
-  .stat-pill {
-    background: var(--gold-dim);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-family: 'Mitr', sans-serif;
-    font-size: 13px;
-    color: var(--gold);
-  }
-
-  /* ===== LAYOUT ===== */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 32px 24px;
-  }
-
-  .page-title {
-    font-family: 'Mitr', sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-  .page-sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
-
-  /* ===== UPLOAD ZONE ===== */
+  /* Upload Card */
   .upload-card {
-    background: var(--surface);
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 32px;
-    margin-bottom: 32px;
-    transition: border-color 0.3s;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px; margin-bottom:28px;
   }
-  .upload-card:hover { border-color: rgba(244,197,66,0.5); }
-  .upload-card.drag-over {
-    border-color: var(--gold);
-    background: rgba(244,197,66,0.05);
-  }
-
-  .upload-header {
-    font-family: 'Mitr', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 20px;
-    color: var(--gold);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .card-title { font-family:'Mitr',sans-serif; font-size:15px; font-weight:500; color:var(--gold); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
 
   .drop-zone {
-    border: 2px dashed rgba(244,197,66,0.3);
-    border-radius: 12px;
-    padding: 40px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-bottom: 16px;
-    position: relative;
+    border:2px dashed rgba(244,197,66,0.25); border-radius:12px;
+    padding:32px 20px; text-align:center; cursor:pointer;
+    transition:all 0.3s; margin-bottom:14px; position:relative;
+    background:rgba(255,255,255,0.02);
   }
-  .drop-zone:hover { border-color: var(--gold); background: rgba(244,197,66,0.03); }
-  .drop-zone input[type=file] {
-    position: absolute; inset: 0; opacity: 0; cursor: pointer;
-  }
-  .drop-zone-icon { font-size: 40px; margin-bottom: 10px; }
-  .drop-zone-text { font-size: 15px; color: var(--muted); margin-bottom: 6px; }
-  .drop-zone-sub  { font-size: 12px; color: rgba(255,255,255,0.25); }
+  .drop-zone:hover, .drop-zone.over { border-color:var(--gold); background:rgba(244,197,66,0.04); }
+  .drop-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+  .drop-zone-icon { font-size:36px; margin-bottom:8px; }
+  .drop-zone-text { font-size:14px; color:var(--muted); }
+  .drop-zone-sub  { font-size:11px; color:rgba(255,255,255,0.2); margin-top:4px; }
 
-  /* Preview list seleced files */
-  #preview-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 12px;
-    margin-bottom: 16px;
-  }
+  #preview-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:10px; margin-bottom:14px; }
+  .prev-item { position:relative; aspect-ratio:1; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  .prev-item img { width:100%; height:100%; object-fit:contain; padding:5px; }
+  .prev-item span { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.65); font-size:9px; padding:2px 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .prev-remove { position:absolute; top:3px; right:3px; width:17px; height:17px; background:rgba(231,76,60,0.9); border:none; border-radius:50%; color:#fff; font-size:9px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 
-  .preview-item {
-    position: relative;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    aspect-ratio: 1;
-  }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
-  .preview-item img {
-    width: 100%; height: 100%;
-    object-fit: contain;
-    padding: 6px;
-  }
+  /* Progress */
+  .progress-wrap { margin-top:12px; display:none; }
+  .progress-bg { background:rgba(255,255,255,0.07); border-radius:20px; height:5px; overflow:hidden; margin-bottom:5px; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,#C89B0A,#F4C542); width:0%; transition:width 0.3s; border-radius:20px; }
+  .progress-label { font-size:11px; color:var(--muted); }
 
-  .preview-item .preview-name {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: rgba(0,0,0,0.7);
-    font-size: 9px;
-    padding: 3px 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: rgba(255,255,255,0.7);
-  }
+  /* Buttons */
+  .btn { font-family:'Mitr',sans-serif; font-size:13px; font-weight:500; padding:9px 20px; border-radius:10px; border:none; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px; }
+  .btn:disabled { opacity:.4; cursor:not-allowed; }
+  .btn-gold { background:linear-gradient(135deg,#C89B0A,#F4C542); color:#1a0a00; font-weight:600; }
+  .btn-gold:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 4px 14px rgba(244,197,66,0.4); }
+  .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
+  .btn-outline:hover { border-color:rgba(244,197,66,0.4); background:var(--gold-dim); }
+  .btn-danger { background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.3); color:#e74c3c; }
+  .btn-danger:hover { background:rgba(231,76,60,0.25); }
+  .btn-sm { padding:5px 12px; font-size:12px; border-radius:8px; }
+  .btn-toggle-on  { background:rgba(46,204,113,0.12); border:1px solid rgba(46,204,113,0.3); color:#2ecc71; }
+  .btn-toggle-off { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:var(--muted); }
 
-  .preview-item .remove-preview {
-    position: absolute;
-    top: 4px; right: 4px;
-    width: 18px; height: 18px;
-    background: rgba(231,76,60,0.9);
-    border: none;
-    border-radius: 50%;
-    color: white;
-    font-size: 10px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    line-height: 1;
-  }
+  /* Grid */
+  .section-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .section-title { font-family:'Mitr',sans-serif; font-size:15px; color:var(--gold); }
+  #grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:14px; }
 
-  /* ===== BUTTONS ===== */
-  .btn {
-    font-family: 'Mitr', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 10px 22px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-  }
-  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-  .btn-gold {
-    background: linear-gradient(135deg, #C89B0A, #F4C542);
-    color: #1a0a00;
-    font-weight: 600;
-  }
-  .btn-gold:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(244,197,66,0.4); }
-  .btn-outline {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-  }
-  .btn-outline:hover { border-color: rgba(244,197,66,0.5); background: var(--gold-dim); }
-  .btn-danger {
-    background: rgba(231,76,60,0.15);
-    border: 1px solid rgba(231,76,60,0.3);
-    color: #e74c3c;
-  }
-  .btn-danger:hover { background: rgba(231,76,60,0.3); }
-  .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+  .k-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; transition:all 0.2s; position:relative; }
+  .k-card:hover { border-color:rgba(244,197,66,0.4); transform:translateY(-2px); }
+  .k-card.off { opacity:.45; }
 
-  /* Upload progress */
-  .upload-progress {
-    display: none;
-    margin-top: 12px;
-  }
-  .progress-bar-wrap {
-    background: rgba(255,255,255,0.08);
-    border-radius: 20px;
-    height: 6px;
-    overflow: hidden;
-    margin-bottom: 6px;
-  }
-  .progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #C89B0A, #F4C542);
-    border-radius: 20px;
-    width: 0%;
-    transition: width 0.3s;
-  }
-  .progress-text { font-size: 12px; color: var(--muted); }
+  .k-img { aspect-ratio:1; background:repeating-conic-gradient(rgba(255,255,255,0.04) 0% 25%,transparent 0% 50%) 0 0/16px 16px; display:flex; align-items:center; justify-content:center; padding:10px; cursor:pointer; overflow:hidden; }
+  .k-img img { max-width:100%; max-height:100%; object-fit:contain; transition:transform 0.3s; }
+  .k-card:hover .k-img img { transform:scale(1.06); }
 
-  /* ===== KRATHONG GRID ===== */
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
+  .k-body { padding:9px 11px; border-top:1px solid var(--border); }
+  .k-name { font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:3px; }
+  .k-meta { font-size:10px; color:var(--muted); margin-bottom:9px; }
+  .k-actions { display:flex; gap:5px; }
 
-  .section-title {
-    font-family: 'Mitr', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--gold);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .badge { position:absolute; top:7px; right:7px; padding:2px 8px; border-radius:20px; font-size:10px; font-family:'Mitr',sans-serif; }
+  .badge-on  { background:rgba(46,204,113,0.18); border:1px solid rgba(46,204,113,0.45); color:#2ecc71; }
+  .badge-off { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.35); }
 
-  #krathong-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 16px;
-  }
+  /* Modal */
+  #modal { position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); z-index:100; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+  #modal.show { opacity:1; pointer-events:all; }
+  .modal-box { background:rgba(8,15,35,0.98); border:1px solid rgba(244,197,66,0.3); border-radius:20px; padding:24px; width:90%; max-width:380px; text-align:center; transform:scale(0.9); transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  #modal.show .modal-box { transform:scale(1); }
+  .modal-bg { background:repeating-conic-gradient(rgba(255,255,255,0.05) 0% 25%,transparent 0% 50%) 0 0/18px 18px; border-radius:12px; padding:18px; margin-bottom:14px; min-height:200px; display:flex; align-items:center; justify-content:center; }
+  .modal-bg img { max-height:180px; max-width:100%; object-fit:contain; }
+  .modal-name { font-family:'Mitr',sans-serif; font-size:15px; margin-bottom:5px; }
+  .modal-meta { font-size:11px; color:var(--muted); margin-bottom:16px; }
+  .modal-url { font-size:10px; color:rgba(255,255,255,0.2); margin-top:10px; word-break:break-all; }
 
-  .krathong-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    transition: all 0.25s;
-    position: relative;
-  }
-  .krathong-card:hover { border-color: rgba(244,197,66,0.45); transform: translateY(-2px); }
-  .krathong-card.inactive { opacity: 0.45; }
-  .krathong-card.inactive .card-img-wrap { filter: grayscale(0.6); }
+  /* Empty / Skeleton */
+  .empty { text-align:center; padding:50px 20px; color:var(--muted); grid-column:1/-1; }
+  .empty-icon { font-size:44px; margin-bottom:10px; opacity:.4; }
+  .sk { background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%); background-size:200% 100%; animation:sh 1.5s infinite; border-radius:8px; }
+  @keyframes sh { to { background-position:-200% 0; } }
 
-  .card-img-wrap {
-    aspect-ratio: 1;
-    background: repeating-conic-gradient(rgba(255,255,255,0.04) 0% 25%, transparent 0% 50%) 0 0 / 16px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: 10px;
-  }
+  /* Toast */
+  #toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(80px); background:rgba(5,15,35,0.97); border:1px solid var(--border); border-radius:12px; padding:11px 20px; font-family:'Mitr',sans-serif; font-size:13px; z-index:200; transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1); white-space:nowrap; }
+  #toast.show { transform:translateX(-50%) translateY(0); }
 
-  .card-img-wrap img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    transition: transform 0.3s;
-  }
-  .krathong-card:hover .card-img-wrap img { transform: scale(1.06); }
-
-  .card-body {
-    padding: 10px 12px;
-    border-top: 1px solid var(--border);
-  }
-
-  .card-name {
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 4px;
-  }
-
-  .card-meta {
-    font-size: 10px;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
-
-  .card-actions {
-    display: flex;
-    gap: 6px;
-  }
-
-  /* Status badge */
-  .status-badge {
-    position: absolute;
-    top: 8px; right: 8px;
-    padding: 3px 8px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-family: 'Mitr', sans-serif;
-    font-weight: 500;
-  }
-  .badge-active {
-    background: rgba(46,204,113,0.2);
-    border: 1px solid rgba(46,204,113,0.5);
-    color: #2ecc71;
-  }
-  .badge-inactive {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.4);
-  }
-
-  /* ===== MODAL PREVIEW ===== */
-  #modal {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(8px);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-  }
-  #modal.show { opacity: 1; pointer-events: all; }
-
-  .modal-box {
-    background: var(--surface);
-    border: 1px solid rgba(244,197,66,0.3);
-    border-radius: 20px;
-    padding: 28px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    transform: scale(0.9);
-    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  #modal.show .modal-box { transform: scale(1); }
-
-  .modal-preview-bg {
-    background: repeating-conic-gradient(rgba(255,255,255,0.06) 0% 25%, transparent 0% 50%) 0 0 / 20px 20px;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 16px;
-    min-height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .modal-preview-bg img { max-height: 200px; max-width: 100%; object-fit: contain; }
-
-  .modal-name {
-    font-family: 'Mitr', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 8px;
-  }
-  .modal-meta { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
-  .modal-actions { display: flex; gap: 10px; justify-content: center; }
-
-  /* ===== TOAST ===== */
-  #toast {
-    position: fixed;
-    bottom: 24px; left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: rgba(5,15,35,0.97);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 20px;
-    font-family: 'Mitr', sans-serif;
-    font-size: 14px;
-    z-index: 200;
-    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    white-space: nowrap;
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* ===== EMPTY STATE ===== */
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-    grid-column: 1/-1;
-  }
-  .empty-state-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
-  .empty-state-text { font-size: 14px; }
-
-  /* Loading skeleton */
-  .skeleton {
-    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 10px;
-  }
-  @keyframes shimmer { to { background-position: -200% 0; } }
-
-  .spinner-sm {
-    display: inline-block;
-    width: 14px; height: 14px;
-    border: 2px solid rgba(26,10,0,0.3);
-    border-top-color: rgba(26,10,0,0.9);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    vertical-align: middle;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* GAS URL input */
-  .gas-config {
-    background: rgba(244,197,66,0.06);
-    border: 1px solid rgba(244,197,66,0.2);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .gas-config label { font-size: 13px; color: var(--gold); font-family: 'Mitr', sans-serif; white-space: nowrap; }
-  .gas-config input {
-    flex: 1;
-    min-width: 200px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 12px;
-    color: white;
-    font-size: 13px;
-    outline: none;
-    font-family: monospace;
-  }
-  .gas-config input:focus { border-color: rgba(244,197,66,0.5); }
-
-  /* Confirm dialog */
-  .confirm-msg { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+  #file-count { font-size:12px; color:var(--muted); }
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">🪷 หลังบ้าน — จัดการกระทง</div>
-  <div class="header-stats">
-    <div class="stat-pill">🖼️ กระทงทั้งหมด: <span id="total-count">—</span></div>
-    <div class="stat-pill">✅ เปิดใช้งาน: <span id="active-count">—</span></div>
+  <div class="header-right">
+    <div class="stat-pill">🖼️ ทั้งหมด: <span id="ttl">—</span></div>
+    <div class="stat-pill">✅ เปิด: <span id="act">—</span></div>
   </div>
 </header>
 
 <div class="container">
+  <div class="page-title">📂 จัดการรูปกระทง</div>
+  <div class="page-sub">อัพโหลด เปิด/ปิด และลบรูปกระทงที่ใช้ในระบบ</div>
 
-  <!-- GAS URL Config -->
-  <div class="gas-config">
-    <label>⚙️ GAS URL:</label>
-    <input type="text" id="gas-url-input"
-      placeholder="https://script.google.com/macros/s/..."
-      value="https://script.google.com/macros/s/AKfycbwM6LgPjcoKS1ER-QeBGhfG9tJOj7qXvNigPeT6Pa_st0-GIY2CMl-D7rB4Dk5cP9QOOQ/exec">
-    <button class="btn btn-outline" onclick="loadKrathongs()">🔄 โหลด</button>
-  </div>
-
-  <!-- Upload Section -->
-  <div class="upload-card" id="upload-card">
-    <div class="upload-header">📤 อัพโหลดรูปกระทง</div>
-
+  <!-- Upload -->
+  <div class="upload-card">
+    <div class="card-title">📤 อัพโหลดรูปกระทงใหม่</div>
     <div class="drop-zone" id="drop-zone">
       <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp" multiple>
       <div class="drop-zone-icon">🖼️</div>
-      <div class="drop-zone-text">ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์</div>
-      <div class="drop-zone-sub">รองรับ PNG, JPG, WebP (แนะนำ PNG พื้นหลังโปร่งใส)</div>
+      <div class="drop-zone-text">ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือก</div>
+      <div class="drop-zone-sub">PNG พื้นหลังโปร่งใสแนะนำ · รองรับ PNG, JPG, WebP</div>
     </div>
 
     <div id="preview-list"></div>
 
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <button class="btn btn-gold" id="upload-btn" onclick="uploadFiles()" disabled>
-        📤 อัพโหลด
-      </button>
-      <button class="btn btn-outline" onclick="clearPreview()">ล้าง</button>
-      <span id="file-count" style="font-size:13px;color:var(--muted);"></span>
+    <div class="row">
+      <button class="btn btn-gold" id="up-btn" onclick="doUpload()" disabled>📤 อัพโหลด</button>
+      <button class="btn btn-outline" onclick="clearFiles()">ล้าง</button>
+      <span id="file-count"></span>
     </div>
 
-    <div class="upload-progress" id="upload-progress">
-      <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
-      <div class="progress-text" id="progress-text">กำลังอัพโหลด...</div>
+    <div class="progress-wrap" id="prog-wrap">
+      <div class="progress-bg"><div class="progress-fill" id="prog-fill"></div></div>
+      <div class="progress-label" id="prog-label">กำลังอัพโหลด...</div>
     </div>
   </div>
 
-  <!-- Krathong List -->
+  <!-- List -->
   <div>
-    <div class="section-header">
+    <div class="section-bar">
       <div class="section-title">🪷 รายการกระทงทั้งหมด</div>
-      <button class="btn btn-outline btn-sm" onclick="loadKrathongs()">🔄 รีเฟรช</button>
+      <button class="btn btn-outline btn-sm" onclick="loadList()">🔄 รีเฟรช</button>
     </div>
-    <div id="krathong-grid">
-      <div class="empty-state">
-        <div class="empty-state-icon">🔄</div>
-        <div class="empty-state-text">กำลังโหลด...</div>
-      </div>
+    <div id="grid">
+      <div class="empty"><div class="empty-icon">⏳</div><div>กำลังโหลด...</div></div>
     </div>
   </div>
 </div>
 
-<!-- Modal Preview -->
-<div id="modal" onclick="closeModal(event)">
-  <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-preview-bg">
-      <img id="modal-img" src="" alt="">
-    </div>
-    <div class="modal-name" id="modal-name"></div>
-    <div class="modal-meta" id="modal-meta"></div>
-    <div class="modal-actions">
+<!-- Modal -->
+<div id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-bg"><img id="m-img" src="" alt=""></div>
+    <div class="modal-name" id="m-name"></div>
+    <div class="modal-meta" id="m-meta"></div>
+    <div class="row" style="justify-content:center;gap:8px;">
       <button class="btn btn-outline btn-sm" onclick="closeModal()">ปิด</button>
-      <button class="btn btn-sm" id="modal-toggle-btn" onclick="modalToggle()">เปิด/ปิด</button>
-      <button class="btn btn-danger btn-sm" onclick="modalDelete()">🗑️ ลบ</button>
+      <button class="btn btn-sm" id="m-tog" onclick="mToggle()"></button>
+      <button class="btn btn-danger btn-sm" onclick="mDelete()">🗑️ ลบ</button>
     </div>
-    <div style="margin-top:12px;font-size:11px;color:var(--muted);" id="modal-url-text"></div>
+    <div class="modal-url" id="m-url"></div>
   </div>
 </div>
 
-<!-- Toast -->
 <div id="toast"></div>
 
 <script>
-const GAS_URL_KEY = 'krathong_admin_gas_url';
-let krathongs = [];
+const GAS = "https://script.google.com/macros/s/AKfycbwM6LgPjcoKS1ER-QeBGhfG9tJOj7qXvNigPeT6Pa_st0-GIY2CMl-D7rB4Dk5cP9QOOQ/exec";
+
+let list = [];
 let selectedFiles = [];
-let modalKrathong = null;
+let modalItem = null;
 
-function getGasUrl() {
-  return document.getElementById('gas-url-input').value.trim();
-}
-
-// ===== LOAD KRATHONGS =====
-async function loadKrathongs() {
-  const grid = document.getElementById('krathong-grid');
-  grid.innerHTML = `
-    ${[1,2,3,4,5,6].map(()=>`
-      <div style="background:rgba(10,25,55,0.95);border:1px solid rgba(244,197,66,0.2);border-radius:14px;overflow:hidden;">
-        <div class="skeleton" style="aspect-ratio:1;"></div>
-        <div style="padding:10px 12px;">
-          <div class="skeleton" style="height:12px;border-radius:6px;margin-bottom:6px;"></div>
-          <div class="skeleton" style="height:10px;width:60%;border-radius:6px;"></div>
-        </div>
-      </div>`).join('')}
-  `;
+// ===== LOAD =====
+async function loadList() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = [1,2,3,4,5,6].map(()=>`
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+      <div class="sk" style="aspect-ratio:1;"></div>
+      <div style="padding:10px 12px;"><div class="sk" style="height:11px;margin-bottom:6px;border-radius:6px;"></div><div class="sk" style="height:9px;width:55%;border-radius:6px;"></div></div>
+    </div>`).join('');
 
   try {
-    const res  = await fetch(`${getGasUrl()}?action=listKrathongs&_=${Date.now()}`);
-    const data = await res.json();
-    krathongs  = data.krathongs || [];
+    const r = await fetch(`${GAS}?action=listKrathongs&_=${Date.now()}`);
+    const d = await r.json();
+    list = d.krathongs || [];
     renderGrid();
     updateStats();
-
-    if (data.folderId) {
-      document.getElementById('gas-url-input').title = 'Folder ID: ' + data.folderId;
-    }
   } catch(e) {
-    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">❌</div><div class="empty-state-text">โหลดไม่ได้ ตรวจสอบ GAS URL<br><small style="font-size:11px;">${e.message}</small></div></div>`;
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">❌</div><div>โหลดไม่ได้<br><small>${e.message}</small></div></div>`;
   }
 }
 
-// ===== RENDER GRID =====
 function renderGrid() {
-  const grid = document.getElementById('krathong-grid');
-  if (!krathongs.length) {
-    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🪷</div><div class="empty-state-text">ยังไม่มีกระทง<br>อัพโหลดรูปก่อนเลย!</div></div>`;
+  const grid = document.getElementById('grid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">🪷</div><div>ยังไม่มีกระทง อัพโหลดก่อนเลย!</div></div>`;
     return;
   }
-
-  grid.innerHTML = krathongs.map(k => `
-    <div class="krathong-card ${k.active ? '' : 'inactive'}" id="card-${k.id}">
-      <span class="status-badge ${k.active ? 'badge-active' : 'badge-inactive'}">
-        ${k.active ? '✅ เปิด' : '⏸ ปิด'}
-      </span>
-      <div class="card-img-wrap" onclick="openModal('${k.id}')">
-        <img src="${k.url}" alt="${esc(k.name)}"
-          onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22><text y=%2240%22 font-size=%2240%22>🪷</text></svg>'">
+  grid.innerHTML = list.map(k => `
+    <div class="k-card ${k.active?'':'off'}" id="kc-${k.id}">
+      <span class="badge ${k.active?'badge-on':'badge-off'}">${k.active?'✅ เปิด':'⏸ ปิด'}</span>
+      <div class="k-img" onclick="openModal('${k.id}')">
+        <img src="${k.url}" alt="${esc(k.name)}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22><text y=%2248%22 font-size=%2248%22>🪷</text></svg>'">
       </div>
-      <div class="card-body">
-        <div class="card-name" title="${esc(k.name)}">${esc(k.name)}</div>
-        <div class="card-meta">${formatSize(k.size)} · ${k.created}</div>
-        <div class="card-actions">
-          <button class="btn btn-outline btn-sm" onclick="openModal('${k.id}')">👁 Preview</button>
-          <button class="btn btn-sm ${k.active ? 'btn-outline' : 'btn-gold'}" onclick="toggleKrathong('${k.id}')">
-            ${k.active ? '⏸' : '▶️'}
-          </button>
-          <button class="btn btn-danger btn-sm" onclick="deleteKrathong('${k.id}')">🗑️</button>
+      <div class="k-body">
+        <div class="k-name" title="${esc(k.name)}">${esc(k.name)}</div>
+        <div class="k-meta">${fmtSize(k.size)}</div>
+        <div class="k-actions">
+          <button class="btn btn-sm ${k.active?'btn-toggle-on':'btn-toggle-off'}" onclick="toggle('${k.id}')">${k.active?'⏸':'▶️'}</button>
+          <button class="btn btn-danger btn-sm" onclick="del('${k.id}')">🗑️</button>
+          <button class="btn btn-outline btn-sm" onclick="openModal('${k.id}')">👁</button>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-// ===== STATS =====
 function updateStats() {
-  document.getElementById('total-count').textContent  = krathongs.length;
-  document.getElementById('active-count').textContent = krathongs.filter(k => k.active).length;
+  document.getElementById('ttl').textContent = list.length;
+  document.getElementById('act').textContent = list.filter(k=>k.active).length;
 }
 
 // ===== FILE PICKER =====
-document.getElementById('file-input').addEventListener('change', function() {
-  handleFiles(Array.from(this.files));
-});
-
-const dropZone = document.getElementById('drop-zone');
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.classList.remove('drag-over');
-  handleFiles(Array.from(e.dataTransfer.files));
-});
+document.getElementById('file-input').addEventListener('change', e => handleFiles([...e.target.files]));
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); handleFiles([...e.dataTransfer.files]); });
 
 function handleFiles(files) {
-  const valid = files.filter(f => f.type.startsWith('image/'));
-  selectedFiles = [...selectedFiles, ...valid];
+  selectedFiles = [...selectedFiles, ...files.filter(f => f.type.startsWith('image/'))];
   renderPreview();
 }
 
 function renderPreview() {
-  const list = document.getElementById('preview-list');
-  list.innerHTML = selectedFiles.map((f, i) => {
-    const url = URL.createObjectURL(f);
-    return `
-      <div class="preview-item">
-        <img src="${url}" alt="">
-        <div class="preview-name">${esc(f.name)}</div>
-        <button class="remove-preview" onclick="removePreview(${i})">✕</button>
-      </div>`;
-  }).join('');
-  document.getElementById('upload-btn').disabled = selectedFiles.length === 0;
-  document.getElementById('file-count').textContent = selectedFiles.length > 0 ? `${selectedFiles.length} ไฟล์` : '';
+  document.getElementById('preview-list').innerHTML = selectedFiles.map((f, i) => `
+    <div class="prev-item">
+      <img src="${URL.createObjectURL(f)}" alt="">
+      <span>${esc(f.name)}</span>
+      <button class="prev-remove" onclick="rmFile(${i})">✕</button>
+    </div>`).join('');
+  document.getElementById('up-btn').disabled = !selectedFiles.length;
+  document.getElementById('file-count').textContent = selectedFiles.length ? `${selectedFiles.length} ไฟล์` : '';
 }
 
-function removePreview(i) {
-  selectedFiles.splice(i, 1);
-  renderPreview();
-}
+function rmFile(i) { selectedFiles.splice(i,1); renderPreview(); }
+function clearFiles() { selectedFiles=[]; document.getElementById('file-input').value=''; renderPreview(); }
 
-function clearPreview() {
-  selectedFiles = [];
-  document.getElementById('file-input').value = '';
-  renderPreview();
-}
-
-// ===== UPLOAD =====
-async function uploadFiles() {
+// ===== UPLOAD — แบ่ง chunk เพื่อหลีกเลี่ยง URL limit =====
+async function doUpload() {
   if (!selectedFiles.length) return;
-
-  const btn      = document.getElementById('upload-btn');
-  const progress = document.getElementById('upload-progress');
-  const bar      = document.getElementById('progress-bar');
-  const txt      = document.getElementById('progress-text');
-
+  const btn = document.getElementById('up-btn');
+  const pw  = document.getElementById('prog-wrap');
+  const pf  = document.getElementById('prog-fill');
+  const pl  = document.getElementById('prog-label');
   btn.disabled = true;
-  progress.style.display = 'block';
+  pw.style.display = 'block';
 
   let done = 0;
   for (const file of selectedFiles) {
-    txt.textContent = `กำลังอัพโหลด ${file.name}...`;
-    bar.style.width = (done / selectedFiles.length * 100) + '%';
+    pl.textContent = `อัพโหลด ${file.name} (${done+1}/${selectedFiles.length})...`;
+    pf.style.width = (done/selectedFiles.length*100)+'%';
     try {
-      const base64 = await toBase64(file);
-      const res = await fetch(getGasUrl(), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action:   'uploadKrathong',
-          base64:   base64,
+      // แปลงเป็น base64 แล้วส่งเป็น chunks ผ่าน multiple GET requests
+      const b64 = await toBase64(file);
+      // ถ้ารูปเล็ก (<300KB) ส่งครั้งเดียวได้
+      if (b64.length < 300000) {
+        const params = new URLSearchParams({
+          action: 'uploadKrathong',
+          base64: b64,
           mimeType: file.type,
           filename: file.name,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        krathongs.unshift({ id: data.id, name: data.name, url: data.url, active: true, size: file.size, created: new Date().toLocaleString('th-TH') });
-        done++;
-        toast(`✅ อัพโหลด ${file.name} สำเร็จ`);
+        });
+        const r = await fetch(`${GAS}?${params}`);
+        const d = await r.json();
+        if (d.success) {
+          list.unshift({ id:d.id, name:d.name, url:d.url, active:true, size:file.size, created:new Date().toLocaleString('th-TH') });
+          toast(`✅ ${file.name} อัพโหลดแล้ว`);
+        } else { toast(`❌ ${file.name}: ${d.error||'ไม่ทราบสาเหตุ'}`, true); }
+      } else {
+        // รูปใหญ่ — ส่งเป็น no-cors POST (GAS รับได้ ไม่สน CORS response)
+        const params = new URLSearchParams({ action:'uploadKrathong', mimeType:file.type, filename:file.name });
+        await fetch(`${GAS}?${params}`, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: b64,
+        });
+        // no-cors ไม่ได้ response — โหลดรายการใหม่แทน
+        toast(`✅ ${file.name} ส่งแล้ว (กำลังรีเฟรช...)`);
+        await new Promise(r=>setTimeout(r,2500));
+        const r2 = await fetch(`${GAS}?action=listKrathongs&_=${Date.now()}`);
+        const d2 = await r2.json();
+        list = d2.krathongs || [];
       }
+      done++;
     } catch(e) {
-      toast(`❌ อัพโหลด ${file.name} ล้มเหลว: ${e.message}`, true);
+      toast(`❌ ${file.name}: ${e.message}`, true);
     }
   }
 
-  bar.style.width = '100%';
-  txt.textContent = `อัพโหลดเสร็จแล้ว ${done}/${selectedFiles.length} ไฟล์`;
-  setTimeout(() => { progress.style.display = 'none'; }, 2000);
-
-  clearPreview();
+  pf.style.width = '100%';
+  pl.textContent = `เสร็จแล้ว ${done}/${selectedFiles.length} ไฟล์`;
+  setTimeout(()=>{ pw.style.display='none'; },2500);
+  clearFiles();
   renderGrid();
   updateStats();
   btn.disabled = false;
 }
 
+// ===== TOGGLE =====
+async function toggle(id) {
+  const k = list.find(x=>x.id===id);
+  if (!k) return;
+  try {
+    await fetch(`${GAS}?action=toggle&fileId=${id}&_=${Date.now()}`);
+    k.active = !k.active;
+    renderGrid(); updateStats();
+    toast(`${k.active?'✅ เปิด':'⏸ ปิด'} "${k.name}" แล้ว`);
+  } catch(e) { toast('❌ '+e.message, true); }
+}
+
+// ===== DELETE =====
+async function del(id) {
+  const k = list.find(x=>x.id===id);
+  if (!k || !confirm(`ลบกระทง "${k.name}" จริงๆ?`)) return;
+  try {
+    await fetch(`${GAS}?action=delete&fileId=${id}&_=${Date.now()}`);
+    list = list.filter(x=>x.id!==id);
+    renderGrid(); updateStats();
+    toast(`🗑️ ลบ "${k.name}" แล้ว`);
+    closeModal();
+  } catch(e) { toast('❌ '+e.message, true); }
+}
+
+// ===== MODAL =====
+function openModal(id) {
+  modalItem = list.find(k=>k.id===id);
+  if (!modalItem) return;
+  const k = modalItem;
+  document.getElementById('m-img').src  = k.url;
+  document.getElementById('m-name').textContent = k.name;
+  document.getElementById('m-meta').textContent = fmtSize(k.size)+' · '+k.created;
+  document.getElementById('m-url').textContent  = k.url;
+  const tb = document.getElementById('m-tog');
+  tb.textContent = k.active ? '⏸ ปิดใช้งาน' : '▶️ เปิดใช้งาน';
+  tb.className   = `btn btn-sm ${k.active?'btn-toggle-on':'btn-outline'}`;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal() { document.getElementById('modal').classList.remove('show'); modalItem=null; }
+function mToggle()    { if (modalItem) { toggle(modalItem.id); closeModal(); } }
+function mDelete()    { if (modalItem) del(modalItem.id); }
+
+// ===== HELPERS =====
 function toBase64(file) {
-  return new Promise((res, rej) => {
+  return new Promise((res,rej)=>{
     const r = new FileReader();
     r.onload  = () => res(r.result.split(',')[1]);
     r.onerror = rej;
     r.readAsDataURL(file);
   });
 }
-
-// ===== TOGGLE =====
-async function toggleKrathong(id) {
-  const k = krathongs.find(x => x.id === id);
-  if (!k) return;
-  try {
-    await fetch(`${getGasUrl()}?action=toggle&fileId=${id}&_=${Date.now()}`);
-    k.active = !k.active;
-    renderGrid();
-    updateStats();
-    toast(`${k.active ? '✅ เปิด' : '⏸ ปิด'} กระทง "${k.name}" แล้ว`);
-  } catch(e) {
-    toast('❌ เกิดข้อผิดพลาด', true);
-  }
+function fmtSize(b) {
+  if (!b) return '—';
+  if (b<1024) return b+'B';
+  if (b<1024*1024) return (b/1024).toFixed(0)+'KB';
+  return (b/1024/1024).toFixed(1)+'MB';
 }
-
-// ===== DELETE =====
-async function deleteKrathong(id) {
-  const k = krathongs.find(x => x.id === id);
-  if (!k) return;
-  if (!confirm(`ลบกระทง "${k.name}" จริงๆ ใช่ไหม?`)) return;
-  try {
-    await fetch(`${getGasUrl()}?action=delete&fileId=${id}&_=${Date.now()}`);
-    krathongs = krathongs.filter(x => x.id !== id);
-    renderGrid();
-    updateStats();
-    toast(`🗑️ ลบ "${k.name}" แล้ว`);
-    closeModal();
-  } catch(e) {
-    toast('❌ ลบไม่สำเร็จ', true);
-  }
-}
-
-// ===== MODAL =====
-function openModal(id) {
-  modalKrathong = krathongs.find(k => k.id === id);
-  if (!modalKrathong) return;
-  const k = modalKrathong;
-  document.getElementById('modal-img').src     = k.url;
-  document.getElementById('modal-name').textContent = k.name;
-  document.getElementById('modal-meta').textContent = `${formatSize(k.size)} · ${k.created}`;
-  document.getElementById('modal-url-text').textContent = 'URL: ' + k.url;
-
-  const tb = document.getElementById('modal-toggle-btn');
-  tb.textContent = k.active ? '⏸ ปิดใช้งาน' : '▶️ เปิดใช้งาน';
-  tb.className = `btn btn-sm ${k.active ? 'btn-outline' : 'btn-gold'}`;
-
-  document.getElementById('modal').classList.add('show');
-}
-
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('modal')) {
-    document.getElementById('modal').classList.remove('show');
-    modalKrathong = null;
-  }
-}
-
-function modalToggle() {
-  if (modalKrathong) { toggleKrathong(modalKrathong.id); closeModal(); }
-}
-
-function modalDelete() {
-  if (modalKrathong) deleteKrathong(modalKrathong.id);
-}
-
-// ===== HELPERS =====
-function formatSize(bytes) {
-  if (!bytes) return '—';
-  if (bytes < 1024)       return bytes + ' B';
-  if (bytes < 1024*1024)  return (bytes/1024).toFixed(0) + ' KB';
-  return (bytes/1024/1024).toFixed(1) + ' MB';
-}
-
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
-function toast(msg, isErr) {
+function toast(msg, err) {
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.style.borderColor = isErr ? 'rgba(231,76,60,0.5)' : 'rgba(244,197,66,0.3)';
+  el.style.borderColor = err ? 'rgba(231,76,60,0.5)' : 'rgba(244,197,66,0.3)';
   el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3500);
+  setTimeout(()=>el.classList.remove('show'), 3500);
 }
 
-// ===== INIT =====
-window.addEventListener('DOMContentLoaded', loadKrathongs);
+window.addEventListener('DOMContentLoaded', loadList);
 </script>
 </body>
 </html>
