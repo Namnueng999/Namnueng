@@ -878,6 +878,22 @@ const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1430903614196416625/Sb
 // กรณียังไม่ได้ deploy ให้ใช้ mock mode
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwM6LgPjcoKS1ER-QeBGhfG9tJOj7qXvNigPeT6Pa_st0-GIY2CMl-D7rB4Dk5cP9QOOQ/exec";
 
+// JSONP — แก้ CORS ได้ 100%
+function gasGet(params) {
+  return new Promise((resolve, reject) => {
+    const cb = '_cb' + Math.random().toString(36).slice(2);
+    const t  = setTimeout(() => { cleanup(); reject(new Error('GAS timeout')); }, 20000);
+    let script;
+    function cleanup() { clearTimeout(t); delete window[cb]; if(script) script.remove(); }
+    window[cb] = (data) => { cleanup(); resolve(data); };
+    const p = new URLSearchParams({ ...params, callback: cb, _: Date.now() });
+    script = document.createElement('script');
+    script.src = GAS_URL + '?' + p;
+    script.onerror = () => { cleanup(); reject(new Error('Script load error')); };
+    document.head.appendChild(script);
+  });
+}
+
 // KRATHONG_COLORS removed — using uploaded images now
 
 // ===== STATE =====
@@ -952,8 +968,7 @@ function initWishInput() {
 async function loadAvailableKrathongs() {
   const picker = document.getElementById('krathong-picker');
   try {
-    const res  = await fetch(`${GAS_URL}?action=listKrathongs&_=${Date.now()}`);
-    const data = await res.json();
+    const data = await gasGet({ action: 'listKrathongs' });
     availableKrathongs = (data.krathongs || []).filter(k => k.active);
     if (!availableKrathongs.length) {
       picker.innerHTML = '<div class="k-loading">ยังไม่มีกระทง กรุณาอัพโหลดในหน้าหลังบ้าน</div>';
@@ -1017,9 +1032,7 @@ async function loadExistingKrathongs() {
   try {
     if (!GAS_URL) return;
 
-    const res = await fetch(`${GAS_URL}?sheetId=${SHEET_ID}&_=${Date.now()}`);
-    const data = await res.json();
-    console.log('Loaded rows:', data);
+    const data = await gasGet({ action: 'list' });
     const rows = data.rows || [];
     rows.forEach(row => {
       const k = {
@@ -1108,19 +1121,15 @@ async function floatKrathong() {
 
 // ===== SAVE TO SHEET =====
 async function saveToSheet(k) {
-  await fetch(GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action:      'append',
-      userId:      k.userId,
-      displayName: k.displayName,
-      pictureUrl:  k.pictureUrl,
-      wish:        k.wish,
-      krathongId:  k.krathongId  || '',
-      krathongUrl: k.krathongUrl || '',
-      timestamp:   k.timestamp,
-    }),
+  await gasGet({
+    action:      'append',
+    userId:      k.userId,
+    displayName: k.displayName,
+    pictureUrl:  k.pictureUrl,
+    wish:        k.wish,
+    krathongId:  k.krathongId  || '',
+    krathongUrl: k.krathongUrl || '',
+    timestamp:   k.timestamp,
   });
   return { success: true };
 }
