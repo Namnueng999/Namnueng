@@ -878,18 +878,27 @@ const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1430903614196416625/Sb
 // กรณียังไม่ได้ deploy ให้ใช้ mock mode
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwM6LgPjcoKS1ER-QeBGhfG9tJOj7qXvNigPeT6Pa_st0-GIY2CMl-D7rB4Dk5cP9QOOQ/exec";
 
-// JSONP — แก้ CORS ได้ 100%
-function gasGet(params) {
+// gasGet — ลอง fetch ปกติก่อน (ถ้า GAS support CORS)
+// ถ้าไม่ได้ ค่อย fallback ไป JSONP
+async function gasGet(params) {
+  const p = new URLSearchParams({ ...params, _: Date.now() });
+  const url = GAS_URL + '?' + p;
+  // ลอง fetch ปกติก่อน
+  try {
+    const res = await fetch(url, { mode: 'cors', cache: 'no-store' });
+    if (res.ok) return await res.json();
+  } catch(_) {}
+  // Fallback: JSONP
   return new Promise((resolve, reject) => {
     const cb = '_cb' + Math.random().toString(36).slice(2);
-    const t  = setTimeout(() => { cleanup(); reject(new Error('GAS timeout')); }, 20000);
+    const t  = setTimeout(() => { cleanup(); reject(new Error('GAS timeout — กรุณา Re-deploy GAS')); }, 15000);
     let script;
     function cleanup() { clearTimeout(t); delete window[cb]; if(script) script.remove(); }
     window[cb] = (data) => { cleanup(); resolve(data); };
-    const p = new URLSearchParams({ ...params, callback: cb, _: Date.now() });
+    const p2 = new URLSearchParams({ ...params, callback: cb, _: Date.now() });
     script = document.createElement('script');
-    script.src = GAS_URL + '?' + p;
-    script.onerror = () => { cleanup(); reject(new Error('Script load error')); };
+    script.src = GAS_URL + '?' + p2;
+    script.onerror = () => { cleanup(); reject(new Error('JSONP load error')); };
     document.head.appendChild(script);
   });
 }
@@ -984,8 +993,30 @@ async function loadAvailableKrathongs() {
     // เลือกอันแรกอัตโนมัติ
     selectKrathong(0);
   } catch(e) {
-    picker.innerHTML = '<div class="k-loading">โหลดไม่ได้ ใช้กระทง default</div>';
     console.warn('loadAvailableKrathongs error:', e.message);
+    // Fallback — แสดงกระทง default SVG ให้ใช้ได้ก่อน
+    availableKrathongs = [
+      { id:'default', url:'', name:'กระทงใบตอง', active:true },
+    ];
+    picker.innerHTML = `
+      <div class="k-option selected" onclick="selectKrathong(0)" id="kopt-0">
+        <svg viewBox="0 0 60 55" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;padding:4px;">
+          <ellipse cx="30" cy="46" rx="26" ry="8" fill="#6B3410"/>
+          <ellipse cx="30" cy="40" rx="22" ry="7" fill="#228B22"/>
+          <ellipse cx="30" cy="34" rx="18" ry="6" fill="#2da44e"/>
+          <ellipse cx="30" cy="29" rx="14" ry="5.5" fill="#1a6b30"/>
+          <circle cx="30" cy="26" r="4" fill="#FF69B4"/>
+          <circle cx="30" cy="26" r="2.5" fill="#FFD700"/>
+          <rect x="27" y="16" width="6" height="14" rx="3" fill="#FFF9C4"/>
+          <path d="M30,4 Q34,8 32,14 Q30,16 28,14 Q26,8 30,4 Z" fill="#FFD700"/>
+        </svg>
+        <div class="k-check">✓</div>
+      </div>
+      <div style="grid-column:1/-1;font-size:10px;color:rgba(255,100,100,0.7);text-align:center;padding:4px 0;">
+        ⚠️ โหลดรูปไม่ได้ — กรุณา Re-deploy GAS
+      </div>
+    `;
+    selectedKrathong = availableKrathongs[0];
   }
 }
 
