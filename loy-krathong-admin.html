@@ -209,7 +209,16 @@ async function loadList() {
     </div>`).join('');
   try {
     const d = await gasGet({ action: 'listKrathongs' });
-    list = d.krathongs || [];
+    const normUrl = (url, id) => {
+      if (!url && !id) return '';
+      if (id) return 'https://drive.google.com/uc?export=view&id=' + id;
+      if (url && url.includes('lh3.googleusercontent.com/d/')) {
+        const fid = url.split('/d/')[1].split('=')[0].split('?')[0];
+        return 'https://drive.google.com/uc?export=view&id=' + fid;
+      }
+      return url;
+    };
+    list = (d.krathongs || []).map(k => ({ ...k, url: normUrl(k.url, k.id) }));
     renderGrid(); updateStats();
   } catch(e) {
     grid.innerHTML = `<div class="empty"><div class="empty-ico">❌</div><div>โหลดไม่ได้<br><small>${e.message}</small><br><small style="opacity:.5">ตรวจสอบว่า Re-deploy GAS แล้ว</small></div></div>`;
