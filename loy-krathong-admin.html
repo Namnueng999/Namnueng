@@ -209,16 +209,18 @@ async function loadList() {
     </div>`).join('');
   try {
     const d = await gasGet({ action: 'listKrathongs' });
-    const normUrl = (url, id) => {
-      if (!url && !id) return '';
-      if (id) return 'https://drive.google.com/uc?export=view&id=' + id;
-      if (url && url.includes('lh3.googleusercontent.com/d/')) {
-        const fid = url.split('/d/')[1].split('=')[0].split('?')[0];
-        return 'https://drive.google.com/uc?export=view&id=' + fid;
+    const toThumb = (url, id) => {
+      // ดึง File ID จากทุก format
+      let fid = (id && id.length > 10) ? id : '';
+      if (!fid && url) {
+        const m1 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        const m2 = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        const m3 = url.match(/thumbnail\?id=([a-zA-Z0-9_-]+)/);
+        fid = (m1 && m1[1]) || (m2 && m2[1]) || (m3 && m3[1]) || '';
       }
-      return url;
+      return fid ? `https://drive.google.com/thumbnail?id=${fid}&sz=w400` : (url || '');
     };
-    list = (d.krathongs || []).map(k => ({ ...k, url: normUrl(k.url, k.id) }));
+    list = (d.krathongs || []).map(k => ({ ...k, url: toThumb(k.url, k.id) }));
     renderGrid(); updateStats();
   } catch(e) {
     grid.innerHTML = `<div class="empty"><div class="empty-ico">❌</div><div>โหลดไม่ได้<br><small>${e.message}</small><br><small style="opacity:.5">ตรวจสอบว่า Re-deploy GAS แล้ว</small></div></div>`;
