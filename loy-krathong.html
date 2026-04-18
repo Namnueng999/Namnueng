@@ -364,6 +364,77 @@
     color: rgba(255,255,255,0.3);
   }
 
+  /* Krathong image picker */
+  .krathong-picker {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(244,197,66,0.3) transparent;
+  }
+  .krathong-picker::-webkit-scrollbar { height: 3px; }
+  .krathong-picker::-webkit-scrollbar-track { background: transparent; }
+  .krathong-picker::-webkit-scrollbar-thumb { background: rgba(244,197,66,0.3); border-radius: 4px; }
+
+  .k-option {
+    flex: 0 0 72px;
+    width: 72px;
+    height: 72px;
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.04);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .k-option:hover { border-color: rgba(244,197,66,0.4); background: rgba(244,197,66,0.06); }
+  .k-option.selected { border-color: var(--gold); background: rgba(244,197,66,0.12); box-shadow: 0 0 12px rgba(244,197,66,0.25); }
+  .k-option img { width: 100%; height: 100%; object-fit: contain; }
+  .k-option .k-check {
+    position: absolute; top: 3px; right: 3px;
+    width: 14px; height: 14px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: #1a0a00;
+    font-weight: 900;
+  }
+  .k-option.selected .k-check { display: flex; }
+
+  .k-eye {
+    position: absolute; bottom: 3px; right: 3px;
+    width: 16px; height: 16px;
+    background: rgba(0,0,0,0.55);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+  }
+  .k-option:hover .k-eye { opacity: 1; }
+
+  .k-loading {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 16px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+  }
+
   /* Krathong style picker */
   .style-label {
     font-size: 12px;
@@ -372,10 +443,10 @@
   }
 
   .style-picker {
-    display: flex;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
     margin-bottom: 14px;
-    justify-content: center;
   }
 
   .style-option {
@@ -576,6 +647,92 @@
 
   .popup-close:hover { background: rgba(244,197,66,0.3); }
 
+  /* Recent krathongs list */
+  #recent-section {
+    margin-top: 14px;
+    border-top: 1px solid rgba(244,197,66,0.15);
+    padding-top: 12px;
+  }
+
+  .recent-title {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  .recent-list::-webkit-scrollbar { width: 3px; }
+  .recent-list::-webkit-scrollbar-track { background: transparent; }
+  .recent-list::-webkit-scrollbar-thumb { background: rgba(244,197,66,0.3); border-radius: 4px; }
+
+  .recent-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 7px 10px;
+    animation: fadeSlideIn 0.4s ease forwards;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .recent-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(244,197,66,0.4);
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .recent-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    border: 1.5px solid rgba(244,197,66,0.3);
+  }
+
+  .recent-info { flex: 1; min-width: 0; }
+
+  .recent-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .recent-wish {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+
+  .recent-badge {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
   /* Loading spinner */
   .spinner {
     display: inline-block;
@@ -660,7 +817,6 @@
 <div class="bank"></div>
 
 <!-- Counter -->
-<div id="krathong-counter">🪷 <span id="counter-num">0</span> กระทง</div>
 
 <!-- UI Panel -->
 <div id="ui-panel">
@@ -676,23 +832,8 @@
     <div class="form-title"><span>🪷</span> ลอยกระทง <span>🕯️</span></div>
 
     <div class="style-label">เลือกแบบกระทง</div>
-    <div class="style-picker">
-      <div class="style-option selected" data-style="0" onclick="selectStyle(0)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#228B22"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#2da44e"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>คลาสสิก</span>
-      </div>
-      <div class="style-option" data-style="1" onclick="selectStyle(1)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#FF69B4"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#FF1493"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>ชมพู</span>
-      </div>
-      <div class="style-option" data-style="2" onclick="selectStyle(2)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#9B59B6"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#8E44AD"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>ม่วง</span>
-      </div>
-      <div class="style-option" data-style="3" onclick="selectStyle(3)">
-        <svg width="32" height="24" viewBox="0 0 32 24"><ellipse cx="16" cy="18" rx="14" ry="5" fill="#8B4513"/><ellipse cx="16" cy="15" rx="12" ry="4" fill="#FFD700"/><ellipse cx="16" cy="12" rx="10" ry="3.5" fill="#FFC200"/><circle cx="16" cy="8" r="2" fill="#FFA500"/><line x1="16" y1="6" x2="16" y2="2" stroke="#FFD700" stroke-width="1.5"/><ellipse cx="16" cy="2" rx="2" ry="3" fill="#FFD700" opacity="0.8"/></svg>
-        <span>ทอง</span>
-      </div>
+    <div class="krathong-picker" id="krathong-picker">
+      <div class="k-loading">⏳ กำลังโหลดกระทง...</div>
     </div>
 
     <div class="input-group">
@@ -704,6 +845,13 @@
     <button id="float-btn" onclick="floatKrathong()">
       🪷 &nbsp;ลอยกระทง
     </button>
+
+    <div id="recent-section">
+      <div class="recent-title">🕯️ กระทงล่าสุด</div>
+      <div class="recent-list" id="recent-list">
+        <div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:8px 0;">ยังไม่มีกระทง...</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -726,7 +874,35 @@
   </button>
 </div>
 
-<!-- Krathong Popup -->
+<!-- Krathong Preview Modal -->
+<div id="k-preview-modal" style="
+  position:fixed;inset:0;z-index:150;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+" onclick="closeKPreview()">
+  <div style="
+    background:rgba(5,15,40,0.98);border:1px solid rgba(244,197,66,0.35);
+    border-radius:18px;padding:20px;width:85%;max-width:300px;text-align:center;
+    transform:scale(0.9);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  " id="k-preview-box" onclick="event.stopPropagation()">
+    <div style="
+      background:repeating-conic-gradient(rgba(255,255,255,0.06) 0% 25%,transparent 0% 50%) 0 0/16px 16px;
+      border-radius:12px;padding:16px;margin-bottom:14px;
+      min-height:180px;display:flex;align-items:center;justify-content:center;
+    ">
+      <img id="k-preview-img" src="" style="max-height:160px;max-width:100%;object-fit:contain;" alt="">
+    </div>
+    <div id="k-preview-name" style="font-family:'Mitr',sans-serif;font-size:14px;color:rgba(244,197,66,1);margin-bottom:14px;"></div>
+    <button onclick="closeKPreview()" style="
+      padding:8px 24px;background:rgba(244,197,66,0.15);
+      border:1px solid rgba(244,197,66,0.3);border-radius:20px;
+      color:var(--gold);font-family:'Mitr',sans-serif;cursor:pointer;
+    ">ปิด ✕</button>
+  </div>
+</div>
+
+<!-- Krathong Popup (กระทงบนแม่น้ำ) -->
 <div id="krathong-popup">
   <div class="popup-card">
     <img class="popup-avatar" id="popup-avatar" src="" alt="">
@@ -748,18 +924,39 @@ const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1430903614196416625/Sb
 
 // Google Apps Script Web App URL (deploy this script in Google Apps Script)
 // กรณียังไม่ได้ deploy ให้ใช้ mock mode
-const GAS_URL = ""; // ใส่ URL ของ Google Apps Script Web App ที่ deploy แล้ว
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwM6LgPjcoKS1ER-QeBGhfG9tJOj7qXvNigPeT6Pa_st0-GIY2CMl-D7rB4Dk5cP9QOOQ/exec";
 
-const KRATHONG_COLORS = [
-  { petals: ['#228B22','#2da44e','#1a6b30'], name: 'คลาสสิก' },
-  { petals: ['#FF69B4','#FF1493','#c01070'], name: 'ชมพู' },
-  { petals: ['#9B59B6','#8E44AD','#6c3483'], name: 'ม่วง' },
-  { petals: ['#FFD700','#FFC200','#e6a800'], name: 'ทอง' },
-];
+// gasGet — ลอง fetch ปกติก่อน (ถ้า GAS support CORS)
+// ถ้าไม่ได้ ค่อย fallback ไป JSONP
+async function gasGet(params) {
+  const p = new URLSearchParams({ ...params, _: Date.now() });
+  const url = GAS_URL + '?' + p;
+  // ลอง fetch ปกติก่อน
+  try {
+    const res = await fetch(url, { mode: 'cors', cache: 'no-store' });
+    if (res.ok) return await res.json();
+  } catch(_) {}
+  // Fallback: JSONP
+  return new Promise((resolve, reject) => {
+    const cb = '_cb' + Math.random().toString(36).slice(2);
+    const t  = setTimeout(() => { cleanup(); reject(new Error('GAS timeout — กรุณา Re-deploy GAS')); }, 15000);
+    let script;
+    function cleanup() { clearTimeout(t); delete window[cb]; if(script) script.remove(); }
+    window[cb] = (data) => { cleanup(); resolve(data); };
+    const p2 = new URLSearchParams({ ...params, callback: cb, _: Date.now() });
+    script = document.createElement('script');
+    script.src = GAS_URL + '?' + p2;
+    script.onerror = () => { cleanup(); reject(new Error('JSONP load error')); };
+    document.head.appendChild(script);
+  });
+}
+
+// KRATHONG_COLORS removed — using uploaded images now
 
 // ===== STATE =====
 let userProfile = null;
-let selectedStyle = 0;
+let selectedKrathong = null; // { id, url, name }
+let availableKrathongs = []; // โหลดจาก Drive
 let krathongData = [];
 let floatCount = 0;
 
@@ -768,8 +965,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   generateStars();
   startKhomLoi();
   initWishInput();
+  loadAvailableKrathongs();   // โหลดรูปกระทงจาก Drive
   await initLiff();
-  loadExistingKrathongs();
+  loadExistingKrathongs();    // โหลดกระทงที่ลอยแล้วจาก Sheets
 });
 
 // ===== STARS =====
@@ -825,12 +1023,92 @@ function initWishInput() {
   });
 }
 
-// ===== STYLE PICKER =====
-function selectStyle(idx) {
-  selectedStyle = idx;
-  document.querySelectorAll('.style-option').forEach((el, i) => {
+// ===== KRATHONG PICKER =====
+async function loadAvailableKrathongs() {
+  const picker = document.getElementById('krathong-picker');
+  try {
+    const data = await gasGet({ action: 'listKrathongs' });
+    // normalize URL — รองรับทั้ง lh3 และ drive.google.com
+    const normalizeUrl = (url, id) => {
+      if (!url && !id) return '';
+      if (id) return 'https://drive.google.com/uc?export=view&id=' + id;
+      if (url.includes('lh3.googleusercontent.com/d/')) {
+        const fileId = url.split('/d/')[1].split('=')[0].split('?')[0];
+        return 'https://drive.google.com/uc?export=view&id=' + fileId;
+      }
+      return url;
+    };
+    availableKrathongs = (data.krathongs || [])
+      .filter(k => k.active)
+      .map(k => ({ ...k, url: normalizeUrl(k.url, k.id) }));
+    if (!availableKrathongs.length) {
+      picker.innerHTML = '<div class="k-loading">ยังไม่มีกระทง กรุณาอัพโหลดในหน้าหลังบ้าน</div>';
+      return;
+    }
+    picker.innerHTML = availableKrathongs.map((k, i) => `
+      <div class="k-option" onclick="selectKrathong(${i})" id="kopt-${i}">
+        <img src="${k.url}" alt="${k.name}"
+          onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22><text y=%2248%22 font-size=%2248%22>🪷</text></svg>'">
+        <div class="k-check">✓</div>
+        <div class="k-eye" onclick="openKPreview(${i}, event)">👁</div>
+      </div>
+    `).join('');
+    // เลือกอันแรกอัตโนมัติ
+    selectKrathong(0);
+  } catch(e) {
+    console.warn('loadAvailableKrathongs error:', e.message);
+    // Fallback — แสดงกระทง default SVG ให้ใช้ได้ก่อน
+    availableKrathongs = [
+      { id:'default', url:'', name:'กระทงใบตอง', active:true },
+    ];
+    picker.innerHTML = `
+      <div class="k-option selected" onclick="selectKrathong(0)" id="kopt-0">
+        <svg viewBox="0 0 60 55" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;padding:4px;">
+          <ellipse cx="30" cy="46" rx="26" ry="8" fill="#6B3410"/>
+          <ellipse cx="30" cy="40" rx="22" ry="7" fill="#228B22"/>
+          <ellipse cx="30" cy="34" rx="18" ry="6" fill="#2da44e"/>
+          <ellipse cx="30" cy="29" rx="14" ry="5.5" fill="#1a6b30"/>
+          <circle cx="30" cy="26" r="4" fill="#FF69B4"/>
+          <circle cx="30" cy="26" r="2.5" fill="#FFD700"/>
+          <rect x="27" y="16" width="6" height="14" rx="3" fill="#FFF9C4"/>
+          <path d="M30,4 Q34,8 32,14 Q30,16 28,14 Q26,8 30,4 Z" fill="#FFD700"/>
+        </svg>
+        <div class="k-check">✓</div>
+      </div>
+      <div style="grid-column:1/-1;font-size:10px;color:rgba(255,100,100,0.7);text-align:center;padding:4px 0;">
+        ⚠️ โหลดรูปไม่ได้ — กรุณา Re-deploy GAS
+      </div>
+    `;
+    selectedKrathong = availableKrathongs[0];
+  }
+}
+
+function selectKrathong(idx) {
+  selectedKrathong = availableKrathongs[idx] || null;
+  document.querySelectorAll('.k-option').forEach((el, i) => {
     el.classList.toggle('selected', i === idx);
   });
+}
+
+function openKPreview(idx, event) {
+  event.stopPropagation();
+  const k = availableKrathongs[idx];
+  if (!k) return;
+  document.getElementById('k-preview-img').src = k.url || '';
+  document.getElementById('k-preview-name').textContent = k.name || '';
+  const modal = document.getElementById('k-preview-modal');
+  const box   = document.getElementById('k-preview-box');
+  modal.style.opacity = '1';
+  modal.style.pointerEvents = 'all';
+  box.style.transform = 'scale(1)';
+}
+
+function closeKPreview() {
+  const modal = document.getElementById('k-preview-modal');
+  const box   = document.getElementById('k-preview-box');
+  modal.style.opacity = '0';
+  modal.style.pointerEvents = 'none';
+  box.style.transform = 'scale(0.9)';
 }
 
 // ===== LIFF INIT =====
@@ -853,63 +1131,40 @@ async function initLiff() {
     document.getElementById('user-display-name').textContent = userProfile.displayName;
     document.getElementById('user-avatar').src = userProfile.pictureUrl;
     document.getElementById('login-screen').style.display = 'none';
-
+  
   } catch (err) {
     console.error('LIFF init error:', err);
-    // Demo mode fallback
-    userProfile = {
-      userId: 'demo_' + Date.now(),
-      displayName: 'ผู้ใช้ทดสอบ',
-      pictureUrl: 'https://via.placeholder.com/46x46/1a3a5c/FFD700?text=%F0%9F%AA%B7',
-    };
-    document.getElementById('user-display-name').textContent = userProfile.displayName;
-    document.getElementById('user-avatar').src = userProfile.pictureUrl;
-    document.getElementById('login-screen').style.display = 'none';
-    showToast('⚠️ โหมดทดสอบ (LIFF)');
+    document.getElementById('login-screen').style.display = 'flex';
   }
 }
 
 function loginWithLine() {
-  try {
-    liff.login();
-  } catch(e) {
-    // Demo fallback
-    userProfile = {
-      userId: 'demo_' + Date.now(),
-      displayName: 'ผู้ใช้ทดสอบ',
-      pictureUrl: 'https://via.placeholder.com/46x46/1a3a5c/FFD700?text=%F0%9F%AA%B7',
-    };
-    document.getElementById('user-display-name').textContent = userProfile.displayName;
-    document.getElementById('user-avatar').src = userProfile.pictureUrl;
-    document.getElementById('login-screen').style.display = 'none';
-    showToast('⚠️ โหมดทดสอบ');
-  }
+  liff.login();
 }
 
 // ===== LOAD KRATHONGS FROM SHEET =====
 async function loadExistingKrathongs() {
   try {
-    if (!GAS_URL) return; // Skip if no GAS URL
+    if (!GAS_URL) return;
 
-    const res = await fetch(`${GAS_URL}?action=get&sheetId=${SHEET_ID}`);
-    const data = await res.json();
-    if (data.rows) {
-      data.rows.forEach(row => {
-        const k = {
-          userId: row[0],
-          displayName: row[1],
-          pictureUrl: row[2],
-          wish: row[3],
-          style: parseInt(row[4]) || 0,
-          timestamp: row[5],
-        };
-        krathongData.push(k);
-        renderKrathong(k);
-      });
-      updateCounter();
-    }
+    const data = await gasGet({ action: 'list' });
+    const rows = data.rows || [];
+    rows.forEach(row => {
+      const k = {
+        userId:      row[0] || '',
+        displayName: row[1] || '',
+        pictureUrl:  row[2] || '',
+        wish:        row[3] || '',
+        style:       parseInt(row[4]) || 0,
+        timestamp:   row[5] || '',
+      };
+      krathongData.push(k);
+      renderKrathong(k);
+    });
+    updateCounter();
+    updateRecent();
   } catch(e) {
-    console.log('Load existing krathongs error (expected if no GAS):', e.message);
+    console.error('Load krathongs error:', e.message);
   }
 }
 
@@ -924,13 +1179,17 @@ async function floatKrathong() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> กำลังลอยกระทง...';
 
+  if (!selectedKrathong) { showToast('🪷 กรุณาเลือกแบบกระทงก่อน'); btn.disabled=false; btn.innerHTML='🪷 &nbsp;ลอยกระทง'; return; }
+
   const krathong = {
-    userId: userProfile.userId,
+    userId:      userProfile.userId,
     displayName: userProfile.displayName,
-    pictureUrl: userProfile.pictureUrl,
-    wish: wish,
-    style: selectedStyle,
-    timestamp: new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' }),
+    pictureUrl:  userProfile.pictureUrl,
+    wish:        wish,
+    krathongId:  selectedKrathong.id,
+    krathongUrl: selectedKrathong.url,
+    krathongName: selectedKrathong.name,
+    timestamp:   new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' }),
   };
 
   try {
@@ -948,6 +1207,7 @@ async function floatKrathong() {
     renderKrathong(krathong);
     krathongData.push(krathong);
     updateCounter();
+    updateRecent();
 
     // Reset form
     document.getElementById('wish-input').value = '';
@@ -963,6 +1223,7 @@ async function floatKrathong() {
     renderKrathong(krathong);
     krathongData.push(krathong);
     updateCounter();
+    updateRecent();
     document.getElementById('wish-input').value = '';
     document.getElementById('char-counter').textContent = '0';
     showToast('🪷 ลอยกระทงแล้ว! (offline mode)');
@@ -975,32 +1236,31 @@ async function floatKrathong() {
 
 // ===== SAVE TO SHEET =====
 async function saveToSheet(k) {
-  const payload = {
-    action: 'append',
-    sheetId: SHEET_ID,
-    row: [k.userId, k.displayName, k.pictureUrl, k.wish, k.style, k.timestamp],
-  };
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+  await gasGet({
+    action:      'append',
+    userId:      k.userId,
+    displayName: k.displayName,
+    pictureUrl:  k.pictureUrl,
+    wish:        k.wish,
+    krathongId:  k.krathongId  || '',
+    krathongUrl: k.krathongUrl || '',
+    timestamp:   k.timestamp,
   });
-  return res.json();
+  return { success: true };
 }
 
 // ===== DISCORD NOTIFICATION =====
 async function sendDiscordNotification(k) {
-  const colorMap = [0x228B22, 0xFF69B4, 0x9B59B6, 0xFFD700];
-  const styleNames = ['คลาสสิก', 'ชมพู', 'ม่วง', 'ทอง'];
+  const colorMap = [0xF4C542]; // ทอง default
 
   const body = {
     embeds: [{
       title: '🪷 กระทงใหม่ลอยมา!',
       description: `**${k.displayName}** ลอยกระทงพร้อมคำอธิษฐาน`,
-      color: colorMap[k.style] || 0x228B22,
+      color: 0xF4C542,
       fields: [
         { name: '💭 คำอธิษฐาน', value: k.wish, inline: false },
-        { name: '🎨 สไตล์กระทง', value: styleNames[k.style] || 'คลาสสิก', inline: true },
+        { name: '🪷 แบบกระทง', value: k.krathongName || '—', inline: true },
         { name: '🕐 เวลา', value: k.timestamp, inline: true },
       ],
       thumbnail: { url: k.pictureUrl },
@@ -1018,17 +1278,16 @@ async function sendDiscordNotification(k) {
 // ===== RENDER KRATHONG =====
 function renderKrathong(k) {
   const river = document.getElementById('river');
-  const col = KRATHONG_COLORS[k.style] || KRATHONG_COLORS[0];
-
   const wrapper = document.createElement('div');
   wrapper.className = 'krathong';
 
-  const startX = Math.random() * 80 + 5;
-  const startY = Math.random() * 50 + 20;
-  const driftX = (Math.random() - 0.3) * 200;
-  const driftY = (Math.random() - 0.5) * 60;
-  const dur = Math.random() * 2 + 1.5;
+  const startX  = Math.random() * 80 + 5;
+  const startY  = Math.random() * 50 + 20;
+  const driftX  = (Math.random() - 0.3) * 200;
+  const driftY  = (Math.random() - 0.5) * 60;
+  const dur     = Math.random() * 2 + 1.5;
   const crossDur = Math.random() * 60 + 40;
+  const imgUrl  = k.krathongUrl || '';
 
   wrapper.style.cssText = `
     --dur: ${dur}s;
@@ -1037,56 +1296,33 @@ function renderKrathong(k) {
     --start-y: ${startY}%;
     --drift-x: ${driftX}px;
     --drift-y: ${driftY}px;
-    width: 60px;
+    width: 70px;
   `;
 
-  wrapper.innerHTML = `
+  wrapper.innerHTML = imgUrl ? `
+    <img class="krathong-svg" src="${imgUrl}" width="70" height="70"
+      style="object-fit:contain;"
+      onerror="this.style.display='none'">
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+  ` : `
     <svg class="krathong-svg" width="60" height="55" viewBox="0 0 60 55" xmlns="http://www.w3.org/2000/svg">
-      <!-- Base/Trunk -->
       <ellipse cx="30" cy="46" rx="26" ry="8" fill="#6B3410"/>
-      <!-- Bottom petal layer -->
-      <ellipse cx="30" cy="40" rx="22" ry="7" fill="${col.petals[0]}"/>
-      <!-- Middle petal layer -->
-      <ellipse cx="30" cy="34" rx="18" ry="6" fill="${col.petals[1]}"/>
-      <!-- Top petal layer -->
-      <ellipse cx="30" cy="29" rx="14" ry="5.5" fill="${col.petals[2]}"/>
-      <!-- Decorative petals -->
-      <path d="M16,32 Q12,24 18,22 Q24,20 24,28 Z" fill="${col.petals[1]}" opacity="0.7"/>
-      <path d="M44,32 Q48,24 42,22 Q36,20 36,28 Z" fill="${col.petals[1]}" opacity="0.7"/>
-      <path d="M10,38 Q6,30 12,28 Q18,26 18,34 Z" fill="${col.petals[0]}" opacity="0.6"/>
-      <path d="M50,38 Q54,30 48,28 Q42,26 42,34 Z" fill="${col.petals[0]}" opacity="0.6"/>
-      <!-- Candle -->
-      <rect x="27" y="16" width="6" height="14" rx="3" fill="#FFF9C4"/>
-      <!-- Flame base -->
-      <ellipse cx="30" cy="15" rx="3.5" ry="2" fill="#FF8C00" class="candle-flame"/>
-      <!-- Flame -->
-      <path d="M30,4 Q34,8 32,14 Q30,16 28,14 Q26,8 30,4 Z" fill="#FFD700" class="candle-flame"/>
-      <path d="M30,7 Q32.5,10 31.5,13 Q30,14.5 28.5,13 Q27.5,10 30,7 Z" fill="#FFF176" opacity="0.9" class="candle-flame"/>
-      <!-- Incense sticks -->
-      <line x1="22" y1="10" x2="22" y2="30" stroke="#8B6914" stroke-width="1.5"/>
-      <line x1="38" y1="10" x2="38" y2="30" stroke="#8B6914" stroke-width="1.5"/>
-      <circle cx="22" cy="10" r="2" fill="#FF4500" opacity="0.8"/>
-      <circle cx="38" cy="10" r="2" fill="#FF4500" opacity="0.8"/>
-      <!-- Smoke dots -->
-      <circle cx="22" cy="7" r="1.5" fill="rgba(200,200,200,0.5)" class="candle-flame"/>
-      <circle cx="38" cy="7" r="1.5" fill="rgba(200,200,200,0.5)" class="candle-flame"/>
-      <!-- Flower decoration -->
+      <ellipse cx="30" cy="40" rx="22" ry="7" fill="#228B22"/>
+      <ellipse cx="30" cy="34" rx="18" ry="6" fill="#2da44e"/>
+      <ellipse cx="30" cy="29" rx="14" ry="5.5" fill="#1a6b30"/>
       <circle cx="30" cy="26" r="4" fill="#FF69B4"/>
       <circle cx="30" cy="26" r="2.5" fill="#FFD700"/>
-      <!-- Small flowers -->
-      <circle cx="20" cy="28" r="3" fill="#FFA0C0"/>
-      <circle cx="40" cy="28" r="3" fill="#FFA0C0"/>
+      <rect x="27" y="16" width="6" height="14" rx="3" fill="#FFF9C4"/>
+      <path d="M30,4 Q34,8 32,14 Q30,16 28,14 Q26,8 30,4 Z" fill="#FFD700" class="candle-flame"/>
     </svg>
-    <div class="ripple"></div>
     <div class="ripple"></div>
     <div class="ripple"></div>
   `;
 
   wrapper.addEventListener('click', () => showKrathongPopup(k));
-
   river.appendChild(wrapper);
-
-  // Auto remove after drift animation
   setTimeout(() => wrapper.remove(), crossDur * 1000 + 3000);
 }
 
@@ -1106,7 +1342,42 @@ function closePopup() {
 // ===== COUNTER =====
 function updateCounter() {
   floatCount = krathongData.length;
-  document.getElementById('counter-num').textContent = floatCount;
+  const el = document.getElementById('counter-num');
+  if (el) el.textContent = floatCount;
+}
+
+// ===== RECENT LIST =====
+const STYLE_COLORS = ['#2da44e','#FF1493','#8E44AD','#FFC200','#E74C3C','#1ABC9C','#F39C12','#5DADE2'];
+const STYLE_EMOJI  = ['🌿','🌸','💜','✨','🌹','💎','🍊','🩵'];
+
+function updateRecent() {
+  const list = document.getElementById('recent-list');
+  if (!list) return;
+  const recent = [...krathongData].reverse().slice(0, 5);
+  if (recent.length === 0) return;
+
+  list.innerHTML = recent.map(k => {
+    const color = STYLE_COLORS[k.style] || STYLE_COLORS[0];
+    const emoji = STYLE_EMOJI[k.style] || '🪷';
+    const avatarHtml = k.pictureUrl
+      ? `<img class="recent-avatar" src="${k.pictureUrl}" onerror="this.outerHTML='<div class=\'recent-dot\' style=\'background:rgba(255,255,255,0.06)\'>${emoji}</div>'">`
+      : `<div class="recent-dot" style="background:rgba(255,255,255,0.06)">${emoji}</div>`;
+    return `
+      <div class="recent-item">
+        ${avatarHtml}
+        <div class="recent-info">
+          <div class="recent-name">${escHtml(k.displayName)}</div>
+          <div class="recent-wish">${k.wish ? escHtml(k.wish) : '—'}</div>
+        </div>
+        <div class="recent-badge" style="background:${color};opacity:0.8;box-shadow:0 0 6px ${color}55;"></div>
+      </div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ===== TOAST =====
@@ -1148,21 +1419,7 @@ function celebrationEffect() {
   }
 }
 
-// Demo: spawn some krathongs for preview
-setTimeout(() => {
-  const demo = [
-    { userId: 'd1', displayName: 'สมชาย', pictureUrl: 'https://via.placeholder.com/46/FF69B4/fff?text=🪷', wish: 'ขอให้มีความสุขตลอดปี', style: 0, timestamp: new Date().toLocaleString('th-TH') },
-    { userId: 'd2', displayName: 'สมหญิง', pictureUrl: 'https://via.placeholder.com/46/9B59B6/fff?text=⭐', wish: 'ขอให้ร่ำรวย โชคดีทุกวัน', style: 1, timestamp: new Date().toLocaleString('th-TH') },
-    { userId: 'd3', displayName: 'มีนา', pictureUrl: 'https://via.placeholder.com/46/FFD700/333?text=🌕', wish: 'ขอให้ครอบครัวมีสุขภาพดี', style: 3, timestamp: new Date().toLocaleString('th-TH') },
-  ];
-  demo.forEach((k, i) => {
-    setTimeout(() => {
-      renderKrathong(k);
-      krathongData.push(k);
-      updateCounter();
-    }, i * 1000);
-  });
-}, 2000);
+
 </script>
 
 <!-- Google Apps Script Code (ให้ deploy เป็น Web App แยก) -->
@@ -1170,32 +1427,153 @@ setTimeout(() => {
 === Google Apps Script (deploy เป็น Web App) ===
 
 function doGet(e) {
+  var action = e.parameter.action || '';
   var sheetId = e.parameter.sheetId;
   var ss = SpreadsheetApp.openById(sheetId);
   var sheet = ss.getSheets()[0];
-  var data = sheet.getDataRange().getValues();
-  var rows = data.slice(1); // skip header
-  return ContentService
-    .createTextOutput(JSON.stringify({ rows: rows }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
 
-function doPost(e) {
-  var payload = JSON.parse(e.postData.contents);
-  if (payload.action === 'append') {
-    var ss = SpreadsheetApp.openById(payload.sheetId);
-    var sheet = ss.getSheets()[0];
-    // Ensure header exists
+  if (action === 'append') {
+    // Ensure header row exists
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['userId', 'displayName', 'pictureUrl', 'wish', 'style', 'timestamp']);
+      sheet.appendRow(['userId','displayName','pictureUrl','wish','style','timestamp']);
     }
-    sheet.appendRow(payload.row);
+    sheet.appendRow([
+      e.parameter.userId || '',
+      e.parameter.displayName || '',
+      e.parameter.pictureUrl || '',
+      e.parameter.wish || '',
+      e.parameter.style || '0',
+      e.parameter.timestamp || new Date().toLocaleString('th-TH'),
+    ]);
     return ContentService
       .createTextOutput(JSON.stringify({ success: true }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+
+  // Default: return all rows
+  var data = sheet.getDataRange().getValues();
+  var rows = data.slice(1);
+  return ContentService
+    .createTextOutput(JSON.stringify({ rows: rows }))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 -->
 
+
+<!-- GAS CODE:
+// ============================================================
+// GOOGLE APPS SCRIPT — ลอยกระทงดิจิทัล (Full Version)
+// ============================================================
+// Deploy as Web App: Execute as Me, Access: Anyone
+// ============================================================
+
+const SHEET_ID   = "1hp_8UMDA-cEAjx_pz4ICcxVmxYu5ZlDND6GxrB3u5fA";
+const FOLDER_NAME = "krathong-images"; // จะสร้างอัตโนมัติ
+
+// ===== หา/สร้าง folder =====
+function getOrCreateFolder() {
+  var folders = DriveApp.getFoldersByName(FOLDER_NAME);
+  if (folders.hasNext()) return folders.next();
+  return DriveApp.createFolder(FOLDER_NAME);
+}
+
+// ===== doGet — ดึงข้อมูล =====
+function doGet(e) {
+  var action = (e.parameter.action || '');
+
+  // --- ดึงรายการกระทงจาก Sheets ---
+  if (action === '' || action === 'list') {
+    var ss    = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheets()[0];
+    var data  = sheet.getDataRange().getValues();
+    var rows  = data.length > 1 ? data.slice(1) : [];
+    return json({ rows: rows });
+  }
+
+  // --- ดึงรายการไฟล์กระทง (สำหรับหลังบ้าน) ---
+  if (action === 'listKrathongs') {
+    var folder = getOrCreateFolder();
+    var files  = folder.getFiles();
+    var list   = [];
+    while (files.hasNext()) {
+      var f = files.next();
+      list.push({
+        id:      f.getId(),
+        name:    f.getName(),
+        url:     'https://drive.google.com/uc?export=view&id=' + f.getId(),
+        active:  f.getDescription() !== 'inactive',
+        size:    f.getSize(),
+        created: f.getDateCreated().toLocaleString('th-TH'),
+      });
+    }
+    return json({ krathongs: list, folderId: folder.getId() });
+  }
+
+  // --- เปิด/ปิดกระทง ---
+  if (action === 'toggle') {
+    var file = DriveApp.getFileById(e.parameter.fileId);
+    var isActive = file.getDescription() !== 'inactive';
+    file.setDescription(isActive ? 'inactive' : 'active');
+    return json({ success: true, active: !isActive });
+  }
+
+  // --- ลบกระทง ---
+  if (action === 'delete') {
+    DriveApp.getFileById(e.parameter.fileId).setTrashed(true);
+    return json({ success: true });
+  }
+
+  return json({ error: 'unknown action' });
+}
+
+// ===== doPost — อัพโหลดไฟล์ / บันทึกกระทง =====
+function doPost(e) {
+  var payload = JSON.parse(e.postData.contents);
+
+  // --- อัพโหลดรูปกระทง ---
+  if (payload.action === 'uploadKrathong') {
+    var folder  = getOrCreateFolder();
+    var bytes   = Utilities.base64Decode(payload.base64);
+    var blob    = Utilities.newBlob(bytes, payload.mimeType, payload.filename);
+    var file    = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    file.setDescription('active');
+    return json({
+      success: true,
+      id:   file.getId(),
+      url:  'https://drive.google.com/uc?export=view&id=' + file.getId(),
+      name: file.getName(),
+    });
+  }
+
+  // --- บันทึกการลอยกระทง ---
+  if (payload.action === 'append') {
+    var ss    = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheets()[0];
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['userId','displayName','pictureUrl','wish','krathongId','krathongUrl','timestamp']);
+    }
+    sheet.appendRow([
+      payload.userId      || '',
+      payload.displayName || '',
+      payload.pictureUrl  || '',
+      payload.wish        || '',
+      payload.krathongId  || '',
+      payload.krathongUrl || '',
+      payload.timestamp   || new Date().toLocaleString('th-TH'),
+    ]);
+    return json({ success: true });
+  }
+
+  return json({ error: 'unknown action' });
+}
+
+function json(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+-->
 </body>
 </html>
