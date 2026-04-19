@@ -6,45 +6,36 @@
 <title>Admin — วิสาขบูชา</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --gold:#c9a84c;--gold-lt:#f0d080;--gold-dim:#7a5f28;--amber:#f5a623;
+:root{--gold:#c9a84c;--gold-lt:#f0d080;--gold-dim:#7a5f28;--amber:#f5a623;
   --deep:#060402;--surface:#14100a;--card:#1a1208;--border:rgba(201,168,76,.18);
-  --text:#f0e6cc;--muted:#8a7450;--ok:#7dcf8a;--err:#e07070;
-}
+  --text:#f0e6cc;--muted:#8a7450;--ok:#7dcf8a;--err:#e07070;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--deep);color:var(--text);font-family:'Sarabun',sans-serif;min-height:100vh;}
 
-/* Admin header */
-.admin-header{background:rgba(26,18,8,.95);border-bottom:1px solid var(--border);
-  padding:14px 24px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;}
+.admin-header{background:rgba(26,18,8,.97);border-bottom:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);}
 .admin-logo{font-size:1.4rem;}
-.admin-title{font-family:'Noto Serif Thai',serif;font-size:1rem;color:var(--gold-lt);font-weight:600;}
+.admin-title{font-family:'Noto Serif Thai',serif;font-size:1rem;color:var(--gold-lt);font-weight:600;flex:1;}
 .admin-badge{padding:3px 10px;background:rgba(201,168,76,.15);border:1px solid var(--border);border-radius:20px;font-size:.72rem;color:var(--gold);}
 
-/* Layout */
 .container{max-width:960px;margin:0 auto;padding:24px 20px 60px;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
 
-/* Card */
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
 .card-title{font-family:'Noto Serif Thai',serif;font-size:.95rem;font-weight:600;color:var(--gold);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
-.card-title small{font-size:.72rem;color:var(--muted);font-family:'Sarabun',sans-serif;font-weight:400;margin-left:auto;}
+.card-title small{font-size:.7rem;color:var(--muted);font-family:'Sarabun',sans-serif;font-weight:400;margin-left:auto;}
 
-/* Form */
-.field{margin-bottom:16px;}
+.field{margin-bottom:15px;}
 .field label{display:block;font-size:.74rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;}
-.field input,.field textarea,.field select{width:100%;padding:10px 14px;background:rgba(0,0,0,.4);border:1.5px solid rgba(201,168,76,.2);border-radius:9px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.93rem;outline:none;transition:border-color .2s,box-shadow .2s;appearance:none;}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.1);}
+.field input,.field textarea{width:100%;padding:10px 14px;background:rgba(0,0,0,.4);border:1.5px solid rgba(201,168,76,.2);border-radius:9px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.93rem;outline:none;transition:border-color .2s,box-shadow .2s;}
+.field input:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.1);}
 .field input::placeholder,.field textarea::placeholder{color:rgba(138,116,80,.45);}
-.field textarea{resize:vertical;min-height:72px;}
-.row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(max-width:480px){.row-2{grid-template-columns:1fr;}}
 
-/* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 22px;border:none;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .22s;text-decoration:none;white-space:nowrap;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 22px;border:none;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .22s;white-space:nowrap;}
 .btn-primary{background:linear-gradient(135deg,#a07830,var(--gold));color:#0a0503;box-shadow:0 3px 14px rgba(201,168,76,.25);}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,168,76,.4);}
+.btn-primary:disabled{opacity:.5;transform:none;cursor:not-allowed;}
 .btn-ghost{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--gold-lt);}
 .btn-ghost:hover{background:rgba(201,168,76,.2);}
 .btn-danger{background:rgba(224,112,112,.15);border:1px solid rgba(224,112,112,.3);color:#e07070;}
@@ -53,71 +44,68 @@ body{background:var(--deep);color:var(--text);font-family:'Sarabun',sans-serif;m
 .btn-xs{padding:5px 10px;font-size:.74rem;border-radius:6px;}
 .btn-full{width:100%;}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-.divider{height:1px;background:var(--border);margin:18px 0;}
+.divider{height:1px;background:var(--border);margin:16px 0;}
 
-/* Status */
-.status{font-size:.8rem;color:var(--muted);margin-top:8px;min-height:18px;}
+.status{font-size:.8rem;color:var(--muted);margin-top:8px;min-height:18px;line-height:1.5;}
 .status.ok{color:var(--ok);} .status.err{color:var(--err);}
 
 /* Stat tiles */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;}
 .stat-tile{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:12px;padding:14px 12px;text-align:center;}
-.stat-tile .val{font-family:'Noto Serif Thai',serif;font-size:1.3rem;color:var(--gold-lt);font-weight:700;display:block;margin-bottom:4px;}
+.stat-tile .val{font-family:'Noto Serif Thai',serif;font-size:1.3rem;color:var(--gold-lt);font-weight:700;display:block;margin-bottom:3px;}
 .stat-tile .lbl{font-size:.72rem;color:var(--muted);}
 
-/* Ticker list */
-.ticker-list{display:grid;gap:8px;max-height:320px;overflow-y:auto;}
+/* Ticker */
+.ticker-list{display:grid;gap:7px;max-height:300px;overflow-y:auto;margin-bottom:12px;}
 .ticker-list::-webkit-scrollbar{width:4px;}
-.ticker-list::-webkit-scrollbar-track{background:transparent;}
 .ticker-list::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px;}
-.ticker-row{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.12);border-radius:8px;padding:8px 12px;}
-.ticker-row.editing{border-color:var(--gold);}
-.ticker-msg{flex:1;font-size:.88rem;color:var(--text);}
-.ticker-edit-input{flex:1;background:transparent;border:none;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.88rem;outline:none;}
-.ticker-tag{font-size:.7rem;padding:2px 8px;border-radius:10px;border:1px solid rgba(201,168,76,.2);color:var(--muted);}
+.t-row{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.12);border-radius:8px;padding:8px 12px;}
+.t-row.editing{border-color:var(--gold);}
+.t-msg{flex:1;font-size:.87rem;color:var(--text);word-break:break-word;}
+.t-edit-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.87rem;outline:none;}
+.t-num{font-size:.68rem;color:var(--muted);flex-shrink:0;min-width:22px;text-align:right;}
 
 /* OBS Preview */
 .obs-preview{background:#000;border-radius:10px;overflow:hidden;aspect-ratio:16/9;position:relative;border:1px solid rgba(201,168,76,.2);}
-.obs-inner{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;}
-.obs-top{background:linear-gradient(to right,rgba(8,5,3,.92),rgba(28,18,8,.85),rgba(8,5,3,.92));border-bottom:1px solid rgba(201,168,76,.4);padding:6px 16px;display:flex;align-items:center;justify-content:space-between;}
-.obs-title{font-family:'Noto Serif Thai',serif;font-size:.7rem;color:#f0d080;text-shadow:0 0 10px rgba(201,168,76,.7);}
-.obs-stats{display:flex;gap:12px;}
-.obs-stat{font-size:.65rem;color:#c9a84c;}
-.obs-stat b{color:#f0d080;}
-.obs-bottom{background:linear-gradient(to right,rgba(8,5,3,.9),rgba(20,12,4,.85),rgba(8,5,3,.9));border-top:1px solid rgba(201,168,76,.3);padding:5px 0;overflow:hidden;}
-.obs-ticker-inner{display:flex;gap:32px;width:max-content;padding:0 12px;animation:marquee 18s linear infinite;white-space:nowrap;}
+.obs-inner{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;}
+.obs-top{background:linear-gradient(to right,rgba(8,5,3,.92),rgba(28,18,8,.85),rgba(8,5,3,.92));border-bottom:1px solid rgba(201,168,76,.4);padding:5px 14px;display:flex;align-items:center;justify-content:space-between;}
+.obs-ttl{font-family:'Noto Serif Thai',serif;font-size:.65rem;color:#f0d080;text-shadow:0 0 8px rgba(201,168,76,.7);}
+.obs-s-row{display:flex;gap:10px;}
+.obs-s{font-size:.6rem;color:#c9a84c;}
+.obs-s b{color:#f0d080;}
+.obs-bot{background:linear-gradient(to right,rgba(8,5,3,.9),rgba(20,12,4,.85),rgba(8,5,3,.9));border-top:1px solid rgba(201,168,76,.3);padding:4px 0;overflow:hidden;}
+.obs-tick{display:flex;gap:28px;width:max-content;padding:0 10px;animation:marquee 16s linear infinite;white-space:nowrap;}
 @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-.obs-ti{font-size:.6rem;color:#f0d080;}
-.obs-td{color:#7a5f28;font-size:.55rem;}
+.obs-ti{font-size:.58rem;color:#f0d080;}
+.obs-td{color:#7a5f28;font-size:.52rem;}
 
-/* Visitor table */
-.table-wrap{overflow-x:auto;max-height:320px;overflow-y:auto;}
+/* Visitors table */
+.table-wrap{overflow-x:auto;max-height:280px;overflow-y:auto;}
 .table-wrap::-webkit-scrollbar{width:4px;height:4px;}
 .table-wrap::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px;}
 table{width:100%;border-collapse:collapse;font-size:.8rem;}
-thead th{background:rgba(201,168,76,.12);color:var(--gold);font-weight:600;padding:8px 10px;text-align:left;position:sticky;top:0;border-bottom:1px solid var(--border);}
-tbody td{padding:7px 10px;border-bottom:1px solid rgba(201,168,76,.07);color:var(--muted);}
+thead th{background:rgba(201,168,76,.1);color:var(--gold);font-weight:600;padding:8px 10px;text-align:left;position:sticky;top:0;border-bottom:1px solid var(--border);}
+tbody td{padding:7px 10px;border-bottom:1px solid rgba(201,168,76,.07);color:var(--muted);vertical-align:middle;}
 tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
-.td-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;vertical-align:middle;}
+.td-av{width:28px;height:28px;border-radius:50%;object-fit:cover;vertical-align:middle;}
 .td-name{color:var(--gold-lt);font-weight:500;}
+
+/* Logo preview */
+.logo-preview-wrap{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+#logo-preview-img{width:72px;height:72px;border-radius:50%;object-fit:contain;border:2px solid var(--border);background:rgba(201,168,76,.08);display:none;}
+#logo-preview-emoji{width:72px;height:72px;border-radius:50%;border:2px dashed var(--gold-dim);background:rgba(201,168,76,.06);display:flex;align-items:center;justify-content:center;font-size:2rem;}
+.logo-preview-info{font-size:.8rem;color:var(--muted);line-height:1.8;}
 
 /* Monoline */
 .monoline{background:rgba(0,0,0,.4);border:1px solid rgba(201,168,76,.18);border-radius:8px;padding:9px 12px;font-family:monospace;font-size:.76rem;color:var(--gold-lt);word-break:break-all;display:flex;align-items:center;gap:8px;}
 .monoline span{flex:1;}
-.copy-btn{padding:4px 10px;background:rgba(201,168,76,.18);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--gold);font-family:'Sarabun',sans-serif;font-size:.72rem;cursor:pointer;flex-shrink:0;transition:all .2s;}
+.copy-btn{padding:4px 10px;background:rgba(201,168,76,.18);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--gold);font-family:'Sarabun',sans-serif;font-size:.72rem;cursor:pointer;transition:all .2s;}
 .copy-btn:hover{background:rgba(201,168,76,.35);}
 
-/* Logo preview */
-.logo-preview{width:80px;height:80px;border-radius:50%;object-fit:contain;border:2px solid var(--border);background:rgba(201,168,76,.08);margin-bottom:12px;display:block;}
-.logo-placeholder{width:80px;height:80px;border-radius:50%;border:2px dashed var(--gold-dim);background:rgba(201,168,76,.06);display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:12px;}
+.note{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:9px;padding:10px 14px;font-size:.8rem;color:var(--muted);line-height:1.8;}
 
-/* Toast */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--card);border:1px solid var(--gold);border-radius:40px;padding:10px 22px;color:var(--gold-lt);font-size:.88rem;z-index:999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;}
 #toast.show{transform:translateX(-50%) translateY(0);}
-
-/* Note */
-.note{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:9px;padding:10px 14px;font-size:.8rem;color:var(--muted);line-height:1.75;}
-.note code{color:var(--amber);background:rgba(245,166,35,.1);padding:1px 5px;border-radius:3px;}
 </style>
 </head>
 <body>
@@ -125,20 +113,23 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
 <div class="admin-header">
   <span class="admin-logo">🛠️</span>
   <span class="admin-title">Admin Panel — วิสาขบูชา ๒๕๖๙</span>
-  <span class="admin-badge">Admin Only</span>
+  <span class="admin-badge">🔒 Admin Only</span>
 </div>
 
 <div class="container">
 
-  <!-- ═══ ROW 1: Stats + Preview ═══ -->
+  <!-- ═══ Stats + OBS Preview ═══ -->
   <div class="grid-2">
-
     <div class="card">
-      <div class="card-title">📊 สถิติบุญ <small id="stat-updated"></small></div>
-      <div class="stat-grid" id="stat-grid"></div>
+      <div class="card-title">📊 สถิติบุญ <small id="stat-ts"></small></div>
+      <div class="stat-grid" id="stat-grid">
+        <div class="stat-tile"><span class="val">…</span><span class="lbl">กำลังโหลด</span></div>
+      </div>
       <div class="divider"></div>
-      <button class="btn btn-ghost btn-sm" onclick="fetchStats()">🔄 รีเฟรช</button>
-      <div class="status" id="stat-status"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-sm" onclick="fetchStats()">🔄 รีเฟรช</button>
+        <div class="status" id="stat-status"></div>
+      </div>
     </div>
 
     <div class="card">
@@ -146,14 +137,15 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
       <div class="obs-preview">
         <div class="obs-inner">
           <div class="obs-top">
-            <span class="obs-title" id="pv-title">🪔 วันวิสาขบูชา ๒๕๖๙</span>
-            <div class="obs-stats">
-              <span class="obs-stat">🕯️ <b id="pv-c">0</b></span>
-              <span class="obs-stat">🙏 <b id="pv-p">0</b></span>
+            <span class="obs-ttl" id="pv-title">🪔 วันวิสาขบูชา ๒๕๖๙</span>
+            <div class="obs-s-row">
+              <span class="obs-s">🕯️<b id="pv-c">0</b></span>
+              <span class="obs-s">🙏<b id="pv-p">0</b></span>
+              <span class="obs-s">👥<b id="pv-v">0</b></span>
             </div>
           </div>
-          <div class="obs-bottom">
-            <div class="obs-ticker-inner" id="pv-ticker"></div>
+          <div class="obs-bot">
+            <div class="obs-tick" id="pv-ticker"></div>
           </div>
         </div>
       </div>
@@ -164,27 +156,23 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
         </div>
       </div>
     </div>
-
   </div>
 
   <!-- ═══ Ticker ═══ -->
   <div class="card">
     <div class="card-title">📺 Ticker ข้อความสาธุ</div>
-    <div class="note" style="margin-bottom:14px;">เพิ่ม / แก้ไข / ลบข้อความที่วิ่งบน OBS Overlay · บันทึกลง Sheet อัตโนมัติ</div>
-
-    <div class="btn-row" style="margin-bottom:14px;">
+    <div class="note" style="margin-bottom:12px;">เพิ่ม / แก้ไข / ลบข้อความที่วิ่งบน OBS Overlay · บันทึกลง Sheet อัตโนมัติ</div>
+    <div class="btn-row" style="margin-bottom:12px;">
       <input id="ticker-new" type="text" placeholder="พิมพ์ข้อความใหม่..." maxlength="60"
-        style="flex:1;padding:9px 13px;background:rgba(0,0,0,.4);border:1.5px solid rgba(201,168,76,.2);border-radius:9px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.9rem;outline:none;">
+        style="flex:1;min-width:0;padding:9px 13px;background:rgba(0,0,0,.4);border:1.5px solid rgba(201,168,76,.2);border-radius:9px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.9rem;outline:none;">
       <button class="btn btn-primary btn-sm" onclick="addTicker()">+ เพิ่ม</button>
     </div>
-
     <div class="ticker-list" id="ticker-list"></div>
     <div class="status" id="ticker-status"></div>
   </div>
 
-  <!-- ═══ ROW 2: Site Config + Logo ═══ -->
+  <!-- ═══ Site Config + Logo ═══ -->
   <div class="grid-2">
-
     <div class="card">
       <div class="card-title">⚙️ ตั้งค่าเว็บไซต์</div>
       <div class="field">
@@ -193,77 +181,91 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
       </div>
       <div class="field">
         <label>คำบรรยายย่อย (subtitle)</label>
-        <input id="cfg-subtitle" type="text" placeholder="น้อมนำจิตใจ · สู่ความสงบ · บุญ · ธรรมะ" maxlength="80">
+        <input id="cfg-subtitle" type="text" placeholder="น้อมนำจิตใจ · สู่ความสงบ…" maxlength="80">
       </div>
-      <button class="btn btn-primary btn-full" onclick="saveConfig()">💾 บันทึกการตั้งค่า</button>
+      <button class="btn btn-primary btn-full" id="btn-save-cfg" onclick="saveConfig()">💾 บันทึกการตั้งค่า</button>
       <div class="status" id="cfg-status"></div>
     </div>
 
     <div class="card">
       <div class="card-title">🖼️ โลโก้เว็บไซต์</div>
-      <div id="logo-preview-wrap">
-        <div class="logo-placeholder" id="logo-placeholder">🪔</div>
+      <div class="logo-preview-wrap">
+        <img id="logo-preview-img" src="" alt="logo">
+        <div id="logo-preview-emoji">🪔</div>
+        <div class="logo-preview-info">
+          อัปโหลดรูปโลโก้<br>รองรับ PNG · JPG · SVG<br>
+          <span style="font-size:.72rem;color:var(--gold-dim);">แนะนำ 256×256px ขึ้นไป</span>
+        </div>
       </div>
       <div class="field">
-        <label>อัปโหลดรูปโลโก้ (PNG / JPG / SVG)</label>
+        <label>เลือกไฟล์รูปโลโก้</label>
         <input type="file" id="logo-file" accept="image/*" onchange="previewLogo(event)"
           style="padding:8px 12px;background:rgba(0,0,0,.3);border:1.5px solid rgba(201,168,76,.2);border-radius:9px;color:var(--text);width:100%;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:.85rem;">
       </div>
       <div class="btn-row">
-        <button class="btn btn-primary btn-sm" onclick="saveLogo()">💾 บันทึกโลโก้</button>
+        <button class="btn btn-primary btn-sm" id="btn-save-logo" onclick="saveLogo()">💾 บันทึกโลโก้</button>
         <button class="btn btn-danger btn-sm" onclick="removeLogo()">🗑️ ลบโลโก้</button>
       </div>
       <div class="status" id="logo-status"></div>
     </div>
-
   </div>
 
-  <!-- ═══ Visitor Log ═══ -->
+  <!-- ═══ Visitor Table ═══ -->
   <div class="card">
-    <div class="card-title">👥 ผู้เข้าใช้งาน <small id="visitor-count"></small></div>
+    <div class="card-title">👥 ผู้เข้าใช้งาน <small id="visitor-count-lbl"></small></div>
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>รูป</th><th>ชื่อ LINE</th><th>LINE ID</th><th>เวลา</th><th>User Agent</th>
+            <th>รูป</th>
+            <th>ชื่อ LINE</th>
+            <th>LINE ID</th>
+            <th>เวลา</th>
+            <th style="text-align:center;">จำนวนครั้ง</th>
           </tr>
         </thead>
-        <tbody id="visitor-tbody"></tbody>
+        <tbody id="visitor-tbody">
+          <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">⏳ กำลังโหลด...</td></tr>
+        </tbody>
       </table>
     </div>
-    <div style="margin-top:10px;" class="btn-row">
+    <div class="btn-row" style="margin-top:10px;">
       <button class="btn btn-ghost btn-sm" onclick="fetchVisitors()">🔄 รีเฟรช</button>
       <div class="status" id="visitor-status"></div>
     </div>
   </div>
 
-  <!-- ═══ Sheet เวียนเทียน ═══ -->
+  <!-- ═══ Candle Log ═══ -->
   <div class="card">
     <div class="card-title">🕯️ ประวัติจุดเทียน</div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>เวลา</th><th>ชื่อ</th><th>คำอธิษฐาน</th><th>LINE</th></tr></thead>
-        <tbody id="candle-tbody"></tbody>
+        <thead><tr><th>เวลา</th><th>ชื่อ</th><th>คำอธิษฐาน</th><th>LINE Name</th></tr></thead>
+        <tbody id="candle-tbody">
+          <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">⏳ กำลังโหลด...</td></tr>
+        </tbody>
       </table>
     </div>
-    <div style="margin-top:10px;" class="btn-row">
-      <button class="btn btn-ghost btn-sm" onclick="fetchCandles()">🔄 รีเฟรช</button>
-      <div class="status" id="candle-status"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-ghost btn-sm" onclick="fetchCandleLog()">🔄 รีเฟรช</button>
+      <div class="status" id="candle-log-status"></div>
     </div>
   </div>
 
-  <!-- ═══ Sheet บทสวด ═══ -->
+  <!-- ═══ Chant Log ═══ -->
   <div class="card">
     <div class="card-title">📿 ประวัติสวดมนต์</div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>เวลา</th><th>บทสวด</th><th>จำนวน</th><th>ชื่อ LINE</th></tr></thead>
-        <tbody id="prayer-tbody"></tbody>
+        <thead><tr><th>เวลา</th><th>บทสวด</th><th style="text-align:center;">จำนวน</th><th>LINE Name</th></tr></thead>
+        <tbody id="prayer-tbody">
+          <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">⏳ กำลังโหลด...</td></tr>
+        </tbody>
       </table>
     </div>
-    <div style="margin-top:10px;" class="btn-row">
-      <button class="btn btn-ghost btn-sm" onclick="fetchPrayers()">🔄 รีเฟรช</button>
-      <div class="status" id="prayer-status"></div>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn btn-ghost btn-sm" onclick="fetchPrayerLog()">🔄 รีเฟรช</button>
+      <div class="status" id="prayer-log-status"></div>
     </div>
   </div>
 
@@ -274,65 +276,156 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
 // ════════════════════════════════════
 // CONFIG
 // ════════════════════════════════════
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzbOkYcp1g-HPSl1HsxP0_sVtudfxvU_Kkg-GPzT5dbIBrwPnludL6X59GERUK1-xyN5Q/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbOkYcp1g-HPSl1HsxP0_sVtudfxvU_Kkg-GPzT5dbIBrwPnludL6X59GERUK1-xyN5Q/exec";
 
 // ════════════════════════════════════
 // STATE
 // ════════════════════════════════════
-let tickerArr=JSON.parse(localStorage.getItem("vb3_t")||'["สาธุ 🙏","วันวิสาขบูชา ๒๕๖๙","น้อมบูชาพระรัตนตรัย","ทำบุญทุกวัน","ขอให้มีความสุข"]');
-let candles=JSON.parse(localStorage.getItem("vb3_c")||"[]");
-let chants=JSON.parse(localStorage.getItem("vb3_p")||"{}");
-
-function saveState(){
-  localStorage.setItem("vb3_t",JSON.stringify(tickerArr));
-}
-
-function cfg(k,def=""){return localStorage.getItem("vb3_cfg_"+k)||def;}
-function setCfg(k,v){localStorage.setItem("vb3_cfg_"+k,v);}
+let tickerArr = [];
 
 // ════════════════════════════════════
-// TOAST
+// TOAST / STATUS
 // ════════════════════════════════════
 let tTmr;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tTmr);tTmr=setTimeout(()=>t.classList.remove("show"),2700);}
+function setSt(id,msg,type=""){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.className="status "+(type||"");}
 
-function setStatus(id,msg,type=""){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.className="status "+(type||"");}
+// ════════════════════════════════════
+// FETCH CONFIG (title, subtitle, logo, ticker)
+// ════════════════════════════════════
+async function fetchConfig(){
+  try{
+    const r = await fetch(SCRIPT_URL+"?action=config");
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const d = await r.json();
+
+    // fill form
+    document.getElementById("cfg-title").value    = d.title    || "";
+    document.getElementById("cfg-subtitle").value = d.subtitle || "";
+
+    // logo
+    if(d.logo){
+      document.getElementById("logo-preview-img").src = d.logo;
+      document.getElementById("logo-preview-img").style.display = "block";
+      document.getElementById("logo-preview-emoji").style.display = "none";
+      document.getElementById("pv-title").textContent = (d.title||"วันวิสาขบูชา ๒๕๖๙");
+    }
+
+    // ticker
+    tickerArr = d.ticker || [];
+    renderTickerList();
+    renderOBSTicker();
+
+  }catch(e){ console.warn("fetchConfig:",e); }
+}
+
+// ════════════════════════════════════
+// SAVE CONFIG → POST to Sheet
+// ════════════════════════════════════
+async function saveConfig(){
+  const btn = document.getElementById("btn-save-cfg");
+  btn.disabled = true; btn.textContent = "⏳ กำลังบันทึก...";
+  const title    = document.getElementById("cfg-title").value.trim()    || "วันวิสาขบูชา ๒๕๖๙";
+  const subtitle = document.getElementById("cfg-subtitle").value.trim() || "";
+
+  try{
+    await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({type:"config", key:"title",    value:title}),    mode:"no-cors"});
+    await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({type:"config", key:"subtitle", value:subtitle}), mode:"no-cors"});
+
+    document.getElementById("pv-title").textContent = "🪔 "+title;
+    setSt("cfg-status","✅ บันทึกแล้ว · หน้าหลักจะอัปเดตในครั้งถัดไปที่โหลด","ok");
+    toast("💾 บันทึกการตั้งค่าแล้ว");
+  }catch(e){
+    setSt("cfg-status","❌ "+e.message,"err");
+  }finally{
+    btn.disabled=false; btn.textContent="💾 บันทึกการตั้งค่า";
+  }
+}
+
+// ════════════════════════════════════
+// LOGO
+// ════════════════════════════════════
+let logoDataUrl = "";
+
+function previewLogo(e){
+  const file=e.target.files[0];if(!file)return;
+  // ตรวจขนาด: base64 ห้ามเกิน 1MB (ประมาณ 750KB file)
+  if(file.size > 750*1024){
+    setSt("logo-status","⚠️ รูปใหญ่เกินไป กรุณาใช้ไฟล์ขนาดต่ำกว่า 750KB","err");
+    return;
+  }
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    logoDataUrl = ev.target.result;
+    const img = document.getElementById("logo-preview-img");
+    img.src = logoDataUrl;
+    img.style.display = "block";
+    document.getElementById("logo-preview-emoji").style.display = "none";
+    setSt("logo-status","✅ พรีวิวแล้ว · กด 'บันทึกโลโก้' เพื่อใช้งาน","ok");
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveLogo(){
+  if(!logoDataUrl){ setSt("logo-status","⚠️ กรุณาเลือกไฟล์ก่อน","err"); return; }
+  const btn = document.getElementById("btn-save-logo");
+  btn.disabled=true; btn.textContent="⏳ กำลังบันทึก...";
+  try{
+    // POST logo as base64 ไปเก็บใน Sheet Config
+    await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({type:"config", key:"logo", value:logoDataUrl}), mode:"no-cors"});
+    setSt("logo-status","✅ บันทึกโลโก้แล้ว · หน้าหลักจะอัปเดตในครั้งถัดไปที่โหลด","ok");
+    toast("🖼️ บันทึกโลโก้แล้ว");
+  }catch(e){
+    setSt("logo-status","❌ "+e.message,"err");
+  }finally{
+    btn.disabled=false; btn.textContent="💾 บันทึกโลโก้";
+  }
+}
+
+async function removeLogo(){
+  await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({type:"config", key:"logo", value:""}), mode:"no-cors"});
+  logoDataUrl="";
+  document.getElementById("logo-file").value="";
+  document.getElementById("logo-preview-img").style.display="none";
+  document.getElementById("logo-preview-emoji").style.display="flex";
+  setSt("logo-status","🗑️ ลบโลโก้แล้ว","ok");
+  toast("🗑️ ลบโลโก้แล้ว");
+}
 
 // ════════════════════════════════════
 // STATS
 // ════════════════════════════════════
 async function fetchStats(){
-  setStatus("stat-status","⏳ กำลังดึงข้อมูล...");
+  setSt("stat-status","⏳ กำลังดึงข้อมูล...");
   try{
-    const r=await fetch(SCRIPT_URL+"?action=summary");
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    const d=await r.json();
-    updateStatUI(d);
-    setStatus("stat-status","✅ อัปเดตแล้ว "+new Date().toLocaleTimeString("th-TH"),"ok");
-    document.getElementById("stat-updated").textContent="อัปเดต "+new Date().toLocaleTimeString("th-TH");
-  }catch(e){
-    // fallback to localStorage counts
-    const tot=Object.values(chants).reduce((a,b)=>a+b,0);
-    updateStatUI({candles:candles.length,chants:tot,visitors:0,ticker:tickerArr.length});
-    setStatus("stat-status","⚠️ ใช้ข้อมูล local ("+e.message+")","err");
-  }
+    const r = await fetch(SCRIPT_URL+"?action=summary");
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const d = await r.json();
+    renderStats(d);
+    setSt("stat-status","✅ "+new Date().toLocaleTimeString("th-TH"),"ok");
+    document.getElementById("stat-ts").textContent = new Date().toLocaleTimeString("th-TH");
+  }catch(e){ setSt("stat-status","❌ "+e.message,"err"); }
 }
 
-function updateStatUI(d){
-  const tot=Object.values(chants).reduce((a,b)=>a+b,0);
+function renderStats(d){
   const items=[
-    {v:d.candles??candles.length,l:"🕯️ เทียนจุดแล้ว",u:"เล่ม"},
-    {v:d.chants??tot,l:"🙏 สวดมนต์รวม",u:"ครั้ง"},
+    {v:d.candles??0, l:"🕯️ เทียนจุดแล้ว", u:"เล่ม"},
+    {v:d.chants??0,  l:"🙏 สวดมนต์รวม",  u:"ครั้ง"},
     {v:d.visitors??0,l:"👥 ผู้เข้าใช้งาน",u:"คน"},
     {v:tickerArr.length,l:"📺 Ticker",u:"ข้อความ"},
   ];
   document.getElementById("stat-grid").innerHTML=items.map(s=>`
     <div class="stat-tile">
       <span class="val">${s.v}</span>
-      <span class="lbl">${s.l}<br><span style="font-size:.65rem;opacity:.7;">${s.u}</span></span>
+      <span class="lbl">${s.l}<br><span style="font-size:.62rem;opacity:.7;">${s.u}</span></span>
     </div>`).join("");
-  document.getElementById("pv-c").textContent=d.candles??candles.length;
-  document.getElementById("pv-p").textContent=d.chants??tot;
+  document.getElementById("pv-c").textContent = d.candles??0;
+  document.getElementById("pv-p").textContent = d.chants??0;
+  document.getElementById("pv-v").textContent = d.visitors??0;
 }
 
 // ════════════════════════════════════
@@ -340,190 +433,133 @@ function updateStatUI(d){
 // ════════════════════════════════════
 function renderTickerList(){
   const list=document.getElementById("ticker-list");
-  if(tickerArr.length===0){list.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-size:.85rem;">ยังไม่มีข้อความ</div>';return;}
+  if(!tickerArr.length){ list.innerHTML='<div style="text-align:center;color:var(--muted);padding:14px;font-size:.85rem;">ยังไม่มีข้อความ</div>'; return; }
   list.innerHTML=tickerArr.map((msg,i)=>`
-    <div class="ticker-row" id="tr-${i}">
-      <span class="ticker-msg" id="tm-${i}">${esc(msg)}</span>
-      <span class="ticker-tag">#${i+1}</span>
+    <div class="t-row" id="tr-${i}">
+      <span class="t-msg">${esc(msg)}</span>
+      <span class="t-num">#${i+1}</span>
       <button class="btn btn-ghost btn-xs" onclick="editTicker(${i})">✏️</button>
-      <button class="btn btn-danger btn-xs" onclick="deleteTicker(${i})">🗑️</button>
+      <button class="btn btn-danger btn-xs" onclick="delTicker(${i})">🗑️</button>
     </div>`).join("");
-  renderOBSTicker();
 }
 
 function addTicker(){
   const inp=document.getElementById("ticker-new");
-  const v=inp.value.trim();
-  if(!v)return;
+  const v=inp.value.trim(); if(!v)return;
   tickerArr.push(v);
-  saveState();
-  postSheet("ticker_add",{message:v,index:tickerArr.length-1});
-  renderTickerList();
   inp.value="";
-  setStatus("ticker-status","✅ เพิ่มแล้ว","ok");
+  postSheet("ticker_add",{message:v, index:tickerArr.length-1});
+  renderTickerList(); renderOBSTicker();
+  setSt("ticker-status","✅ เพิ่มแล้ว","ok");
   toast("✅ เพิ่ม Ticker แล้ว");
 }
 
 function editTicker(i){
-  const row=document.getElementById("tr-"+i);
-  const span=document.getElementById("tm-"+i);
+  const row=document.getElementById("tr-${i}".replace("${i}",i));
+  if(!row)return;
   row.classList.add("editing");
+  const span=row.querySelector(".t-msg");
   const inp=document.createElement("input");
-  inp.className="ticker-edit-input";inp.value=tickerArr[i];
-  span.replaceWith(inp);inp.focus();
-  // change buttons
+  inp.className="t-edit-inp"; inp.value=tickerArr[i];
+  span.replaceWith(inp); inp.focus();
+  // swap buttons
   row.querySelectorAll("button").forEach(b=>b.remove());
-  const save=document.createElement("button");save.className="btn btn-primary btn-xs";save.textContent="💾 บันทึก";
-  const cancel=document.createElement("button");cancel.className="btn btn-ghost btn-xs";cancel.textContent="ยกเลิก";
-  row.appendChild(save);row.appendChild(cancel);
-  save.onclick=()=>{const nv=inp.value.trim();if(!nv)return;tickerArr[i]=nv;saveState();postSheet("ticker_edit",{index:i,message:nv});renderTickerList();setStatus("ticker-status","✅ แก้ไขแล้ว","ok");};
-  cancel.onclick=()=>renderTickerList();
+  const num=row.querySelector(".t-num"); if(num)num.remove();
+  const ok=Object.assign(document.createElement("button"),{className:"btn btn-primary btn-xs",textContent:"💾"});
+  const no=Object.assign(document.createElement("button"),{className:"btn btn-ghost btn-xs",textContent:"✖"});
+  row.append(ok,no);
+  ok.onclick=()=>{
+    const nv=inp.value.trim(); if(!nv)return;
+    tickerArr[i]=nv;
+    postSheet("ticker_edit",{index:i,message:nv});
+    renderTickerList(); renderOBSTicker();
+    setSt("ticker-status","✅ แก้ไขแล้ว","ok");
+  };
+  no.onclick=()=>renderTickerList();
 }
 
-function deleteTicker(i){
-  if(!confirm("ลบข้อความ: "+tickerArr[i]+"?"))return;
+function delTicker(i){
+  if(!confirm(`ลบ: "${tickerArr[i]}"?`))return;
   const msg=tickerArr[i];
   tickerArr.splice(i,1);
-  saveState();
   postSheet("ticker_delete",{index:i,message:msg});
-  renderTickerList();
-  setStatus("ticker-status","🗑️ ลบแล้ว","ok");
+  renderTickerList(); renderOBSTicker();
+  setSt("ticker-status","🗑️ ลบแล้ว","ok");
   toast("🗑️ ลบ Ticker แล้ว");
 }
 
 function renderOBSTicker(){
-  const all=[...tickerArr,...candles.slice(-10).map(c=>`🕯️ ${c.name}`)];
-  const db=[...all,...all];
+  const db=[...tickerArr,...tickerArr];
   document.getElementById("pv-ticker").innerHTML=db.map(m=>`<span class="obs-ti">${esc(m)}</span><span class="obs-td"> ✦ </span>`).join("");
 }
 
 // ════════════════════════════════════
-// SITE CONFIG
-// ════════════════════════════════════
-function loadConfig(){
-  document.getElementById("cfg-title").value=cfg("title","วันวิสาขบูชา ๒๕๖๙");
-  document.getElementById("cfg-subtitle").value=cfg("subtitle","น้อมนำจิตใจ · สู่ความสงบ · บุญ · ธรรมะ");
-  document.getElementById("obs-url-txt").textContent=getOBSUrl();
-  // logo
-  const logoUrl=cfg("logo","");
-  if(logoUrl){
-    const img=document.createElement("img");img.src=logoUrl;img.className="logo-preview";
-    document.getElementById("logo-placeholder").replaceWith(img);
-  }
-  // preview
-  const t=cfg("title","วันวิสาขบูชา ๒๕๖๙");
-  document.getElementById("pv-title").textContent="🪔 "+t;
-}
-
-function saveConfig(){
-  const title=document.getElementById("cfg-title").value.trim()||"วันวิสาขบูชา ๒๕๖๙";
-  const subtitle=document.getElementById("cfg-subtitle").value.trim();
-  setCfg("title",title);
-  setCfg("subtitle",subtitle);
-  document.getElementById("pv-title").textContent="🪔 "+title;
-  setStatus("cfg-status","✅ บันทึกแล้ว · หน้าหลักจะอัปเดตอัตโนมัติ","ok");
-  toast("💾 บันทึกการตั้งค่าแล้ว");
-}
-
-// ════════════════════════════════════
-// LOGO
-// ════════════════════════════════════
-let logoDataUrl="";
-
-function previewLogo(e){
-  const file=e.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    logoDataUrl=ev.target.result;
-    const existing=document.querySelector(".logo-preview");
-    if(existing){existing.src=logoDataUrl;}
-    else{
-      const img=document.createElement("img");img.src=logoDataUrl;img.className="logo-preview";
-      const ph=document.getElementById("logo-placeholder");
-      if(ph)ph.replaceWith(img);
-    }
-    setStatus("logo-status","✅ พรีวิวโลโก้แล้ว · กด 'บันทึกโลโก้' เพื่อใช้งาน","ok");
-  };
-  reader.readAsDataURL(file);
-}
-
-function saveLogo(){
-  if(!logoDataUrl){setStatus("logo-status","⚠️ กรุณาเลือกไฟล์ก่อน","err");return;}
-  setCfg("logo",logoDataUrl);
-  setStatus("logo-status","✅ บันทึกโลโก้แล้ว · หน้าหลักจะอัปเดตอัตโนมัติ","ok");
-  toast("🖼️ บันทึกโลโก้แล้ว");
-}
-
-function removeLogo(){
-  setCfg("logo","");logoDataUrl="";
-  document.getElementById("logo-file").value="";
-  const existing=document.querySelector(".logo-preview");
-  if(existing){const ph=document.createElement("div");ph.className="logo-placeholder";ph.id="logo-placeholder";ph.textContent="🪔";existing.replaceWith(ph);}
-  setStatus("logo-status","🗑️ ลบโลโก้แล้ว","ok");
-  toast("🗑️ ลบโลโก้แล้ว");
-}
-
-// ════════════════════════════════════
-// FETCH DATA FROM SHEET
+// VISITORS (visitCount ไม่แสดง UA)
 // ════════════════════════════════════
 async function fetchVisitors(){
-  setStatus("visitor-status","⏳ กำลังดึงข้อมูล...");
+  setSt("visitor-status","⏳ กำลังดึงข้อมูล...");
   try{
     const r=await fetch(SCRIPT_URL+"?action=visitors");
     if(!r.ok)throw new Error("HTTP "+r.status);
     const d=await r.json();
     const rows=d.rows||[];
-    document.getElementById("visitor-count").textContent=rows.length+" รายการ";
-    document.getElementById("visitor-tbody").innerHTML=rows.map(row=>`
+    document.getElementById("visitor-count-lbl").textContent=rows.length+" รายการ";
+    document.getElementById("visitor-tbody").innerHTML=rows.length ? rows.map(row=>`
       <tr>
-        <td>${row.pic?`<img class="td-avatar" src="${esc(row.pic)}" onerror="this.style.display='none'">`:"—"}</td>
+        <td>${row.pic?`<img class="td-av" src="${esc(row.pic)}" onerror="this.style.display='none'">`:"—"}</td>
         <td class="td-name">${esc(row.name||"—")}</td>
-        <td style="font-size:.72rem;">${esc((row.lineId||"—").slice(0,16)+"…")}</td>
-        <td style="font-size:.72rem;white-space:nowrap;">${esc(row.ts||"")}</td>
-        <td style="font-size:.68rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;">${esc((row.ua||"").slice(0,60))}</td>
-      </tr>`).join("");
-    setStatus("visitor-status","✅ อัปเดตแล้ว","ok");
-  }catch(e){setStatus("visitor-status","❌ "+e.message,"err");}
+        <td style="font-size:.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(row.lineId||"—")}</td>
+        <td style="font-size:.72rem;white-space:nowrap;">${esc(row.ts||"—")}</td>
+        <td style="text-align:center;font-weight:700;color:var(--amber);">${row.visitCount||1}</td>
+      </tr>`).join("") : '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">ยังไม่มีข้อมูล</td></tr>';
+    setSt("visitor-status","✅ "+rows.length+" คน","ok");
+  }catch(e){setSt("visitor-status","❌ "+e.message,"err");}
 }
 
-async function fetchCandles(){
-  setStatus("candle-status","⏳ กำลังดึงข้อมูล...");
+// ════════════════════════════════════
+// CANDLE LOG
+// ════════════════════════════════════
+async function fetchCandleLog(){
+  setSt("candle-log-status","⏳ กำลังดึงข้อมูล...");
   try{
     const r=await fetch(SCRIPT_URL+"?action=candles");
     if(!r.ok)throw new Error("HTTP "+r.status);
     const d=await r.json();
     const rows=d.rows||[];
-    document.getElementById("candle-tbody").innerHTML=rows.map(row=>`
+    document.getElementById("candle-tbody").innerHTML=rows.length ? rows.map(row=>`
       <tr>
         <td style="font-size:.72rem;white-space:nowrap;">${esc(row.ts||"")}</td>
         <td class="td-name">${esc(row.name||"—")}</td>
         <td>${esc(row.wish||"—")}</td>
-        <td style="font-size:.72rem;">${esc(row.lineName||"—")}</td>
-      </tr>`).join("");
-    setStatus("candle-status","✅ "+rows.length+" รายการ","ok");
-  }catch(e){setStatus("candle-status","❌ "+e.message,"err");}
+        <td>${esc(row.lineName||"—")}</td>
+      </tr>`).join("") : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">ยังไม่มีข้อมูล</td></tr>';
+    setSt("candle-log-status","✅ "+rows.length+" รายการ","ok");
+  }catch(e){setSt("candle-log-status","❌ "+e.message,"err");}
 }
 
-async function fetchPrayers(){
-  setStatus("prayer-status","⏳ กำลังดึงข้อมูล...");
+// ════════════════════════════════════
+// PRAYER LOG
+// ════════════════════════════════════
+async function fetchPrayerLog(){
+  setSt("prayer-log-status","⏳ กำลังดึงข้อมูล...");
   try{
     const r=await fetch(SCRIPT_URL+"?action=prayers");
     if(!r.ok)throw new Error("HTTP "+r.status);
     const d=await r.json();
     const rows=d.rows||[];
-    document.getElementById("prayer-tbody").innerHTML=rows.map(row=>`
+    document.getElementById("prayer-tbody").innerHTML=rows.length ? rows.map(row=>`
       <tr>
         <td style="font-size:.72rem;white-space:nowrap;">${esc(row.ts||"")}</td>
         <td class="td-name">${esc(row.prayer||"—")}</td>
-        <td style="text-align:center;">${row.count||0}</td>
+        <td style="text-align:center;font-weight:700;color:var(--amber);">${row.count||0}</td>
         <td>${esc(row.lineName||"—")}</td>
-      </tr>`).join("");
-    setStatus("prayer-status","✅ "+rows.length+" รายการ","ok");
-  }catch(e){setStatus("prayer-status","❌ "+e.message,"err");}
+      </tr>`).join("") : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">ยังไม่มีข้อมูล</td></tr>';
+    setSt("prayer-log-status","✅ "+rows.length+" รายการ","ok");
+  }catch(e){setSt("prayer-log-status","❌ "+e.message,"err");}
 }
 
 // ════════════════════════════════════
-// SHEET POST
+// POST SHEET
 // ════════════════════════════════════
 async function postSheet(type,data){
   try{
@@ -533,28 +569,26 @@ async function postSheet(type,data){
 }
 
 // ════════════════════════════════════
-// OBS URL
-// ════════════════════════════════════
-function getOBSUrl(){return location.href.replace("visakha-admin.html","visakha-obs-overlay.html");}
-function copyTxt(t){navigator.clipboard.writeText(t).then(()=>toast("📋 คัดลอกแล้ว!")).catch(()=>{const el=document.createElement("textarea");el.value=t;document.body.appendChild(el);el.select();document.execCommand("copy");el.remove();toast("📋 คัดลอกแล้ว!");});}
-
-// ════════════════════════════════════
 // UTIL
 // ════════════════════════════════════
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function copyTxt(t){navigator.clipboard.writeText(t).then(()=>toast("📋 คัดลอกแล้ว!")).catch(()=>{const el=document.createElement("textarea");el.value=t;document.body.appendChild(el);el.select();document.execCommand("copy");el.remove();toast("📋 คัดลอกแล้ว!");});}
+
+function getOBSUrl(){
+  return location.href.replace("visakha-admin.html","visakha-obs-overlay.html");
+}
 
 // ════════════════════════════════════
 // INIT
 // ════════════════════════════════════
-loadConfig();
-renderTickerList();
+document.getElementById("obs-url-txt").textContent = getOBSUrl();
+document.getElementById("ticker-new").addEventListener("keydown",e=>{if(e.key==="Enter")addTicker();});
+
+fetchConfig();
 fetchStats();
 fetchVisitors();
-fetchCandles();
-fetchPrayers();
-
-// ─ Ticker input enter ─
-document.getElementById("ticker-new").addEventListener("keydown",e=>{if(e.key==="Enter")addTicker();});
+fetchCandleLog();
+fetchPrayerLog();
 </script>
 </body>
 </html>
