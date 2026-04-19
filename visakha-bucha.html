@@ -26,8 +26,8 @@ header{text-align:center;padding:48px 0 32px;}
   width:80px;height:80px;border-radius:50%;margin-bottom:16px;
   background:radial-gradient(circle,rgba(201,168,76,.15),transparent 70%);
   animation:pulse 3s ease-in-out infinite;}
-.logo-wrap img{width:64px;height:64px;object-fit:contain;border-radius:50%;}
-.logo-emoji{font-size:48px;line-height:1;}
+#logo-img{width:64px;height:64px;object-fit:contain;border-radius:50%;display:none;}
+#logo-emoji{font-size:48px;line-height:1;display:block;}
 @keyframes pulse{0%,100%{filter:drop-shadow(0 0 6px rgba(245,166,35,.5));}50%{filter:drop-shadow(0 0 22px rgba(245,166,35,.9));}}
 h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-weight:700;
   color:var(--gold-lt);letter-spacing:.02em;text-shadow:0 2px 24px rgba(201,168,76,.35);margin-bottom:6px;}
@@ -39,14 +39,14 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
   border-radius:40px;padding:8px 16px;margin:0 auto 24px;
   width:fit-content;max-width:100%;}
 #line-profile img{width:32px;height:32px;border-radius:50%;object-fit:cover;}
-#line-profile .ln-name{font-size:.88rem;color:#7df07d;font-weight:600;}
-#line-profile .ln-id{font-size:.72rem;color:var(--muted);}
+.ln-name{font-size:.88rem;color:#7df07d;font-weight:600;}
+.ln-id{font-size:.72rem;color:var(--muted);}
 
 /* Tabs */
 .tab-bar{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);
   border-radius:14px;padding:4px;margin:0 0 24px;overflow-x:auto;}
 .tab-bar::-webkit-scrollbar{display:none;}
-.tab{flex:1;min-width:0;padding:11px 8px;background:none;border:none;border-radius:10px;
+.tab{flex:1;padding:11px 8px;background:none;border:none;border-radius:10px;
   color:var(--muted);font-family:'Sarabun',sans-serif;font-size:.85rem;font-weight:600;
   cursor:pointer;transition:all .25s;white-space:nowrap;}
 .tab.on{background:var(--card);color:var(--gold-lt);border:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.3);}
@@ -62,35 +62,34 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
 /* Form */
 .field{margin-bottom:18px;}
 .field label{display:block;font-size:.76rem;font-weight:600;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.08em;}
-.field input,.field textarea{width:100%;padding:12px 15px;background:rgba(0,0,0,.4);border:1.5px solid rgba(201,168,76,.2);border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.97rem;outline:none;transition:border-color .2s,box-shadow .2s;}
-.field input:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.1);}
-.field input::placeholder,.field textarea::placeholder{color:rgba(138,116,80,.5);}
+.field input{width:100%;padding:12px 15px;background:rgba(0,0,0,.4);border:1.5px solid rgba(201,168,76,.2);border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.97rem;outline:none;transition:border-color .2s,box-shadow .2s;}
+.field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.1);}
+.field input::placeholder{color:rgba(138,116,80,.5);}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 @media(max-width:520px){.row-2{grid-template-columns:1fr;}}
 
 /* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 26px;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .25s;text-decoration:none;white-space:nowrap;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 26px;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .25s;white-space:nowrap;}
 .btn-primary{background:linear-gradient(135deg,#a07830,var(--gold));color:#0a0503;box-shadow:0 4px 16px rgba(201,168,76,.25);}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.4);}
-.btn-primary:active{transform:translateY(0);}
+.btn-primary:active{transform:translateY(0) scale(.98);}
 .btn-sm{padding:9px 18px;font-size:.84rem;border-radius:8px;}
 .btn-full{width:100%;}
-.btn-ghost{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--gold-lt);}
-.btn-ghost:hover{background:rgba(201,168,76,.2);}
 .divider{height:1px;background:var(--border);margin:20px 0;}
 
 /* Candle zone */
-.candle-zone{min-height:180px;display:flex;flex-wrap:wrap;gap:16px;align-content:flex-start;padding:4px 0;}
+.candle-zone{min-height:180px;display:flex;flex-wrap:wrap;gap:16px;align-content:flex-start;padding:4px 0;margin-top:16px;}
 .candle-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
 @keyframes popIn{from{opacity:0;transform:scale(.4) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .candle-lbl{font-size:.64rem;color:var(--gold-lt);text-align:center;max-width:60px;line-height:1.3;word-break:break-word;}
-.candle-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(201,168,76,.4);background:rgba(201,168,76,.15);}
-.candle-avatar-default{width:30px;height:30px;border-radius:50%;background:rgba(201,168,76,.15);border:1.5px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--gold);}
+.c-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(201,168,76,.4);}
+.c-avatar-d{width:30px;height:30px;border-radius:50%;background:rgba(201,168,76,.15);border:1.5px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--gold);font-weight:600;}
 .flame{animation:flicker 1.8s ease-in-out infinite;transform-origin:50% 100%;}
 @keyframes flicker{0%,100%{transform:scaleX(1) scaleY(1) rotate(-1deg);}30%{transform:scaleX(.88) scaleY(1.12) rotate(1.5deg);}60%{transform:scaleX(1.08) scaleY(.93) rotate(-1.8deg);}}
-.counter-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,.1);border:1px solid var(--border);border-radius:20px;padding:5px 16px;font-size:.82rem;color:var(--muted);margin-top:4px;}
+.counter-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,.1);border:1px solid var(--border);border-radius:20px;padding:5px 16px;font-size:.82rem;color:var(--muted);}
 .counter-pill b{color:var(--amber);}
 .candle-empty{width:100%;text-align:center;padding:32px 0;color:var(--muted);font-size:.9rem;}
+.loading-txt{width:100%;text-align:center;padding:24px 0;color:var(--muted);font-size:.85rem;}
 
 /* Prayer */
 .prayer-card{margin-bottom:10px;}
@@ -117,11 +116,12 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
 <canvas id="stars"></canvas>
 <div id="app">
   <header>
-    <div class="logo-wrap" id="logo-wrap">
-      <span class="logo-emoji" id="logo-el">🪔</span>
+    <div class="logo-wrap">
+      <img id="logo-img" src="" alt="logo">
+      <span id="logo-emoji">🪔</span>
     </div>
     <h1 id="site-title">วันวิสาขบูชา ๒๕๖๙</h1>
-    <p class="subtitle">น้อมนำจิตใจ · สู่ความสงบ · บุญ · ธรรมะ</p>
+    <p class="subtitle" id="site-subtitle">น้อมนำจิตใจ · สู่ความสงบ · บุญ · ธรรมะ</p>
   </header>
 
   <div id="line-profile">
@@ -151,11 +151,11 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
           <input id="c-wish" type="text" placeholder="ขอให้..." maxlength="60">
         </div>
       </div>
-      <button class="btn btn-primary btn-full" onclick="lightCandle()">🕯️ จุดเทียนบูชา</button>
+      <button class="btn btn-primary btn-full" id="btn-light" onclick="lightCandle()">🕯️ จุดเทียนบูชา</button>
       <div class="divider"></div>
       <div class="counter-pill">เทียนที่จุดแล้ว <b id="candle-total">0</b> เล่ม</div>
       <div class="candle-zone" id="candle-grid">
-        <div class="candle-empty">ยังไม่มีการจุดเทียน · เป็นคนแรกได้เลย 🙏</div>
+        <div class="loading-txt">⏳ กำลังโหลด...</div>
       </div>
     </div>
   </div>
@@ -168,45 +168,25 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
 <div id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════
-// CONFIG (sync with admin)
-// ═══════════════════════════════════════
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzbOkYcp1g-HPSl1HsxP0_sVtudfxvU_Kkg-GPzT5dbIBrwPnludL6X59GERUK1-xyN5Q/exec";
-const DISCORD_WH="https://discord.com/api/webhooks/1495459514348994692/o61b7SllQmS06vi7TG9AKie4pLEYXkTYTJ2AlcVMjWCvJzNkbcONSyYb0zqhqFGSHJo8";
-const LIFF_ID="2007719419-hN3Ikxwz";
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbOkYcp1g-HPSl1HsxP0_sVtudfxvU_Kkg-GPzT5dbIBrwPnludL6X59GERUK1-xyN5Q/exec";
+const DISCORD_WH = "https://discord.com/api/webhooks/1495459514348994692/o61b7SllQmS06vi7TG9AKie4pLEYXkTYTJ2AlcVMjWCvJzNkbcONSyYb0zqhqFGSHJo8";
+const LIFF_ID    = "2007719419-hN3Ikxwz";
 
-// ═══════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════
-let candles=JSON.parse(localStorage.getItem("vb3_c")||"[]");
-let chants=JSON.parse(localStorage.getItem("vb3_p")||"{}");
-let lineProfile=null;
+// ═══════════════════════════════════════════
+// STATE (local chants count only — candles fetched from sheet)
+// ═══════════════════════════════════════════
+let chants      = JSON.parse(localStorage.getItem("vb3_p") || "{}");
+let lineProfile = null;
+let remoteCandleCount = 0; // total from sheet (for discord milestone)
 
-function cfg(k,def=""){try{return localStorage.getItem("vb3_cfg_"+k)||def;}catch{return def;}}
+function saveChants(){ localStorage.setItem("vb3_p", JSON.stringify(chants)); }
 
-function save(){
-  localStorage.setItem("vb3_c",JSON.stringify(candles));
-  localStorage.setItem("vb3_p",JSON.stringify(chants));
-}
-
-// ═══════════════════════════════════════
-// APPLY ADMIN CONFIG
-// ═══════════════════════════════════════
-function applyConfig(){
-  const title=cfg("title","วันวิสาขบูชา ๒๕๖๙");
-  document.getElementById("site-title").textContent=title;
-  document.getElementById("page-title").textContent=title;
-  const logoUrl=cfg("logo","");
-  if(logoUrl){
-    const img=document.createElement("img");
-    img.src=logoUrl; img.alt="logo";
-    document.getElementById("logo-el").replaceWith(img);
-  }
-}
-
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // STARS
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 (()=>{
   const c=document.getElementById("stars"),cx=c.getContext("2d");
   const s=Array.from({length:80},()=>({x:Math.random(),y:Math.random(),r:Math.random()*.9+.2,ph:Math.random()*Math.PI*2,sp:Math.random()*.01+.004}));
@@ -215,9 +195,9 @@ function applyConfig(){
   requestAnimationFrame(draw);
 })();
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // TABS
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 document.querySelector(".tab-bar").addEventListener("click",e=>{
   const b=e.target.closest(".tab");if(!b)return;
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));
@@ -226,44 +206,83 @@ document.querySelector(".tab-bar").addEventListener("click",e=>{
   document.getElementById("panel-"+b.dataset.p).classList.add("on");
 });
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // TOAST
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 let tTmr;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tTmr);tTmr=setTimeout(()=>t.classList.remove("show"),2700);}
 
-// ═══════════════════════════════════════
-// LINE LIFF — ดึงโปรไฟล์
-// ═══════════════════════════════════════
-async function initLiff(){
-  try{
-    await liff.init({liffId:LIFF_ID});
-    if(liff.isLoggedIn()){
-      const p=await liff.getProfile();
-      lineProfile={name:p.displayName,id:p.userId,pic:p.pictureUrl};
-      // แสดง profile strip
-      document.getElementById("lp-img").src=p.pictureUrl||"";
-      document.getElementById("lp-name").textContent=p.displayName;
-      document.getElementById("lp-id").textContent="LINE: "+p.userId.slice(0,12)+"…";
-      document.getElementById("line-profile").style.display="flex";
-      // prefill name
-      if(!document.getElementById("c-name").value)
-        document.getElementById("c-name").value=p.displayName;
-      // บันทึกผู้ใช้เข้า Sheet
-      postSheet("visitor",{lineId:p.userId,lineName:p.displayName,linePic:p.pictureUrl,ua:navigator.userAgent.slice(0,80)});
-    } else {
-      // บันทึก visitor ไม่มี LINE
-      postSheet("visitor",{lineId:"",lineName:"",linePic:"",ua:navigator.userAgent.slice(0,80)});
-    }
-  }catch(e){
-    console.warn("LIFF:",e);
-    postSheet("visitor",{lineId:"",lineName:"",linePic:"",ua:navigator.userAgent.slice(0,80)});
+// ═══════════════════════════════════════════
+// APPLY CONFIG FROM SHEET
+// applyConfig() — เรียกหลัง fetchConfig() ส่งข้อมูลมา
+// ═══════════════════════════════════════════
+function applyConfig(cfg){
+  // ชื่อเว็บ
+  const title = cfg.title || "วันวิสาขบูชา ๒๕๖๙";
+  document.getElementById("site-title").textContent = title;
+  document.getElementById("page-title").textContent = title;
+
+  // subtitle
+  const sub = cfg.subtitle || "น้อมนำจิตใจ · สู่ความสงบ · บุญ · ธรรมะ";
+  document.getElementById("site-subtitle").textContent = sub;
+
+  // โลโก้ — logo เป็น base64 หรือ URL
+  const logoUrl = cfg.logo || "";
+  if(logoUrl){
+    const img = document.getElementById("logo-img");
+    img.src = logoUrl;
+    img.style.display = "block";
+    document.getElementById("logo-emoji").style.display = "none";
+  } else {
+    document.getElementById("logo-img").style.display = "none";
+    document.getElementById("logo-emoji").style.display = "block";
   }
 }
 
-// ═══════════════════════════════════════
-// CANDLE
-// ═══════════════════════════════════════
+async function fetchConfig(){
+  try{
+    const r = await fetch(SCRIPT_URL + "?action=config");
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const d = await r.json();
+    applyConfig(d);
+  }catch(e){
+    // fallback ไม่แสดง error แค่ใช้ default
+    applyConfig({});
+    console.warn("fetchConfig:",e);
+  }
+}
+
+// ═══════════════════════════════════════════
+// LIFF — ดึงโปรไฟล์ LINE
+// ═══════════════════════════════════════════
+async function initLiff(){
+  try{
+    await liff.init({liffId: LIFF_ID});
+    if(liff.isLoggedIn()){
+      const p = await liff.getProfile();
+      lineProfile = {name:p.displayName, id:p.userId, pic:p.pictureUrl||""};
+      document.getElementById("lp-img").src = lineProfile.pic;
+      document.getElementById("lp-name").textContent = lineProfile.name;
+      document.getElementById("lp-id").textContent = "LINE: "+lineProfile.id.slice(0,14)+"…";
+      document.getElementById("line-profile").style.display = "flex";
+      if(!document.getElementById("c-name").value)
+        document.getElementById("c-name").value = lineProfile.name;
+    }
+    // บันทึก visitor
+    postSheet("visitor",{
+      lineId:   lineProfile?.id    || "",
+      lineName: lineProfile?.name  || "",
+      linePic:  lineProfile?.pic   || "",
+    });
+  }catch(e){
+    console.warn("LIFF:",e);
+    postSheet("visitor",{lineId:"",lineName:"",linePic:""});
+  }
+}
+
+// ═══════════════════════════════════════════
+// CANDLE — fetch จาก Sheet (เห็นของทุกคน)
+// ═══════════════════════════════════════════
 const hues=[44,30,200,340,280,120,180,60,260];
 
 function candleSVG(h){
@@ -284,56 +303,87 @@ function candleSVG(h){
 }
 
 function avatarEl(pic,name){
-  if(pic) return `<img class="candle-avatar" src="${esc(pic)}" alt="" onerror="this.style.display='none'">`;
-  const initials=(name||"?").slice(0,1).toUpperCase();
-  return `<div class="candle-avatar-default">${esc(initials)}</div>`;
+  if(pic) return `<img class="c-avatar" src="${esc(pic)}" alt="" onerror="this.outerHTML='<div class=c-avatar-d>${esc((name||"?")[0].toUpperCase())}</div>'">`;
+  return `<div class="c-avatar-d">${esc((name||"?")[0].toUpperCase())}</div>`;
 }
 
-function renderCandles(){
-  const grid=document.getElementById("candle-grid");
-  document.getElementById("candle-total").textContent=candles.length;
-  // แสดงแค่ 20 เล่มล่าสุด
-  const display=candles.slice(-20);
+async function fetchCandles(){
+  try{
+    const r = await fetch(SCRIPT_URL+"?action=candles");
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const d = await r.json();
+    const rows = d.rows || [];
+    remoteCandleCount = d.total || rows.length;
+    renderCandleGrid(rows);
+  }catch(e){
+    document.getElementById("candle-grid").innerHTML='<div class="candle-empty">ไม่สามารถโหลดข้อมูลได้ · ลองใหม่อีกครั้ง</div>';
+    console.warn("fetchCandles:",e);
+  }
+}
+
+function renderCandleGrid(rows){
+  // rows มาจาก Sheet เรียงใหม่สุดก่อน → เราแสดงล่าสุด 20 เล่ม
+  const display = rows.slice(0,20);
+  document.getElementById("candle-total").textContent = rows.length;
   if(display.length===0){
-    grid.innerHTML='<div class="candle-empty">ยังไม่มีการจุดเทียน · เป็นคนแรกได้เลย 🙏</div>';
+    document.getElementById("candle-grid").innerHTML='<div class="candle-empty">ยังไม่มีการจุดเทียน · เป็นคนแรกได้เลย 🙏</div>';
     return;
   }
-  grid.innerHTML=display.map((c,i)=>`
+  document.getElementById("candle-grid").innerHTML = display.map((c,i)=>`
     <div class="candle-wrap">
       ${candleSVG(hues[i%hues.length])}
-      ${avatarEl(c.pic,c.name)}
+      ${avatarEl(c.pic, c.name)}
       <div class="candle-lbl">${esc(c.name)}</div>
     </div>`).join("");
 }
 
-function lightCandle(){
-  const name=document.getElementById("c-name").value.trim()||"ไม่ระบุชื่อ";
-  const wish=document.getElementById("c-wish").value.trim();
-  const pic=lineProfile?.pic||"";
-  const lineId=lineProfile?.id||"";
-  const entry={name,wish,pic,lineId,t:Date.now()};
-  candles.push(entry);
-  save();renderCandles();
-  document.getElementById("c-name").value="";
-  document.getElementById("c-wish").value="";
-  toast(`🕯️ จุดเทียนให้ "${name}" แล้ว · สาธุ! 🙏`);
-  // ส่ง sheet
-  postSheet("candle",{name,wish,pic,lineId});
-  // Discord auto: คำอธิษฐาน
-  if(wish){
-    autoDiscord(`🕯️ **${name}** จุดเทียนพร้อมคำอธิษฐาน\n> *"${wish}"*`);
-  }
-  // Discord: milestone ทุก 10 เล่ม
-  if(candles.length%10===0){
-    autoDiscord(`🪔 มีผู้จุดเทียนออนไลน์ครบ **${candles.length} เล่ม**แล้ว! สาธุ 🙏`);
+async function lightCandle(){
+  const btn  = document.getElementById("btn-light");
+  const name = document.getElementById("c-name").value.trim() || "ไม่ระบุชื่อ";
+  const wish = document.getElementById("c-wish").value.trim();
+  const pic  = lineProfile?.pic  || "";
+  const lineId   = lineProfile?.id   || "";
+  const lineName = lineProfile?.name || "";
+
+  btn.disabled = true;
+  btn.textContent = "⏳ กำลังจุด...";
+
+  try{
+    // POST ไป Sheet ก่อน
+    await fetch(SCRIPT_URL, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({type:"candle", name, wish, pic, lineId, lineName}),
+      mode:"no-cors"
+    });
+    // รอ 1.2s แล้ว re-fetch เพื่อโหลด candle ใหม่จาก Sheet
+    await new Promise(r=>setTimeout(r,1200));
+    await fetchCandles();
+
+    document.getElementById("c-name").value = "";
+    document.getElementById("c-wish").value = "";
+    toast(`🕯️ จุดเทียนให้ "${name}" แล้ว · สาธุ! 🙏`);
+
+    // Discord: มีคำอธิษฐาน
+    if(wish) autoDiscord(`🕯️ **${name}** จุดเทียนพร้อมคำอธิษฐาน\n> *"${wish}"*`);
+
+    // Discord: milestone
+    const cnt = parseInt(document.getElementById("candle-total").textContent)||0;
+    if(cnt > 0 && cnt % 10 === 0)
+      autoDiscord(`🪔 มีผู้จุดเทียนออนไลน์ครบ **${cnt} เล่ม**แล้ว! สาธุ 🙏`);
+
+  }catch(e){
+    toast("❌ เกิดข้อผิดพลาด ลองใหม่อีกครั้ง");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "🕯️ จุดเทียนบูชา";
   }
 }
 
 document.getElementById("c-name").addEventListener("keydown",e=>{if(e.key==="Enter")lightCandle();});
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // PRAYERS
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 const prayers=[
   {id:"itipiso",icon:"📿",title:"อิติปิโส — บทพุทธคุณ",
    text:`อิ ติ ปิ โส ภะ คะ วา อะ ระ หัง สัม มา สัม พุท โธ
@@ -368,11 +418,11 @@ const prayers=[
 ];
 
 const ML=[
-  {min:0, l:"เริ่มต้นบุญ",   c:"#7a5f28",bg:"rgba(122,95,40,.2)"},
-  {min:3, l:"สะสมบุญ",       c:"#c9a84c",bg:"rgba(201,168,76,.2)"},
-  {min:9, l:"บุญงอกงาม",     c:"#f0d080",bg:"rgba(240,208,128,.2)"},
-  {min:27,l:"บุญเต็มเปี่ยม ✨",c:"#f5a623",bg:"rgba(245,166,35,.2)"},
-  {min:108,l:"บุญ ๑๐๘ 🌟",  c:"#e8821a",bg:"rgba(232,130,26,.25)"},
+  {min:0,  l:"เริ่มต้นบุญ",    c:"#7a5f28",bg:"rgba(122,95,40,.2)"},
+  {min:3,  l:"สะสมบุญ",        c:"#c9a84c",bg:"rgba(201,168,76,.2)"},
+  {min:9,  l:"บุญงอกงาม",      c:"#f0d080",bg:"rgba(240,208,128,.2)"},
+  {min:27, l:"บุญเต็มเปี่ยม ✨",c:"#f5a623",bg:"rgba(245,166,35,.2)"},
+  {min:108,l:"บุญ ๑๐๘ 🌟",    c:"#e8821a",bg:"rgba(232,130,26,.25)"},
 ];
 function merit(n){for(let i=ML.length-1;i>=0;i--)if(n>=ML[i].min)return ML[i];return ML[0];}
 
@@ -402,7 +452,7 @@ function toggleP(id,e){if(e.target.closest(".btn"))return;document.getElementByI
 
 function doChant(id,e){
   e.stopPropagation();
-  chants[id]=(chants[id]||0)+1;save();
+  chants[id]=(chants[id]||0)+1;saveChants();
   const n=chants[id],m=merit(n);
   document.getElementById("cn-"+id).textContent=n;
   const b=document.getElementById("badge-"+id);
@@ -412,9 +462,9 @@ function doChant(id,e){
   if(n===108) autoDiscord(`🌟 **${prayers.find(p=>p.id===id)?.title}** — สวดครบ 108 ครั้ง! สาธุ 🙏`);
 }
 
-// ═══════════════════════════════════════
-// SHEET POST
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
+// SHEET POST (no-cors — ไม่สามารถรับ response ได้)
+// ═══════════════════════════════════════════
 async function postSheet(type,data){
   try{
     await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
@@ -422,9 +472,9 @@ async function postSheet(type,data){
   }catch(e){console.warn("Sheet:",e);}
 }
 
-// ═══════════════════════════════════════
-// DISCORD AUTO
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
+// DISCORD
+// ═══════════════════════════════════════════
 async function autoDiscord(content){
   try{
     const tot=Object.values(chants).reduce((a,b)=>a+b,0);
@@ -432,7 +482,7 @@ async function autoDiscord(content){
       body:JSON.stringify({username:"วิสาขบูชา 🪔",embeds:[{
         title:"🪔 วันวิสาขบูชา ๒๕๖๙",description:content,color:0xc9a84c,
         fields:[
-          {name:"🕯️ เทียนทั้งหมด",value:`${candles.length} เล่ม`,inline:true},
+          {name:"🕯️ เทียนทั้งหมด",value:`${document.getElementById("candle-total").textContent} เล่ม`,inline:true},
           {name:"🙏 สวดมนต์รวม",value:`${tot} ครั้ง`,inline:true},
         ],
         footer:{text:"สาธุ 🙏"},timestamp:new Date().toISOString()
@@ -440,18 +490,21 @@ async function autoDiscord(content){
   }catch(e){console.warn("Discord:",e);}
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // UTIL
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════
-applyConfig();
-renderCandles();
+// ═══════════════════════════════════════════
+fetchConfig();       // โหลด title + logo + subtitle จาก Sheet
+fetchCandles();      // โหลดเทียนจาก Sheet (เห็นของทุกคน)
 renderPrayers();
 initLiff();
+
+// auto-refresh เทียนทุก 30 วินาที
+setInterval(fetchCandles, 30000);
 </script>
 </body>
 </html>
