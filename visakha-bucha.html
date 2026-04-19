@@ -3,972 +3,660 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>วันวิสาขบูชา ๒๕๖๙ — เวียนเทียนออนไลน์</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&family=Noto+Serif+Thai:wght@300;400;700&display=swap" rel="stylesheet">
+<title>วันวิสาขบูชา ๒๕๖๙</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@300;400;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold: #c9a84c;
-    --gold-light: #f0d080;
-    --gold-dim: #7a5f28;
-    --amber: #f5a623;
-    --deep: #0a0604;
-    --dark: #120d06;
-    --mid: #1e1508;
-    --surface: #2a1d0a;
-    --text: #f0e6cc;
-    --text-dim: #9a8460;
-    --saffron: #e8821a;
-    --lotus: #d4789a;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--deep);
-    color: var(--text);
-    font-family: 'Sarabun', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── Stars Background ── */
-  #stars-canvas {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  }
-
-  /* ── Gold dust particles ── */
-  .dust {
-    position: fixed; width: 3px; height: 3px;
-    background: var(--gold-light); border-radius: 50%;
-    pointer-events: none; z-index: 1;
-    animation: floatDust linear infinite;
-    opacity: 0;
-  }
-
-  @keyframes floatDust {
-    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-    10%  { opacity: 0.6; }
-    90%  { opacity: 0.3; }
-    100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
-  }
-
-  /* ── Nav Tabs ── */
-  #app { position: relative; z-index: 10; max-width: 960px; margin: 0 auto; padding: 0 16px 40px; }
-
-  header {
-    text-align: center; padding: 48px 0 32px;
-    border-bottom: 1px solid rgba(201,168,76,0.2);
-    margin-bottom: 0;
-  }
-
-  .header-icon { font-size: 56px; line-height: 1; display: block; margin-bottom: 12px; animation: glow 3s ease-in-out infinite; }
-
-  @keyframes glow {
-    0%,100% { filter: drop-shadow(0 0 8px #f5a623aa); }
-    50%      { filter: drop-shadow(0 0 24px #f5a623ff); }
-  }
-
-  header h1 {
-    font-family: 'Noto Serif Thai', serif;
-    font-size: clamp(1.6rem, 5vw, 2.8rem);
-    font-weight: 700; color: var(--gold-light);
-    letter-spacing: 0.04em;
-    text-shadow: 0 0 32px rgba(201,168,76,0.5);
-  }
-
-  header p { color: var(--text-dim); font-size: 0.95rem; margin-top: 8px; letter-spacing: 0.08em; }
-
-  /* ── Tabs ── */
-  .tabs {
-    display: flex; gap: 4px; margin: 24px 0;
-    background: rgba(42,29,10,0.8);
-    border: 1px solid rgba(201,168,76,0.15);
-    border-radius: 12px; padding: 4px;
-    backdrop-filter: blur(10px);
-  }
-
-  .tab {
-    flex: 1; padding: 12px 8px; border: none; cursor: pointer;
-    border-radius: 8px; font-family: 'Sarabun', sans-serif;
-    font-size: clamp(0.7rem, 2vw, 0.9rem);
-    background: transparent; color: var(--text-dim);
-    transition: all 0.3s; font-weight: 600;
-  }
-
-  .tab.active {
-    background: linear-gradient(135deg, #c9a84c22, #f0d08033);
-    color: var(--gold-light);
-    box-shadow: 0 2px 12px rgba(201,168,76,0.2);
-    border: 1px solid rgba(201,168,76,0.3);
-  }
-
-  .tab:hover:not(.active) { color: var(--gold); }
-
-  /* ── Panels ── */
-  .panel { display: none; animation: fadeIn 0.4s ease; }
-  .panel.active { display: block; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ════════════════════════════════
-     PANEL 1: เวียนเทียน
-  ════════════════════════════════ */
-  .candle-section {
-    display: grid; gap: 24px;
-  }
-
-  .candle-hero {
-    text-align: center; padding: 32px 16px;
-    background: radial-gradient(ellipse at center, rgba(245,166,35,0.08) 0%, transparent 70%);
-    border: 1px solid rgba(201,168,76,0.15);
-    border-radius: 20px; position: relative; overflow: hidden;
-  }
-
-  .candle-hero::before {
-    content: ''; position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    pointer-events: none;
-  }
-
-  #name-input-wrap { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
-
-  #name-input {
-    padding: 12px 20px; border: 1px solid rgba(201,168,76,0.3);
-    border-radius: 40px; background: rgba(255,255,255,0.05);
-    color: var(--text); font-family: 'Sarabun', sans-serif; font-size: 1rem;
-    width: 240px; outline: none; transition: border-color 0.3s;
-  }
-
-  #name-input:focus { border-color: var(--gold); }
-  #name-input::placeholder { color: var(--text-dim); }
-
-  .btn-light {
-    padding: 12px 28px;
-    background: linear-gradient(135deg, var(--gold-dim), var(--gold));
-    border: none; border-radius: 40px; cursor: pointer;
-    color: #0a0604; font-family: 'Sarabun', sans-serif;
-    font-size: 1rem; font-weight: 700;
-    transition: all 0.3s; white-space: nowrap;
-    box-shadow: 0 4px 20px rgba(201,168,76,0.3);
-  }
-
-  .btn-light:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(201,168,76,0.5);
-  }
-
-  .btn-light:active { transform: scale(0.97); }
-
-  /* Candle grid */
-  #candle-grid {
-    display: flex; flex-wrap: wrap; gap: 16px;
-    justify-content: center; min-height: 160px;
-    padding: 16px;
-  }
-
-  .candle-item {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    cursor: default; animation: appear 0.6s ease;
-  }
-
-  @keyframes appear {
-    from { opacity: 0; transform: scale(0.5) translateY(20px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  .candle-svg { position: relative; }
-
-  .candle-svg svg { overflow: visible; }
-
-  .candle-name {
-    font-size: 0.7rem; color: var(--gold-light); text-align: center;
-    max-width: 70px; word-break: break-word; line-height: 1.3;
-  }
-
-  .flame-anim { animation: flicker 1.5s ease-in-out infinite; transform-origin: bottom center; }
-
-  @keyframes flicker {
-    0%,100% { transform: scaleX(1) scaleY(1) rotate(-1deg); opacity: 1; }
-    25%      { transform: scaleX(0.9) scaleY(1.1) rotate(1deg); }
-    50%      { transform: scaleX(1.1) scaleY(0.95) rotate(-2deg); opacity: 0.9; }
-    75%      { transform: scaleX(0.95) scaleY(1.05) rotate(1deg); }
-  }
-
-  .candle-count {
-    text-align: center; font-size: 0.85rem; color: var(--text-dim); margin-top: 8px;
-  }
-
-  .candle-count span { color: var(--gold); font-weight: 700; font-size: 1.1rem; }
-
-  /* ════════════════════════════════
-     PANEL 2: บทสวด
-  ════════════════════════════════ */
-  .prayer-list { display: grid; gap: 16px; }
-
-  .prayer-card {
-    background: rgba(42,29,10,0.7);
-    border: 1px solid rgba(201,168,76,0.15);
-    border-radius: 16px; overflow: hidden;
-    backdrop-filter: blur(8px);
-    transition: border-color 0.3s;
-  }
-
-  .prayer-card:hover { border-color: rgba(201,168,76,0.35); }
-
-  .prayer-header {
-    padding: 16px 20px; cursor: pointer;
-    display: flex; align-items: center; gap: 12px;
-    user-select: none;
-  }
-
-  .prayer-icon { font-size: 1.5rem; flex-shrink: 0; }
-
-  .prayer-title { font-family: 'Noto Serif Thai', serif; font-size: 1.05rem; color: var(--gold-light); flex: 1; }
-
-  .prayer-arrow { color: var(--gold-dim); transition: transform 0.3s; font-size: 0.8rem; }
-
-  .prayer-card.open .prayer-arrow { transform: rotate(90deg); }
-
-  .prayer-body { display: none; padding: 0 20px 20px; }
-
-  .prayer-card.open .prayer-body { display: block; }
-
-  .prayer-text {
-    font-family: 'Noto Serif Thai', serif;
-    font-size: 0.95rem; line-height: 2.2;
-    color: var(--text); white-space: pre-wrap;
-    background: rgba(0,0,0,0.2); border-radius: 10px;
-    padding: 16px; margin-bottom: 16px;
-    border-left: 3px solid var(--gold-dim);
-  }
-
-  .prayer-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-
-  .btn-chant {
-    padding: 10px 24px;
-    background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.35));
-    border: 1px solid rgba(201,168,76,0.4);
-    border-radius: 40px; cursor: pointer;
-    color: var(--gold-light); font-family: 'Sarabun', sans-serif;
-    font-size: 0.95rem; font-weight: 600; transition: all 0.3s;
-  }
-
-  .btn-chant:hover { background: linear-gradient(135deg, rgba(201,168,76,0.4), rgba(201,168,76,0.6)); transform: scale(1.03); }
-
-  .btn-chant:active { transform: scale(0.97); }
-
-  .chant-count { color: var(--text-dim); font-size: 0.9rem; }
-
-  .chant-count b { color: var(--amber); }
-
-  .merit-badge {
-    display: inline-block; padding: 3px 12px;
-    background: rgba(232,130,26,0.15); border: 1px solid rgba(232,130,26,0.3);
-    border-radius: 20px; font-size: 0.75rem; color: var(--saffron);
-  }
-
-  /* ════════════════════════════════
-     PANEL 3: OBS Overlay
-  ════════════════════════════════ */
-  .obs-section { display: grid; gap: 20px; }
-
-  .obs-card {
-    background: rgba(42,29,10,0.7); border: 1px solid rgba(201,168,76,0.15);
-    border-radius: 16px; padding: 20px; backdrop-filter: blur(8px);
-  }
-
-  .obs-card h3 { font-family: 'Noto Serif Thai', serif; color: var(--gold); margin-bottom: 12px; font-size: 1rem; }
-
-  .url-box {
-    background: rgba(0,0,0,0.4); border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 8px; padding: 12px 16px;
-    font-family: monospace; font-size: 0.8rem; color: var(--gold-light);
-    word-break: break-all; display: flex; align-items: center; gap: 10px;
-  }
-
-  .url-text { flex: 1; }
-
-  .copy-btn {
-    padding: 6px 14px; background: rgba(201,168,76,0.2);
-    border: 1px solid rgba(201,168,76,0.3); border-radius: 6px;
-    color: var(--gold); cursor: pointer; font-size: 0.75rem;
-    font-family: 'Sarabun', sans-serif; transition: all 0.2s; flex-shrink: 0;
-  }
-
-  .copy-btn:hover { background: rgba(201,168,76,0.4); }
-
-  .obs-preview {
-    border: 1px dashed rgba(201,168,76,0.25); border-radius: 12px;
-    padding: 20px; background: rgba(0,0,0,0.5);
-    min-height: 120px; display: flex; align-items: center; justify-content: center;
-    text-align: center;
-  }
-
-  /* ── Live Ticker ── */
-  #ticker-wrap {
-    overflow: hidden; background: rgba(0,0,0,0.6);
-    border: 1px solid rgba(201,168,76,0.25); border-radius: 8px;
-    padding: 10px 0;
-  }
-
-  #ticker {
-    display: flex; gap: 48px; width: max-content;
-    animation: tickerScroll 20s linear infinite;
-    white-space: nowrap;
-  }
-
-  #ticker:hover { animation-play-state: paused; }
-
-  @keyframes tickerScroll {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
-  .ticker-item { font-family: 'Noto Serif Thai', serif; font-size: 0.95rem; color: var(--gold-light); }
-  .ticker-sep { color: var(--gold-dim); }
-
-  /* ════════════════════════════════
-     PANEL 4: Discord + LINE
-  ════════════════════════════════ */
-  .social-grid { display: grid; gap: 20px; }
-
-  .social-card {
-    background: rgba(42,29,10,0.7); border: 1px solid rgba(201,168,76,0.15);
-    border-radius: 16px; padding: 24px; backdrop-filter: blur(8px);
-  }
-
-  .social-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-
-  .social-icon { font-size: 2rem; }
-
-  .social-title { font-family: 'Noto Serif Thai', serif; font-size: 1.1rem; color: var(--gold-light); }
-
-  .social-desc { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 16px; line-height: 1.7; }
-
-  .btn-social {
-    display: inline-block; padding: 10px 24px;
-    border-radius: 40px; font-family: 'Sarabun', sans-serif;
-    font-size: 0.9rem; font-weight: 700; cursor: pointer;
-    text-decoration: none; border: none; transition: all 0.3s;
-  }
-
-  .btn-discord {
-    background: linear-gradient(135deg, #5865f2, #7289da);
-    color: white; box-shadow: 0 4px 20px rgba(88,101,242,0.4);
-  }
-
-  .btn-discord:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(88,101,242,0.6); }
-
-  .btn-line {
-    background: linear-gradient(135deg, #00b900, #00e000);
-    color: white; box-shadow: 0 4px 20px rgba(0,185,0,0.3);
-  }
-
-  .btn-line:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,185,0,0.5); }
-
-  .send-form { display: flex; gap: 10px; flex-wrap: wrap; }
-
-  .send-input {
-    flex: 1; min-width: 200px; padding: 10px 16px;
-    border: 1px solid rgba(201,168,76,0.25); border-radius: 8px;
-    background: rgba(0,0,0,0.3); color: var(--text);
-    font-family: 'Sarabun', sans-serif; font-size: 0.95rem; outline: none;
-  }
-
-  .send-input:focus { border-color: var(--gold); }
-
-  /* ── Toast ── */
-  #toast {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: rgba(42,29,10,0.95); border: 1px solid var(--gold);
-    border-radius: 40px; padding: 12px 28px;
-    color: var(--gold-light); font-family: 'Sarabun', sans-serif;
-    font-size: 0.95rem; z-index: 999; transition: transform 0.4s ease;
-    pointer-events: none; white-space: nowrap;
-  }
-
-  #toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* ── Section headings ── */
-  .section-title {
-    font-family: 'Noto Serif Thai', serif; font-size: 1.1rem;
-    color: var(--gold); margin-bottom: 16px;
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  .divider {
-    height: 1px; background: linear-gradient(to right, transparent, rgba(201,168,76,0.3), transparent);
-    margin: 24px 0;
-  }
-
-  /* ── Responsive ── */
-  @media (max-width: 600px) {
-    .tabs { flex-wrap: wrap; }
-    .tab { flex: 1 1 40%; font-size: 0.75rem; padding: 10px 6px; }
-  }
+:root {
+  --gold:     #c9a84c;
+  --gold-lt:  #f0d080;
+  --gold-dim: #7a5f28;
+  --amber:    #f5a623;
+  --deep:     #080503;
+  --surface:  #18110a;
+  --card:     #1c1208;
+  --border:   rgba(201,168,76,0.18);
+  --text:     #f0e6cc;
+  --muted:    #8a7450;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--deep);color:var(--text);font-family:'Sarabun',sans-serif;min-height:100vh;overflow-x:hidden;}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(201,168,76,0.06) 0%,transparent 70%),
+             radial-gradient(ellipse 30% 30% at 80% 80%,rgba(232,130,26,0.04) 0%,transparent 60%);}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* Layout */
+#app{position:relative;z-index:10;max-width:820px;margin:0 auto;padding:0 20px 60px;}
+
+/* Header */
+header{text-align:center;padding:52px 0 36px;}
+.logo{display:inline-flex;align-items:center;justify-content:center;width:72px;height:72px;
+  background:radial-gradient(circle,rgba(201,168,76,0.15),transparent 70%);border-radius:50%;
+  font-size:44px;margin-bottom:16px;animation:pulse 3s ease-in-out infinite;}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 6px rgba(245,166,35,.5));}50%{filter:drop-shadow(0 0 20px rgba(245,166,35,.9));}}
+h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-weight:700;
+  color:var(--gold-lt);letter-spacing:.02em;text-shadow:0 2px 24px rgba(201,168,76,.35);margin-bottom:6px;}
+.subtitle{color:var(--muted);font-size:.9rem;letter-spacing:.1em;}
+
+/* Tabs */
+.tab-bar{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:4px;margin:28px 0;overflow-x:auto;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:0;padding:10px 6px;background:none;border:none;border-radius:10px;
+  color:var(--muted);font-family:'Sarabun',sans-serif;font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .25s;white-space:nowrap;}
+.tab.on{background:var(--card);color:var(--gold-lt);border:1px solid var(--border);
+  box-shadow:0 2px 10px rgba(0,0,0,.3);}
+.tab:hover:not(.on){color:var(--gold);}
+
+/* Panel */
+.panel{display:none;animation:fadeUp .35s ease;}
+.panel.on{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* Card */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;margin-bottom:16px;}
+.card-title{font-family:'Noto Serif Thai',serif;font-size:1rem;font-weight:600;color:var(--gold);
+  margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+
+/* Form */
+.field{margin-bottom:18px;}
+.field:last-child{margin-bottom:0;}
+.field label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);
+  margin-bottom:7px;text-transform:uppercase;letter-spacing:.08em;}
+.field input,.field textarea,.field select{
+  width:100%;padding:12px 15px;background:rgba(0,0,0,.4);
+  border:1.5px solid rgba(201,168,76,.2);border-radius:10px;
+  color:var(--text);font-family:'Sarabun',sans-serif;font-size:.97rem;
+  outline:none;transition:border-color .2s,box-shadow .2s;appearance:none;}
+.field input:focus,.field textarea:focus,.field select:focus{
+  border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.1);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(138,116,80,.5);}
+.field textarea{resize:vertical;min-height:76px;}
+.field select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%23c9a84c'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;}
+.field select option{background:#201508;}
+.row{display:grid;gap:14px;}
+.row-2{grid-template-columns:1fr 1fr;}
+@media(max-width:520px){.row-2{grid-template-columns:1fr;}}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 26px;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;
+  font-size:.95rem;font-weight:600;cursor:pointer;transition:all .25s;text-decoration:none;white-space:nowrap;}
+.btn-primary{background:linear-gradient(135deg,#a07830,var(--gold));color:#0a0503;
+  box-shadow:0 4px 16px rgba(201,168,76,.25);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.4);}
+.btn-primary:active{transform:translateY(0);}
+.btn-ghost{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--gold-lt);}
+.btn-ghost:hover{background:rgba(201,168,76,.2);}
+.btn-discord{background:linear-gradient(135deg,#4752c4,#5865f2);color:#fff;box-shadow:0 4px 16px rgba(88,101,242,.3);}
+.btn-discord:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(88,101,242,.5);}
+.btn-line{background:linear-gradient(135deg,#00a000,#00c300);color:#fff;box-shadow:0 4px 16px rgba(0,195,0,.25);}
+.btn-line:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,195,0,.4);}
+.btn-sm{padding:9px 18px;font-size:.84rem;border-radius:8px;}
+.btn-full{width:100%;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;}
+
+/* Divider */
+.divider{height:1px;background:var(--border);margin:20px 0;}
+
+/* Candle */
+.candle-zone{min-height:180px;display:flex;flex-wrap:wrap;gap:14px;align-content:flex-start;padding:4px 0;}
+.candle-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{opacity:0;transform:scale(.4) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.candle-lbl{font-size:.66rem;color:var(--gold-lt);text-align:center;max-width:60px;line-height:1.3;word-break:break-word;}
+.flame{animation:flicker 1.8s ease-in-out infinite;transform-origin:50% 100%;}
+@keyframes flicker{0%,100%{transform:scaleX(1) scaleY(1) rotate(-1deg);}
+  30%{transform:scaleX(.88) scaleY(1.12) rotate(1.5deg);}
+  60%{transform:scaleX(1.08) scaleY(.93) rotate(-1.8deg);}}
+.counter-pill{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(201,168,76,.1);border:1px solid var(--border);
+  border-radius:20px;padding:5px 16px;font-size:.82rem;color:var(--muted);margin-top:4px;}
+.counter-pill b{color:var(--amber);font-size:.95rem;}
+
+/* Prayers */
+.prayer-card{margin-bottom:10px;}
+.prayer-head{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;}
+.prayer-ico{font-size:1.4rem;flex-shrink:0;}
+.prayer-ttl{font-family:'Noto Serif Thai',serif;font-size:.98rem;color:var(--gold);flex:1;}
+.badge{padding:3px 11px;border-radius:20px;font-size:.7rem;border:1px solid;white-space:nowrap;}
+.chevron{color:var(--muted);transition:transform .3s;font-size:.9rem;margin-left:4px;}
+.prayer-card.open .chevron{transform:rotate(90deg);}
+.prayer-body{display:none;margin-top:16px;}
+.prayer-card.open .prayer-body{display:block;}
+.chant-text{font-family:'Noto Serif Thai',serif;font-size:.9rem;line-height:2.3;color:var(--text);
+  background:rgba(0,0,0,.25);border-radius:10px;padding:16px 18px;margin-bottom:14px;
+  border-left:2px solid var(--gold-dim);white-space:pre-wrap;}
+.chant-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.chant-stat{font-size:.84rem;color:var(--muted);}
+.chant-stat b{color:var(--amber);}
+
+/* Code */
+.code-block{background:rgba(0,0,0,.55);border:1px solid rgba(201,168,76,.15);
+  border-radius:10px;padding:16px;font-family:'Courier New',monospace;font-size:.76rem;
+  color:#c8e8b0;line-height:1.9;overflow-x:auto;white-space:pre;max-height:360px;overflow-y:auto;}
+.monoline{background:rgba(0,0,0,.45);border:1px solid rgba(201,168,76,.2);border-radius:8px;
+  padding:11px 14px;font-family:monospace;font-size:.8rem;color:var(--gold-lt);
+  word-break:break-all;display:flex;align-items:center;gap:10px;}
+.monoline span{flex:1;}
+.copy-btn{padding:5px 13px;background:rgba(201,168,76,.18);border:1px solid rgba(201,168,76,.3);
+  border-radius:6px;color:var(--gold);font-family:'Sarabun',sans-serif;font-size:.75rem;
+  cursor:pointer;flex-shrink:0;transition:all .2s;}
+.copy-btn:hover{background:rgba(201,168,76,.35);}
+
+/* Ticker */
+.ticker-outer{overflow:hidden;border-radius:8px;border:1px solid rgba(201,168,76,.2);background:rgba(0,0,0,.3);}
+.ticker-inner{display:flex;gap:48px;width:max-content;padding:10px 16px;
+  animation:marquee 22s linear infinite;white-space:nowrap;}
+.ticker-inner:hover{animation-play-state:paused;}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.t-item{font-size:.88rem;color:var(--gold-lt);}
+.t-dot{color:var(--gold-dim);}
+
+/* OBS preview */
+.obs-preview{border:1px dashed rgba(201,168,76,.25);border-radius:12px;
+  background:rgba(0,0,0,.5);padding:24px;text-align:center;}
+.obs-preview-ttl{font-family:'Noto Serif Thai',serif;font-size:1.15rem;color:var(--gold-lt);margin-bottom:8px;}
+.obs-preview-sub{font-size:.84rem;color:var(--muted);}
+.obs-preview-sub b{color:var(--amber);}
+
+/* Steps */
+.steps{counter-reset:step;display:grid;gap:8px;}
+.step{display:flex;gap:12px;align-items:flex-start;font-size:.86rem;color:var(--muted);line-height:1.6;}
+.step::before{counter-increment:step;content:counter(step);min-width:22px;height:22px;
+  background:rgba(201,168,76,.15);border:1px solid var(--border);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;
+  color:var(--gold);flex-shrink:0;margin-top:1px;}
+
+/* Social */
+.social-head{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.soc-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:1.5rem;flex-shrink:0;}
+.soc-ttl{font-family:'Noto Serif Thai',serif;font-size:1.05rem;color:var(--gold-lt);}
+.soc-sub{font-size:.8rem;color:var(--muted);margin-top:2px;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;}
+.stat-tile{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:12px;
+  padding:14px 12px;text-align:center;}
+.stat-tile .val{font-family:'Noto Serif Thai',serif;font-size:1.25rem;color:var(--gold-lt);
+  font-weight:700;display:block;margin-bottom:4px;}
+.stat-tile .lbl{font-size:.74rem;color:var(--muted);}
+
+/* Status */
+.status{font-size:.82rem;color:var(--muted);margin-top:10px;min-height:20px;}
+.status.ok{color:#7dcf8a;} .status.err{color:#e07070;}
+
+/* Note */
+.note{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);
+  border-radius:10px;padding:12px 16px;font-size:.82rem;color:var(--muted);line-height:1.8;}
+.note code{color:var(--amber);background:rgba(245,166,35,.1);padding:1px 6px;border-radius:4px;}
+
+/* Toast */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(70px);
+  background:var(--card);border:1px solid var(--gold);border-radius:40px;padding:11px 24px;
+  color:var(--gold-lt);font-size:.9rem;z-index:999;
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
-
-<canvas id="stars-canvas"></canvas>
+<div id="bg"></div>
+<canvas id="stars"></canvas>
 
 <div id="app">
   <header>
-    <span class="header-icon">🪔</span>
+    <div class="logo">🪔</div>
     <h1>วันวิสาขบูชา ๒๕๖๙</h1>
-    <p>น้อมนำจิตใจ สู่ความสงบ บุญ และธรรมะ</p>
+    <p class="subtitle">น้อมนำจิตใจ · สู่ความสงบ · บุญ · ธรรมะ</p>
   </header>
 
-  <nav class="tabs">
-    <button class="tab active" onclick="switchTab('candle')">🕯️ เวียนเทียน</button>
-    <button class="tab" onclick="switchTab('prayer')">📖 บทสวด</button>
-    <button class="tab" onclick="switchTab('obs')">🎥 OBS Overlay</button>
-    <button class="tab" onclick="switchTab('social')">💬 LINE / Discord</button>
+  <nav class="tab-bar" id="tabs">
+    <button class="tab on" data-p="candle">🕯️ เวียนเทียน</button>
+    <button class="tab" data-p="prayer">📿 บทสวด</button>
+    <button class="tab" data-p="obs">🎥 OBS / Sheet</button>
+    <button class="tab" data-p="social">💬 LINE / Discord</button>
   </nav>
 
-  <!-- ═══ PANEL: เวียนเทียน ═══ -->
-  <div id="panel-candle" class="panel active candle-section">
-    <div class="candle-hero">
-      <div id="name-input-wrap">
-        <input id="name-input" type="text" placeholder="ใส่ชื่อของคุณ..." maxlength="30">
-        <button class="btn-light" onclick="lightCandle()">🕯️ จุดเทียน</button>
-      </div>
-      <div class="candle-count">เทียนที่จุดแล้ว: <span id="candle-total">0</span> เล่ม</div>
-      <div id="candle-grid"></div>
-    </div>
-  </div>
-
-  <!-- ═══ PANEL: บทสวด ═══ -->
-  <div id="panel-prayer" class="panel">
-    <div class="prayer-list" id="prayer-list"></div>
-  </div>
-
-  <!-- ═══ PANEL: OBS Overlay ═══ -->
-  <div id="panel-obs" class="panel obs-section">
-
-    <div class="obs-card">
-      <h3>📡 OBS Browser Source URL</h3>
-      <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:12px">
-        คัดลอก URL นี้ไปวางใน OBS → Sources → Browser Source
-      </p>
-      <div class="url-box">
-        <span class="url-text" id="obs-url-text">กำลังสร้าง URL...</span>
-        <button class="copy-btn" onclick="copyOBSUrl()">คัดลอก</button>
-      </div>
-    </div>
-
-    <div class="obs-card">
-      <h3>🔄 Live Ticker — ข้อความสาธุ</h3>
-      <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:12px">
-        ข้อความวิ่งจากชื่อผู้จุดเทียนและบทสวด (ดึงจาก Google Sheet)
-      </p>
-      <div id="ticker-wrap">
-        <div id="ticker"></div>
-      </div>
-      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-        <input id="sheet-msg" class="send-input" placeholder="เพิ่มข้อความสาธุ..." style="flex:1;">
-        <button class="btn-light" style="padding:10px 20px;font-size:0.85rem;" onclick="addTickerMsg()">เพิ่ม</button>
-      </div>
-    </div>
-
-    <div class="obs-card">
-      <h3>👁️ Preview Overlay</h3>
-      <div class="obs-preview" id="obs-preview-box">
-        <div style="text-align:center;">
-          <div style="font-family:'Noto Serif Thai',serif;font-size:1.4rem;color:var(--gold-light);margin-bottom:8px;">
-            🪔 วันวิสาขบูชา ๒๕๖๙
-          </div>
-          <div style="font-size:0.9rem;color:var(--text-dim);" id="obs-preview-sub">
-            จุดเทียนแล้ว <b style="color:var(--amber)" id="obs-preview-count">0</b> เล่ม · สวดมนต์ <b style="color:var(--amber)" id="obs-preview-chant">0</b> ครั้ง
-          </div>
+  <!-- ═══ เวียนเทียน ═══ -->
+  <div class="panel on" id="panel-candle">
+    <div class="card">
+      <div class="card-title">🕯️ จุดเทียนออนไลน์</div>
+      <div class="row row-2">
+        <div class="field">
+          <label>ชื่อของคุณ</label>
+          <input id="c-name" type="text" placeholder="กรอกชื่อ..." maxlength="30">
+        </div>
+        <div class="field">
+          <label>คำอธิษฐาน (ไม่บังคับ)</label>
+          <input id="c-wish" type="text" placeholder="ขอให้..." maxlength="60">
         </div>
       </div>
-    </div>
-
-    <div class="obs-card">
-      <h3>📊 Google Sheet Integration</h3>
-      <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:12px">
-        ข้อมูลทั้งหมดสามารถ sync กับ Google Sheet ID ด้านล่าง
-      </p>
-      <div class="url-box" style="font-size:0.75rem;">
-        <span class="url-text">Sheet ID: 1sA3jVT4dhzNDAYdzK9Bayqep4bd4nmLoTchTWQ8cuOU</span>
-        <button class="copy-btn" onclick="copyText('1sA3jVT4dhzNDAYdzK9Bayqep4bd4nmLoTchTWQ8cuOU')">คัดลอก</button>
-      </div>
-      <p style="color:var(--text-dim);font-size:0.78rem;margin-top:10px;line-height:1.8;">
-        ⚙️ สร้าง Apps Script ใน Sheet → เปิด Webhook endpoint → รับ POST จากระบบนี้<br>
-        📌 Columns แนะนำ: Timestamp | Name | Type | Count
-      </p>
+      <button class="btn btn-primary btn-full" onclick="lightCandle()">🕯️ จุดเทียนบูชา</button>
+      <div class="divider"></div>
+      <div class="counter-pill">เทียนที่จุดแล้ว <b id="candle-total">0</b> เล่ม</div>
+      <div class="candle-zone" id="candle-grid"></div>
     </div>
   </div>
 
-  <!-- ═══ PANEL: LINE / Discord ═══ -->
-  <div id="panel-social" class="panel social-grid">
+  <!-- ═══ บทสวด ═══ -->
+  <div class="panel" id="panel-prayer">
+    <div id="prayer-list"></div>
+  </div>
 
-    <div class="social-card">
-      <div class="social-header">
-        <span class="social-icon">💚</span>
-        <span class="social-title">LINE LIFF — อวยพรวิสาขบูชา</span>
+  <!-- ═══ OBS / Sheet ═══ -->
+  <div class="panel" id="panel-obs">
+
+    <div class="card">
+      <div class="card-title">📡 OBS Browser Source URL</div>
+      <div class="monoline" style="margin-bottom:14px;">
+        <span id="obs-url">-</span>
+        <button class="copy-btn" onclick="copyOBS()">คัดลอก</button>
       </div>
-      <p class="social-desc">
-        เปิด LINE LIFF เพื่อส่งพรวันวิสาขบูชาให้เพื่อน · แชร์เทียนของคุณ<br>
-        LIFF ID: <code style="color:var(--amber)">2007719419-hN3Ikxwz</code>
-      </p>
-      <div class="send-form" style="margin-bottom:12px;">
-        <input id="line-msg" class="send-input" placeholder="ข้อความอวยพร..." value="สาธุ 🙏 ขอให้มีความสุขในวันวิสาขบูชา">
+      <div class="steps">
+        <div class="step">OBS → Sources → เพิ่ม Browser Source</div>
+        <div class="step">วาง URL ด้านบนในช่อง URL → Width 1920 / Height 1080</div>
+        <div class="step">ติ๊ก "Shutdown source when not visible" ปิดไว้ + ติ๊ก transparent background</div>
+        <div class="step">กด OK แล้วจัดตำแหน่งบนหน้าจอ</div>
       </div>
-      <a class="btn-social btn-line" href="https://liff.line.me/2007719419-hN3Ikxwz" target="_blank">เปิด LINE LIFF 💚</a>
-      <button class="btn-social btn-line" style="margin-left:10px;border:none;" onclick="openLineShare()">แชร์ให้เพื่อน</button>
     </div>
 
-    <div class="social-card">
-      <div class="social-header">
-        <span class="social-icon">💜</span>
-        <span class="social-title">Discord — ส่งบุญสู่ Server</span>
+    <div class="card">
+      <div class="card-title">👁️ Preview Overlay</div>
+      <div class="obs-preview">
+        <div class="obs-preview-ttl">🪔 วันวิสาขบูชา ๒๕๖๙</div>
+        <div class="obs-preview-sub">จุดเทียน <b id="pv-c">0</b> เล่ม &nbsp;·&nbsp; สวดมนต์ <b id="pv-p">0</b> ครั้ง</div>
       </div>
-      <p class="social-desc">
-        ส่งข้อความบุญและสถิติการสวดมนต์ไปยัง Discord Server ของคุณอัตโนมัติ
-      </p>
-      <div class="send-form">
-        <input id="discord-msg" class="send-input" placeholder="ข้อความส่งบุญ..." value="🪔 สาธุ! ขอให้ทุกคนมีความสุขในวันวิสาขบูชา 🙏">
-        <button class="btn-social btn-discord" onclick="sendDiscord()">ส่ง Discord 💜</button>
-      </div>
-      <div id="discord-status" style="margin-top:10px;font-size:0.82rem;color:var(--text-dim);"></div>
     </div>
 
-    <div class="social-card">
-      <div class="social-header">
-        <span class="social-icon">📈</span>
-        <span class="social-title">สถิติบุญประจำวัน</span>
+    <div class="card">
+      <div class="card-title">📺 Ticker ข้อความสาธุ</div>
+      <div class="ticker-outer" style="margin-bottom:14px;">
+        <div class="ticker-inner" id="ticker"></div>
       </div>
-      <div id="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;"></div>
+      <div class="row row-2">
+        <div class="field" style="margin:0;"><input id="ticker-in" type="text" placeholder="เพิ่มข้อความ..." maxlength="50"></div>
+        <button class="btn btn-ghost btn-sm" style="align-self:end;" onclick="addTicker()">+ เพิ่ม</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 Google Apps Script — บันทึกลง Sheet</div>
+
+      <div class="note" style="margin-bottom:16px;">
+        Sheet ID: <code>1sA3jVT4dhzNDAYdzK9Bayqep4bd4nmLoTchTWQ8cuOU</code><br>
+        วาง code นี้ใน <strong style="color:var(--gold-lt)">Extensions → Apps Script</strong> แล้ว Deploy เป็น Web App
+      </div>
+
+      <div class="steps" style="margin-bottom:16px;">
+        <div class="step">เปิด Google Sheet → Extensions → Apps Script</div>
+        <div class="step">ลบ code เดิมทิ้ง แล้ววาง code ด้านล่าง → Save</div>
+        <div class="step">Deploy → New deployment → Type: Web App → Execute as: Me → Who has access: Anyone</div>
+        <div class="step">คัดลอก Web App URL มาวางในช่อง "Script URL" ด้านล่าง แล้วกดทดสอบ</div>
+      </div>
+
+<pre class="code-block">// ════════════════════════════════════════════════════
+// Google Apps Script — วิสาขบูชา ๒๕๖๙ Webhook
+// วาง code นี้ใน Extensions → Apps Script
+// Deploy → Web App → Anyone can access
+// ════════════════════════════════════════════════════
+
+const SHEET_ID = "1sA3jVT4dhzNDAYdzK9Bayqep4bd4nmLoTchTWQ8cuOU";
+
+// POST — รับข้อมูลจากหน้าเว็บ
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss   = SpreadsheetApp.openById(SHEET_ID);
+
+    const sheetName = data.type === "candle" ? "เวียนเทียน"
+                    : data.type === "chant"  ? "บทสวด"
+                    : "ทั่วไป";
+
+    let sheet = ss.getSheetByName(sheetName);
+    if (!sheet) {
+      sheet = ss.insertSheet(sheetName);
+      const headers = {
+        "เวียนเทียน": ["วันที่-เวลา", "ชื่อ", "คำอธิษฐาน"],
+        "บทสวด":      ["วันที่-เวลา", "บทสวด", "สวดสะสม (ครั้ง)", "ชื่อผู้สวด"],
+        "ทั่วไป":     ["วันที่-เวลา", "ประเภท", "ข้อมูล"],
+      };
+      sheet.appendRow(headers[sheetName]);
+      sheet.getRange(1, 1, 1, sheet.getLastColumn())
+           .setFontWeight("bold")
+           .setBackground("#c9a84c")
+           .setFontColor("#ffffff");
+      sheet.setFrozenRows(1);
+    }
+
+    const ts = Utilities.formatDate(
+      new Date(), "Asia/Bangkok", "dd/MM/yyyy HH:mm:ss"
+    );
+
+    if (data.type === "candle") {
+      sheet.appendRow([ts, data.name || "", data.wish || ""]);
+    } else if (data.type === "chant") {
+      sheet.appendRow([ts, data.prayer || "", data.count || 0, data.name || ""]);
+    } else {
+      sheet.appendRow([ts, data.type || "", JSON.stringify(data)]);
+    }
+
+    // อัปเดต Summary
+    _updateSummary(ss);
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ ok: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ ok: false, error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// GET — ดึง summary กลับมาแสดงผล
+function doGet() {
+  const ss  = SpreadsheetApp.openById(SHEET_ID);
+  const sum = ss.getSheetByName("Summary");
+  if (!sum) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ candles: 0, chants: 0 }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  const rows   = sum.getDataRange().getValues().slice(1); // skip header
+  const result = {};
+  rows.forEach(r => { if (r[0]) result[r[0]] = r[1]; });
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ── Internal: อัปเดต Summary sheet ──
+function _updateSummary(ss) {
+  let sum = ss.getSheetByName("Summary");
+  if (!sum) {
+    sum = ss.insertSheet("Summary");
+    sum.appendRow(["Key", "Value", "อัปเดตล่าสุด"]);
+    sum.getRange(1,1,1,3).setFontWeight("bold").setBackground("#1c1208").setFontColor("#c9a84c");
+  }
+
+  const cs = ss.getSheetByName("เวียนเทียน");
+  const ps = ss.getSheetByName("บทสวด");
+
+  const candleCount = cs ? Math.max(0, cs.getLastRow() - 1) : 0;
+
+  let chantTotal = 0;
+  if (ps && ps.getLastRow() > 1) {
+    const vals = ps.getRange(2, 3, ps.getLastRow() - 1, 1).getValues();
+    chantTotal  = vals.reduce((acc, r) => acc + (Number(r[0]) || 0), 0);
+  }
+
+  const ts = Utilities.formatDate(new Date(), "Asia/Bangkok", "dd/MM/yyyy HH:mm:ss");
+
+  // เขียนทับ data rows (ไม่แตะ header)
+  if (sum.getLastRow() < 2) {
+    sum.appendRow(["candles", candleCount, ts]);
+    sum.appendRow(["chants",  chantTotal,  ts]);
+  } else {
+    sum.getRange(2, 1, 1, 3).setValues([["candles", candleCount, ts]]);
+    sum.getRange(3, 1, 1, 3).setValues([["chants",  chantTotal,  ts]]);
+  }
+}</pre>
+
+      <div class="divider"></div>
+
+      <div class="field">
+        <label>Web App URL (หลัง Deploy)</label>
+        <input id="script-url" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary btn-sm" onclick="testScript()">🧪 ทดสอบเชื่อมต่อ</button>
+        <button class="btn btn-ghost btn-sm" onclick="copyScript()">📋 คัดลอก Code</button>
+      </div>
+      <div class="status" id="script-status"></div>
+    </div>
+  </div>
+
+  <!-- ═══ LINE / Discord ═══ -->
+  <div class="panel" id="panel-social">
+
+    <div class="card">
+      <div class="card-title">📊 สถิติบุญวันนี้</div>
+      <div class="stat-grid" id="stat-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="social-head">
+        <div class="soc-icon" style="background:rgba(88,101,242,.15);">💜</div>
+        <div><div class="soc-ttl">Discord</div><div class="soc-sub">ส่งบุญไปยัง Server อัตโนมัติ</div></div>
+      </div>
+      <div class="field">
+        <label>ข้อความส่งบุญ</label>
+        <textarea id="discord-msg" rows="2">🪔 สาธุ! ขอให้ทุกคนมีความสุขในวันวิสาขบูชา ๒๕๖๙ 🙏</textarea>
+      </div>
+      <div class="field">
+        <label>Discord Webhook URL</label>
+        <input id="discord-url" type="url" value="https://discord.com/api/webhooks/1495459514348994692/o61b7SllQmS06vi7TG9AKie4pLEYXkTYTJ2AlcVMjWCvJzNkbcONSyYb0zqhqFGSHJo8">
+      </div>
+      <button class="btn btn-discord" onclick="sendDiscord()">💜 ส่ง Discord</button>
+      <div class="status" id="discord-status"></div>
+    </div>
+
+    <div class="card">
+      <div class="social-head">
+        <div class="soc-icon" style="background:rgba(0,195,0,.12);">💚</div>
+        <div><div class="soc-ttl">LINE LIFF</div><div class="soc-sub">LIFF ID: 2007719419-hN3Ikxwz</div></div>
+      </div>
+      <div class="field">
+        <label>ข้อความอวยพร</label>
+        <input id="line-msg" type="text" value="สาธุ 🙏 ขอให้มีความสุขในวันวิสาขบูชา ๒๕๖๙">
+      </div>
+      <div class="btn-row">
+        <a class="btn btn-line" href="https://liff.line.me/2007719419-hN3Ikxwz" target="_blank">เปิด LIFF 💚</a>
+        <button class="btn btn-ghost" onclick="lineShare()">📤 แชร์ให้เพื่อน</button>
+      </div>
     </div>
 
   </div>
 </div>
 
-<!-- Toast -->
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════
-const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1495459514348994692/o61b7SllQmS06vi7TG9AKie4pLEYXkTYTJ2AlcVMjWCvJzNkbcONSyYb0zqhqFGSHJo8";
-const LIFF_ID = "2007719419-hN3Ikxwz";
-const SHEET_ID = "1sA3jVT4dhzNDAYdzK9Bayqep4bd4nmLoTchTWQ8cuOU";
+// ── State ──
+let candles   = JSON.parse(localStorage.getItem("vb2_c") || "[]");
+let chants    = JSON.parse(localStorage.getItem("vb2_p") || "{}");
+let tickerArr = JSON.parse(localStorage.getItem("vb2_t") || '["สาธุ 🙏","วันวิสาขบูชา ๒๕๖๙","น้อมบูชาพระรัตนตรัย","ทำบุญทุกวัน","ขอให้มีความสุข"]');
+let scriptURL = localStorage.getItem("vb2_su") || "";
 
-// ══════════════════════════════════════
-// STATE (in-memory)
-// ══════════════════════════════════════
-let candles = JSON.parse(localStorage.getItem("vb_candles") || "[]");
-let chantCounts = JSON.parse(localStorage.getItem("vb_chants") || "{}");
-let tickerMsgs = JSON.parse(localStorage.getItem("vb_ticker") || '["สาธุ 🙏","ขอให้มีความสุข","วันวิสาขบูชา ๒๕๖๙","น้อมบูชาพระรัตนตรัย","ทำบุญทุกวัน"]');
-
-function save() {
-  localStorage.setItem("vb_candles", JSON.stringify(candles));
-  localStorage.setItem("vb_chants", JSON.stringify(chantCounts));
-  localStorage.setItem("vb_ticker", JSON.stringify(tickerMsgs));
+function save(){
+  localStorage.setItem("vb2_c", JSON.stringify(candles));
+  localStorage.setItem("vb2_p", JSON.stringify(chants));
+  localStorage.setItem("vb2_t", JSON.stringify(tickerArr));
+  localStorage.setItem("vb2_su", scriptURL);
 }
 
-// ══════════════════════════════════════
-// STARS
-// ══════════════════════════════════════
-(function() {
-  const canvas = document.getElementById("stars-canvas");
-  const ctx = canvas.getContext("2d");
-  let stars = [];
-
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener("resize", resize);
-
-  for (let i = 0; i < 120; i++) {
-    stars.push({
-      x: Math.random(), y: Math.random(),
-      r: Math.random() * 1.2 + 0.2,
-      o: Math.random(), s: Math.random() * 0.015 + 0.005,
-      phase: Math.random() * Math.PI * 2
-    });
-  }
-
-  function draw(t) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    stars.forEach(s => {
-      const o = 0.3 + 0.5 * Math.sin(t * s.s + s.phase);
-      ctx.beginPath();
-      ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(240,214,128,${o})`;
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
+// ── Stars ──
+(()=>{
+  const c=document.getElementById("stars"),cx=c.getContext("2d");
+  const s=Array.from({length:90},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1+.2,ph:Math.random()*Math.PI*2,sp:Math.random()*.01+.004}));
+  function resize(){c.width=innerWidth;c.height=innerHeight;}
+  resize();addEventListener("resize",resize);
+  function draw(t){cx.clearRect(0,0,c.width,c.height);s.forEach(st=>{const a=.25+.45*Math.sin(t*st.sp+st.ph);cx.beginPath();cx.arc(st.x*c.width,st.y*c.height,st.r,0,Math.PI*2);cx.fillStyle=`rgba(240,208,120,${a})`;cx.fill();});requestAnimationFrame(draw);}
   requestAnimationFrame(draw);
-
-  // Gold dust
-  for (let i = 0; i < 18; i++) {
-    const d = document.createElement("div");
-    d.className = "dust";
-    d.style.left = Math.random() * 100 + "vw";
-    d.style.animationDuration = (12 + Math.random() * 16) + "s";
-    d.style.animationDelay = (Math.random() * 12) + "s";
-    document.body.appendChild(d);
-  }
 })();
 
-// ══════════════════════════════════════
-// TABS
-// ══════════════════════════════════════
-function switchTab(tab) {
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-  event.target.classList.add("active");
-  document.getElementById("panel-" + tab).classList.add("active");
-}
-
-// ══════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════
-function toast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2800);
-}
-
-// ══════════════════════════════════════
-// CANDLE
-// ══════════════════════════════════════
-function makeCandleSVG(hue) {
-  return `<svg width="40" height="80" viewBox="0 0 40 80">
-    <!-- Glow -->
-    <ellipse cx="20" cy="20" rx="16" ry="16" fill="rgba(245,166,35,0.12)"/>
-    <ellipse cx="20" cy="20" rx="10" ry="10" fill="rgba(245,166,35,0.18)"/>
-    <!-- Flame -->
-    <g class="flame-anim">
-      <ellipse cx="20" cy="18" rx="5" ry="9" fill="#f5a623" opacity="0.9"/>
-      <ellipse cx="20" cy="20" rx="3" ry="6" fill="#fff5cc"/>
-      <ellipse cx="20" cy="22" rx="2" ry="3" fill="white"/>
-    </g>
-    <!-- Wick -->
-    <rect x="19" y="26" width="2" height="6" fill="#5a3e1b" rx="1"/>
-    <!-- Body -->
-    <rect x="14" y="32" width="12" height="36" rx="4" fill="hsl(${hue},70%,88%)"/>
-    <rect x="16" y="32" width="4" height="36" rx="2" fill="hsl(${hue},60%,95%)" opacity="0.4"/>
-    <!-- Base -->
-    <ellipse cx="20" cy="67" rx="7" ry="2.5" fill="hsl(${hue},50%,70%)"/>
-    <!-- Drip -->
-    <path d="M14 42 Q12 48 13 52 Q14 56 14 52 Q14 48 16 44Z" fill="hsl(${hue},60%,90%)" opacity="0.6"/>
-  </svg>`;
-}
-
-function renderCandles() {
-  const grid = document.getElementById("candle-grid");
-  const hues = [45, 30, 200, 280, 340, 120, 180];
-  grid.innerHTML = candles.map((c, i) => `
-    <div class="candle-item">
-      <div class="candle-svg">${makeCandleSVG(hues[i % hues.length])}</div>
-      <div class="candle-name">${escapeHtml(c.name)}</div>
-    </div>
-  `).join("");
-  document.getElementById("candle-total").textContent = candles.length;
-  updateOBSPreview();
-}
-
-function lightCandle() {
-  const input = document.getElementById("name-input");
-  const name = input.value.trim() || "ไม่ระบุชื่อ";
-  const entry = { name, time: Date.now() };
-  candles.push(entry);
-  save();
-  renderCandles();
-  updateTicker();
-  input.value = "";
-  input.focus();
-  toast(`🕯️ จุดเทียนให้ "${name}" แล้ว สาธุ! 🙏`);
-
-  // Auto-send to Discord if candle count is milestone
-  if (candles.length % 10 === 0) {
-    sendDiscordAuto(`🪔 มีผู้จุดเทียนออนไลน์ครบ ${candles.length} เล่มแล้ว! สาธุ 🙏`);
-  }
-}
-
-document.getElementById("name-input").addEventListener("keydown", e => {
-  if (e.key === "Enter") lightCandle();
+// ── Tabs ──
+document.getElementById("tabs").addEventListener("click",e=>{
+  const b=e.target.closest(".tab");if(!b)return;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("on"));
+  b.classList.add("on");
+  document.getElementById("panel-"+b.dataset.p).classList.add("on");
+  if(b.dataset.p==="social")updateStats();
+  if(b.dataset.p==="obs"){renderTicker();document.getElementById("obs-url").textContent=getOBSUrl();}
 });
 
-// ══════════════════════════════════════
-// PRAYERS
-// ══════════════════════════════════════
-const prayers = [
-  {
-    id: "itipiso", icon: "📿", title: "อิติปิโส (บทพุทธคุณ)",
-    text: `อิ ติ ปิ โส ภะ คะ วา
-อะ ระ หัง สัม มา สัม พุท โธ
-วิช ชา จะ ระ ณะ สัม ปัน โน
-สุ คะ โต โล กะ วิ ทู
-อะ นุต ตะ โร ปุ ริ สะ ทัม มะ สา ระ ถิ
-สัต ถา เท วะ มะ นุส สา นัง พุท โธ ภะ คะ วา ติ`
-  },
-  {
-    id: "namotassa", icon: "🙏", title: "นโม ตัสสะ (บทขึ้นต้น)",
-    text: `นะ โม ตัส สะ ภะ คะ วะ โต
-อะ ระ หะ โต สัม มา สัม พุท ธัส สะ
-นะ โม ตัส สะ ภะ คะ วะ โต
-อะ ระ หะ โต สัม มา สัม พุท ธัส สะ
-นะ โม ตัส สะ ภะ คะ วะ โต
-อะ ระ หะ โต สัม มา สัม พุท ธัส สะ`
-  },
-  {
-    id: "tisarana", icon: "☸️", title: "ไตรสรณคมน์",
-    text: `พุท ธัง สะ ระ ณัง คัจ ฉา มิ
-ธัม มัง สะ ระ ณัง คัจ ฉา มิ
-สัง ฆัง สะ ระ ณัง คัจ ฉา มิ
+// ── Toast ──
+let tTmr;
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tTmr);tTmr=setTimeout(()=>t.classList.remove("show"),2600);}
 
-ทุ ติ ยัม ปิ พุท ธัง สะ ระ ณัง คัจ ฉา มิ
-ทุ ติ ยัม ปิ ธัม มัง สะ ระ ณัง คัจ ฉา มิ
-ทุ ติ ยัม ปิ สัง ฆัง สะ ระ ณัง คัจ ฉา มิ
+// ── Candle ──
+const hues=[44,30,200,340,280,120,180];
+function candleSVG(h){return `<svg width="34" height="70" viewBox="0 0 36 74" overflow="visible"><ellipse cx="18" cy="14" rx="14" ry="14" fill="rgba(245,166,35,.1)"/><ellipse cx="18" cy="15" rx="8" ry="8" fill="rgba(245,166,35,.14)"/><g class="flame"><ellipse cx="18" cy="13" rx="4.5" ry="8" fill="#f5a623" opacity=".9"/><ellipse cx="18" cy="15" rx="2.8" ry="5" fill="#fff2aa"/><ellipse cx="18" cy="16.5" rx="1.6" ry="2.8" fill="white"/></g><rect x="17" y="21" width="2" height="6" rx="1" fill="#5a3e1b"/><rect x="13" y="27" width="10" height="32" rx="3.5" fill="hsl(${h},65%,86%)"/><rect x="15" y="27" width="3.5" height="32" rx="2" fill="hsl(${h},55%,94%)" opacity=".4"/><ellipse cx="18" cy="58" rx="6" ry="2.2" fill="hsl(${h},45%,68%)"/></svg>`;}
 
-ตะ ติ ยัม ปิ พุท ธัง สะ ระ ณัง คัจ ฉา มิ
-ตะ ติ ยัม ปิ ธัม มัง สะ ระ ณัง คัจ ฉา มิ
-ตะ ติ ยัม ปิ สัง ฆัง สะ ระ ณัง คัจ ฉา มิ`
-  },
-  {
-    id: "silasikkhapada", icon: "📜", title: "ศีล ๕",
-    text: `ปา ณา ติ ปา ตา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ
-อะ ทิน นา ทา นา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ
-กา เม สุ มิจ ฉา จา รา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ
-มุ สา วา ทา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ
-สุ รา เม ระ ยะ มัช ชะ ปา มา ทัฏ ฐา นา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ`
-  },
-  {
-    id: "visakha", icon: "🌸", title: "คาถาวิสาขบูชา",
-    text: `ยัม พุท ธะ เส ฏ โฐ ชะ คะ ตัง ปะ สา สิ
-ทิ พ พา นะ ถา ยัง อะ มะ ตัง วิ เส สัง
-ตัง ปุน นะ มีนัง ชะ นะ ตา ปะ สัน ตา
-วิ สา ขะ ปุ ณ ณะ มิง มุ นิ นา วิ สิฏ ฐัง
-สัม มา ปะ ทา นัง วะ ระ ธัม มะ โก สัง
-วิ สา ขะ ปุ ณ ณะ มี อา ทิ นา สา ธุ กา รัง`
-  }
-];
-
-const meritLevels = [
-  { min: 0, label: "เริ่มต้นบุญ", color: "#7a5f28" },
-  { min: 3, label: "สะสมบุญ", color: "#c9a84c" },
-  { min: 9, label: "บุญเต็ม", color: "#f0d080" },
-  { min: 27, label: "บุญพิเศษ ✨", color: "#f5a623" },
-  { min: 108, label: "บุญ ๑๐๘ ครั้ง 🌟", color: "#e8821a" },
-];
-
-function getMerit(count) {
-  for (let i = meritLevels.length - 1; i >= 0; i--) {
-    if (count >= meritLevels[i].min) return meritLevels[i];
-  }
-  return meritLevels[0];
+function renderCandles(){
+  document.getElementById("candle-total").textContent=candles.length;
+  document.getElementById("candle-grid").innerHTML=candles.map((c,i)=>`<div class="candle-wrap">${candleSVG(hues[i%hues.length])}<div class="candle-lbl">${esc(c.name)}</div></div>`).join("");
+  updatePreview();
 }
 
-function renderPrayers() {
-  const list = document.getElementById("prayer-list");
-  list.innerHTML = prayers.map(p => {
-    const count = chantCounts[p.id] || 0;
-    const merit = getMerit(count);
-    return `
-      <div class="prayer-card" id="card-${p.id}" onclick="togglePrayer('${p.id}', event)">
-        <div class="prayer-header">
-          <span class="prayer-icon">${p.icon}</span>
-          <span class="prayer-title">${p.title}</span>
-          <span class="merit-badge" style="color:${merit.color}">${merit.label}</span>
-          <span class="prayer-arrow">›</span>
+function lightCandle(){
+  const name=document.getElementById("c-name").value.trim()||"ไม่ระบุชื่อ";
+  const wish=document.getElementById("c-wish").value.trim();
+  candles.push({name,wish,t:Date.now()});
+  save();renderCandles();renderTicker();
+  document.getElementById("c-name").value="";
+  document.getElementById("c-wish").value="";
+  toast(`🕯️ จุดเทียนให้ "${name}" แล้ว · สาธุ! 🙏`);
+  postSheet("candle",{name,wish});
+  if(candles.length%10===0) autoDiscord(`🪔 มีผู้จุดเทียนออนไลน์ครบ ${candles.length} เล่มแล้ว! สาธุ 🙏`);
+}
+document.getElementById("c-name").addEventListener("keydown",e=>{if(e.key==="Enter")lightCandle();});
+
+// ── Prayers ──
+const prayers=[
+  {id:"itipiso",icon:"📿",title:"อิติปิโส — บทพุทธคุณ",
+   text:`อิ ติ ปิ โส ภะ คะ วา อะ ระ หัง สัม มา สัม พุท โธ\nวิช ชา จะ ระ ณะ สัม ปัน โน สุ คะ โต โล กะ วิ ทู\nอะ นุต ตะ โร ปุ ริ สะ ทัม มะ สา ระ ถิ\nสัต ถา เท วะ มะ นุส สา นัง พุท โธ ภะ คะ วา ติ`},
+  {id:"namo",icon:"🙏",title:"นโม ตัสสะ",
+   text:`นะ โม ตัส สะ ภะ คะ วะ โต อะ ระ หะ โต สัม มา สัม พุท ธัส สะ\nนะ โม ตัส สะ ภะ คะ วะ โต อะ ระ หะ โต สัม มา สัม พุท ธัส สะ\nนะ โม ตัส สะ ภะ คะ วะ โต อะ ระ หะ โต สัม มา สัม พุท ธัส สะ`},
+  {id:"tisarana",icon:"☸️",title:"ไตรสรณคมน์",
+   text:`พุท ธัง สะ ระ ณัง คัจ ฉา มิ · ธัม มัง สะ ระ ณัง คัจ ฉา มิ · สัง ฆัง สะ ระ ณัง คัจ ฉา มิ\nทุ ติ ยัม ปิ พุท ธัง สะ ระ ณัง คัจ ฉา มิ · ทุ ติ ยัม ปิ ธัม มัง สะ ระ ณัง คัจ ฉา มิ\nตะ ติ ยัม ปิ พุท ธัง สะ ระ ณัง คัจ ฉา มิ · ตะ ติ ยัม ปิ ธัม มัง สะ ระ ณัง คัจ ฉา มิ`},
+  {id:"sila5",icon:"📜",title:"ศีล ๕",
+   text:`ปา ณา ติ ปา ตา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ\nอะ ทิน นา ทา นา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ\nกา เม สุ มิจ ฉา จา รา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ\nมุ สา วา ทา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ\nสุ รา เม ระ ยะ มัช ชะ ปา มา ทัฏ ฐา นา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ`},
+  {id:"visakha",icon:"🌸",title:"คาถาวิสาขบูชา",
+   text:`ยัม พุท ธะ เส ฏ โฐ ชะ คะ ตัง ปะ สา สิ\nทิ พ พา นะ ถา ยัง อะ มะ ตัง วิ เส สัง\nตัง ปุน นะ มีนัง ชะ นะ ตา ปะ สัน ตา\nวิ สา ขะ ปุ ณ ณะ มีนัง มุ นิ นา วิ สิฏ ฐัง`},
+];
+const ML=[{min:0,l:"เริ่มต้นบุญ",c:"#7a5f28",bg:"rgba(122,95,40,.2)"},{min:3,l:"สะสมบุญ",c:"#c9a84c",bg:"rgba(201,168,76,.2)"},{min:9,l:"บุญงอกงาม",c:"#f0d080",bg:"rgba(240,208,128,.2)"},{min:27,l:"บุญเต็มเปี่ยม ✨",c:"#f5a623",bg:"rgba(245,166,35,.2)"},{min:108,l:"บุญ ๑๐๘ 🌟",c:"#e8821a",bg:"rgba(232,130,26,.25)"}];
+function merit(n){for(let i=ML.length-1;i>=0;i--)if(n>=ML[i].min)return ML[i];return ML[0];}
+
+function renderPrayers(){
+  document.getElementById("prayer-list").innerHTML=prayers.map(p=>{
+    const n=chants[p.id]||0,m=merit(n);
+    return `<div class="card prayer-card" id="pc-${p.id}" onclick="toggleP('${p.id}',event)">
+      <div class="prayer-head">
+        <span class="prayer-ico">${p.icon}</span>
+        <span class="prayer-ttl">${p.title}</span>
+        <span class="badge" id="badge-${p.id}" style="background:${m.bg};border-color:${m.c};color:${m.c};">${m.l}</span>
+        <span class="chevron">›</span>
+      </div>
+      <div class="prayer-body">
+        <div class="divider"></div>
+        <pre class="chant-text">${p.text}</pre>
+        <div class="chant-row">
+          <button class="btn btn-primary btn-sm" onclick="doChant('${p.id}',event)">🙏 สวดมนต์</button>
+          <span class="chant-stat">สวดแล้ว <b id="cn-${p.id}">${n}</b> ครั้ง</span>
         </div>
-        <div class="prayer-body">
-          <pre class="prayer-text">${p.text}</pre>
-          <div class="prayer-actions">
-            <button class="btn-chant" onclick="chant('${p.id}', event)">🙏 สวดมนต์</button>
-            <span class="chant-count">สวดแล้ว <b id="chant-${p.id}">${count}</b> ครั้ง</span>
-          </div>
-        </div>
-      </div>`;
+      </div>
+    </div>`;
   }).join("");
 }
 
-function togglePrayer(id, e) {
-  if (e.target.classList.contains("btn-chant")) return;
-  document.getElementById("card-" + id).classList.toggle("open");
-}
+function toggleP(id,e){if(e.target.closest(".btn"))return;document.getElementById("pc-"+id).classList.toggle("open");}
 
-function chant(id, e) {
+function doChant(id,e){
   e.stopPropagation();
-  chantCounts[id] = (chantCounts[id] || 0) + 1;
-  save();
-  const count = chantCounts[id];
-  document.getElementById("chant-" + id).textContent = count;
-  const merit = getMerit(count);
-  const badge = document.querySelector(`#card-${id} .merit-badge`);
-  badge.textContent = merit.label;
-  badge.style.color = merit.color;
-  toast(`🙏 สาธุ! สวดแล้ว ${count} ครั้ง`);
-  updateOBSPreview();
-  updateStats();
-  if (count === 108) {
-    sendDiscordAuto(`🌟 ${prayers.find(p=>p.id===id)?.title} — มีผู้สวดครบ 108 ครั้งแล้ว! สาธุ 🙏`);
+  chants[id]=(chants[id]||0)+1;save();
+  const n=chants[id],m=merit(n);
+  document.getElementById("cn-"+id).textContent=n;
+  const b=document.getElementById("badge-"+id);
+  b.textContent=m.l;b.style.color=m.c;b.style.background=m.bg;b.style.borderColor=m.c;
+  toast(`🙏 สาธุ! สวดครั้งที่ ${n}`);
+  updatePreview();
+  postSheet("chant",{prayer:prayers.find(p=>p.id===id)?.title,count:n});
+  if(n===108)autoDiscord(`🌟 ${prayers.find(p=>p.id===id)?.title} — สวดครบ 108 ครั้ง! สาธุ 🙏`);
+}
+
+// ── Ticker ──
+function renderTicker(){
+  const names=candles.slice(-20).map(c=>`🕯️ ${c.name}`);
+  const all=[...tickerArr,...names],db=[...all,...all];
+  document.getElementById("ticker").innerHTML=db.map(m=>`<span class="t-item">${esc(m)}</span><span class="t-dot"> ✦ </span>`).join("");
+}
+function addTicker(){const v=document.getElementById("ticker-in").value.trim();if(!v)return;tickerArr.push(v);if(tickerArr.length>30)tickerArr.shift();save();renderTicker();document.getElementById("ticker-in").value="";toast("✅ เพิ่มข้อความแล้ว");}
+
+// ── OBS ──
+function getOBSUrl(){return location.href.split("?")[0]+"?overlay=1";}
+function copyOBS(){copyTxt(getOBSUrl());}
+function copyTxt(t){navigator.clipboard.writeText(t).then(()=>toast("📋 คัดลอกแล้ว!")).catch(()=>{const el=document.createElement("textarea");el.value=t;document.body.appendChild(el);el.select();document.execCommand("copy");el.remove();toast("📋 คัดลอกแล้ว!");});}
+function updatePreview(){document.getElementById("pv-c").textContent=candles.length;document.getElementById("pv-p").textContent=Object.values(chants).reduce((a,b)=>a+b,0);}
+
+// ── Apps Script ──
+async function postSheet(type,data){
+  const url=document.getElementById("script-url")?.value.trim()||scriptURL;
+  if(!url||!url.includes("script.google.com"))return;
+  try{await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type,...data}),mode:"no-cors"});}
+  catch(e){console.warn("Sheet:",e);}
+}
+
+async function testScript(){
+  const url=document.getElementById("script-url").value.trim();
+  const st=document.getElementById("script-status");
+  if(!url){st.textContent="⚠️ ยังไม่ได้ใส่ Script URL";st.className="status err";return;}
+  st.textContent="⏳ กำลังทดสอบ...";st.className="status";
+  try{
+    const r=await fetch(url);
+    if(r.ok){const d=await r.json();st.textContent=`✅ เชื่อมต่อสำเร็จ! เทียน: ${d.candles||0} · สวด: ${d.chants||0}`;st.className="status ok";scriptURL=url;save();}
+    else{st.textContent="❌ HTTP "+r.status;st.className="status err";}
+  }catch(e){
+    // CORS block → try no-cors POST
+    try{await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"test",ts:Date.now()}),mode:"no-cors"});st.textContent="✅ ส่งทดสอบแล้ว — ตรวจสอบใน Sheet ได้เลย (no-cors mode)";st.className="status ok";scriptURL=url;save();}
+    catch(e2){st.textContent="❌ "+e2.message;st.className="status err";}
   }
 }
 
-// ══════════════════════════════════════
-// OBS OVERLAY
-// ══════════════════════════════════════
-function getOBSUrl() {
-  return window.location.href.split("?")[0] + "?mode=overlay";
+function copyScript(){copyTxt(document.querySelector(".code-block").textContent);}
+
+// ── Discord ──
+async function sendDiscord(){
+  const url=document.getElementById("discord-url").value.trim();
+  const msg=document.getElementById("discord-msg").value.trim();
+  if(!url||!msg)return;
+  await _discord(url,msg,document.getElementById("discord-status"));
+}
+async function autoDiscord(msg){await _discord("https://discord.com/api/webhooks/1495459514348994692/o61b7SllQmS06vi7TG9AKie4pLEYXkTYTJ2AlcVMjWCvJzNkbcONSyYb0zqhqFGSHJo8",msg,null);}
+async function _discord(wh,content,stEl){
+  if(stEl){stEl.textContent="⏳ กำลังส่ง...";stEl.className="status";}
+  try{
+    const tot=Object.values(chants).reduce((a,b)=>a+b,0);
+    const r=await fetch(wh,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:"วิสาขบูชา 🪔",embeds:[{title:"🪔 วันวิสาขบูชา ๒๕๖๙",description:content,color:0xc9a84c,fields:[{name:"🕯️ เทียน",value:`${candles.length} เล่ม`,inline:true},{name:"🙏 สวด",value:`${tot} ครั้ง`,inline:true}],footer:{text:"สาธุ 🙏"},timestamp:new Date().toISOString()}]})});
+    if(stEl){stEl.textContent=r.ok?"✅ ส่งถึง Discord แล้ว!":"❌ HTTP "+r.status;stEl.className="status "+(r.ok?"ok":"err");}
+    if(r.ok)toast("💜 ส่งบุญถึง Discord แล้ว!");
+  }catch(e){if(stEl){stEl.textContent="❌ "+e.message;stEl.className="status err";}}
 }
 
-function copyOBSUrl() {
-  copyText(getOBSUrl());
-  document.getElementById("obs-url-text").textContent = getOBSUrl();
+// ── LINE ──
+function lineShare(){open("https://line.me/R/msg/text/?"+encodeURIComponent(document.getElementById("line-msg").value||"สาธุ 🙏 วันวิสาขบูชา 🪔"),"_blank");}
+
+// ── Stats ──
+function updateStats(){
+  const tot=Object.values(chants).reduce((a,b)=>a+b,0);
+  const top=prayers.reduce((b,p)=>(chants[p.id]||0)>(chants[b.id]||0)?p:b,prayers[0]);
+  document.getElementById("stat-grid").innerHTML=[
+    {v:candles.length+" เล่ม",l:"🕯️ เทียนจุดแล้ว"},
+    {v:tot+" ครั้ง",l:"🙏 สวดมนต์รวม"},
+    {v:top.title.slice(0,10)+"…",l:"📿 บทยอดนิยม"},
+    {v:prayers.length+" บท",l:"📊 บทสวดทั้งหมด"},
+  ].map(s=>`<div class="stat-tile"><span class="val">${s.v}</span><span class="lbl">${s.l}</span></div>`).join("");
 }
 
-function copyText(text) {
-  navigator.clipboard.writeText(text).then(() => toast("📋 คัดลอกแล้ว!")).catch(() => {
-    const t = document.createElement("textarea");
-    t.value = text; document.body.appendChild(t);
-    t.select(); document.execCommand("copy");
-    document.body.removeChild(t);
-    toast("📋 คัดลอกแล้ว!");
-  });
-}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
-function updateOBSPreview() {
-  document.getElementById("obs-preview-count").textContent = candles.length;
-  const total = Object.values(chantCounts).reduce((a, b) => a + b, 0);
-  document.getElementById("obs-preview-chant").textContent = total;
-}
-
-// ══════════════════════════════════════
-// TICKER
-// ══════════════════════════════════════
-function updateTicker() {
-  const names = candles.slice(-20).map(c => `🕯️ ${c.name}`);
-  const msgs = [...tickerMsgs, ...names];
-  const doubled = [...msgs, ...msgs]; // infinite scroll trick
-  const ticker = document.getElementById("ticker");
-  ticker.innerHTML = doubled.map(m => `<span class="ticker-item">${escapeHtml(m)}</span><span class="ticker-sep">·</span>`).join("");
-}
-
-function addTickerMsg() {
-  const input = document.getElementById("sheet-msg");
-  const msg = input.value.trim();
-  if (!msg) return;
-  tickerMsgs.push(msg);
-  if (tickerMsgs.length > 30) tickerMsgs.shift();
-  save();
-  updateTicker();
-  input.value = "";
-  toast("✅ เพิ่มข้อความแล้ว");
-}
-
-// ══════════════════════════════════════
-// DISCORD
-// ══════════════════════════════════════
-async function sendDiscord() {
-  const msg = document.getElementById("discord-msg").value.trim();
-  if (!msg) return;
-  await sendDiscordMsg(msg);
-}
-
-async function sendDiscordAuto(msg) {
-  await sendDiscordMsg(msg);
-}
-
-async function sendDiscordMsg(content) {
-  const status = document.getElementById("discord-status");
-  if (status) status.textContent = "⏳ กำลังส่ง...";
-  try {
-    const total = Object.values(chantCounts).reduce((a, b) => a + b, 0);
-    const embed = {
-      title: "🪔 วันวิสาขบูชา ๒๕๖๙",
-      description: content,
-      color: 0xc9a84c,
-      fields: [
-        { name: "🕯️ เทียนที่จุด", value: `${candles.length} เล่ม`, inline: true },
-        { name: "🙏 สวดมนต์รวม", value: `${total} ครั้ง`, inline: true },
-        { name: "📅 วันที่", value: new Date().toLocaleDateString("th-TH", { dateStyle: "long" }), inline: false }
-      ],
-      footer: { text: "ระบบวิสาขบูชาออนไลน์ · สาธุ 🙏" },
-      timestamp: new Date().toISOString()
-    };
-    const res = await fetch(DISCORD_WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: "วิสาขบูชา 🪔", embeds: [embed] })
-    });
-    if (status) {
-      if (res.ok) {
-        status.textContent = "✅ ส่งถึง Discord แล้ว!";
-        toast("💜 ส่งบุญถึง Discord แล้ว!");
-      } else {
-        status.textContent = "❌ ส่งไม่สำเร็จ (HTTP " + res.status + ")";
-      }
-    }
-  } catch (e) {
-    if (status) status.textContent = "❌ ไม่สามารถเชื่อมต่อได้";
-    console.error("Discord error:", e);
-  }
-}
-
-// ══════════════════════════════════════
-// LINE SHARE
-// ══════════════════════════════════════
-function openLineShare() {
-  const msg = encodeURIComponent(document.getElementById("line-msg").value || "สาธุ! ขอแชร์บุญวันวิสาขบูชา 🪔🙏");
-  const url = `https://line.me/R/msg/text/?${msg}`;
-  window.open(url, "_blank");
-}
-
-// ══════════════════════════════════════
-// STATS
-// ══════════════════════════════════════
-function updateStats() {
-  const total = Object.values(chantCounts).reduce((a, b) => a + b, 0);
-  const topPrayer = prayers.reduce((best, p) => {
-    const c = chantCounts[p.id] || 0;
-    return c > (chantCounts[best?.id] || 0) ? p : best;
-  }, prayers[0]);
-  const grid = document.getElementById("stats-grid");
-  if (!grid) return;
-  const items = [
-    { label: "🕯️ เทียนจุดแล้ว", value: candles.length + " เล่ม" },
-    { label: "🙏 สวดมนต์รวม", value: total + " ครั้ง" },
-    { label: "📿 บทยอดนิยม", value: topPrayer.title.slice(0, 14) },
-    { label: "📊 บทสวดทั้งหมด", value: prayers.length + " บท" },
-  ];
-  grid.innerHTML = items.map(i => `
-    <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:16px;text-align:center;">
-      <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:6px;">${i.label}</div>
-      <div style="font-family:'Noto Serif Thai',serif;font-size:1.1rem;color:var(--gold-light);font-weight:700;">${i.value}</div>
-    </div>
-  `).join("");
-}
-
-// ══════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════
-function escapeHtml(s) {
-  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-
-// ══════════════════════════════════════
-// INIT
-// ══════════════════════════════════════
-document.getElementById("obs-url-text").textContent = getOBSUrl();
-renderCandles();
-renderPrayers();
-updateTicker();
-updateStats();
-updateOBSPreview();
+// ── Init ──
+if(scriptURL)document.getElementById("script-url").value=scriptURL;
+document.getElementById("obs-url").textContent=getOBSUrl();
+renderCandles();renderPrayers();renderTicker();updateStats();updatePreview();
 </script>
 </body>
 </html>
