@@ -18,7 +18,7 @@ body{background:var(--deep);color:var(--text);font-family:'Sarabun',sans-serif;m
 .admin-title{font-family:'Noto Serif Thai',serif;font-size:1rem;color:var(--gold-lt);font-weight:600;flex:1;}
 .admin-badge{padding:3px 10px;background:rgba(201,168,76,.15);border:1px solid var(--border);border-radius:20px;font-size:.72rem;color:var(--gold);}
 
-.container{max-width:960px;margin:0 auto;padding:24px 20px 60px;}
+.container{max-width:900px;margin:0 auto;padding:24px 20px 60px;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:640px){.grid-2{grid-template-columns:1fr;}}
 
@@ -30,7 +30,7 @@ body{background:var(--deep);color:var(--text);font-family:'Sarabun',sans-serif;m
 .field label{display:block;font-size:.74rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;}
 .field input,.field textarea{width:100%;padding:10px 14px;background:rgba(0,0,0,.4);border:1.5px solid rgba(201,168,76,.2);border-radius:9px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.93rem;outline:none;transition:border-color .2s,box-shadow .2s;}
 .field input:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.1);}
-.field input::placeholder,.field textarea::placeholder{color:rgba(138,116,80,.45);}
+.field input::placeholder{color:rgba(138,116,80,.45);}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 22px;border:none;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .22s;white-space:nowrap;}
 .btn-primary{background:linear-gradient(135deg,#a07830,var(--gold));color:#0a0503;box-shadow:0 3px 14px rgba(201,168,76,.25);}
@@ -49,7 +49,6 @@ body{background:var(--deep);color:var(--text);font-family:'Sarabun',sans-serif;m
 .status{font-size:.8rem;color:var(--muted);margin-top:8px;min-height:18px;line-height:1.5;}
 .status.ok{color:var(--ok);} .status.err{color:var(--err);}
 
-/* Stat tiles */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;}
 .stat-tile{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:12px;padding:14px 12px;text-align:center;}
 .stat-tile .val{font-family:'Noto Serif Thai',serif;font-size:1.3rem;color:var(--gold-lt);font-weight:700;display:block;margin-bottom:3px;}
@@ -62,24 +61,16 @@ body{background:var(--deep);color:var(--text);font-family:'Sarabun',sans-serif;m
 .t-row{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.12);border-radius:8px;padding:8px 12px;}
 .t-row.editing{border-color:var(--gold);}
 .t-msg{flex:1;font-size:.87rem;color:var(--text);word-break:break-word;}
-.t-edit-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.87rem;outline:none;}
+.t-edit-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.87rem;outline:none;min-width:0;}
 .t-num{font-size:.68rem;color:var(--muted);flex-shrink:0;min-width:22px;text-align:right;}
 
-/* OBS Preview */
-.obs-preview{background:#000;border-radius:10px;overflow:hidden;aspect-ratio:16/9;position:relative;border:1px solid rgba(201,168,76,.2);}
-.obs-inner{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;}
-.obs-top{background:linear-gradient(to right,rgba(8,5,3,.92),rgba(28,18,8,.85),rgba(8,5,3,.92));border-bottom:1px solid rgba(201,168,76,.4);padding:5px 14px;display:flex;align-items:center;justify-content:space-between;}
-.obs-ttl{font-family:'Noto Serif Thai',serif;font-size:.65rem;color:#f0d080;text-shadow:0 0 8px rgba(201,168,76,.7);}
-.obs-s-row{display:flex;gap:10px;}
-.obs-s{font-size:.6rem;color:#c9a84c;}
-.obs-s b{color:#f0d080;}
-.obs-bot{background:linear-gradient(to right,rgba(8,5,3,.9),rgba(20,12,4,.85),rgba(8,5,3,.9));border-top:1px solid rgba(201,168,76,.3);padding:4px 0;overflow:hidden;}
-.obs-tick{display:flex;gap:28px;width:max-content;padding:0 10px;animation:marquee 16s linear infinite;white-space:nowrap;}
-@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-.obs-ti{font-size:.58rem;color:#f0d080;}
-.obs-td{color:#7a5f28;font-size:.52rem;}
+/* Logo */
+.logo-preview-wrap{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+#logo-preview-img{width:72px;height:72px;border-radius:50%;object-fit:contain;border:2px solid var(--border);background:rgba(201,168,76,.08);display:none;}
+#logo-preview-emoji{width:72px;height:72px;border-radius:50%;border:2px dashed var(--gold-dim);background:rgba(201,168,76,.06);display:flex;align-items:center;justify-content:center;font-size:2rem;}
+.logo-info{font-size:.8rem;color:var(--muted);line-height:1.8;}
 
-/* Visitors table */
+/* Table */
 .table-wrap{overflow-x:auto;max-height:280px;overflow-y:auto;}
 .table-wrap::-webkit-scrollbar{width:4px;height:4px;}
 .table-wrap::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px;}
@@ -90,26 +81,14 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
 .td-av{width:28px;height:28px;border-radius:50%;object-fit:cover;vertical-align:middle;}
 .td-name{color:var(--gold-lt);font-weight:500;}
 
-/* Logo preview */
-.logo-preview-wrap{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
-#logo-preview-img{width:72px;height:72px;border-radius:50%;object-fit:contain;border:2px solid var(--border);background:rgba(201,168,76,.08);display:none;}
-#logo-preview-emoji{width:72px;height:72px;border-radius:50%;border:2px dashed var(--gold-dim);background:rgba(201,168,76,.06);display:flex;align-items:center;justify-content:center;font-size:2rem;}
-.logo-preview-info{font-size:.8rem;color:var(--muted);line-height:1.8;}
-
-/* Monoline */
-.monoline{background:rgba(0,0,0,.4);border:1px solid rgba(201,168,76,.18);border-radius:8px;padding:9px 12px;font-family:monospace;font-size:.76rem;color:var(--gold-lt);word-break:break-all;display:flex;align-items:center;gap:8px;}
-.monoline span{flex:1;}
-.copy-btn{padding:4px 10px;background:rgba(201,168,76,.18);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--gold);font-family:'Sarabun',sans-serif;font-size:.72rem;cursor:pointer;transition:all .2s;}
-.copy-btn:hover{background:rgba(201,168,76,.35);}
-
 .note{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:9px;padding:10px 14px;font-size:.8rem;color:var(--muted);line-height:1.8;}
+.note code{color:var(--amber);}
 
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--card);border:1px solid var(--gold);border-radius:40px;padding:10px 22px;color:var(--gold-lt);font-size:.88rem;z-index:999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;}
 #toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
-
 <div class="admin-header">
   <span class="admin-logo">🛠️</span>
   <span class="admin-title">Admin Panel — วิสาขบูชา ๒๕๖๙</span>
@@ -118,60 +97,35 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
 
 <div class="container">
 
-  <!-- ═══ Stats + OBS Preview ═══ -->
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title">📊 สถิติบุญ <small id="stat-ts"></small></div>
-      <div class="stat-grid" id="stat-grid">
-        <div class="stat-tile"><span class="val">…</span><span class="lbl">กำลังโหลด</span></div>
-      </div>
-      <div class="divider"></div>
-      <div class="btn-row">
-        <button class="btn btn-ghost btn-sm" onclick="fetchStats()">🔄 รีเฟรช</button>
-        <div class="status" id="stat-status"></div>
-      </div>
+  <!-- Stats -->
+  <div class="card">
+    <div class="card-title">📊 สถิติบุญ <small id="stat-ts"></small></div>
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-tile"><span class="val">…</span><span class="lbl">กำลังโหลด</span></div>
     </div>
-
-    <div class="card">
-      <div class="card-title">👁️ OBS Overlay Preview</div>
-      <div class="obs-preview">
-        <div class="obs-inner">
-          <div class="obs-top">
-            <span class="obs-ttl" id="pv-title">🪔 วันวิสาขบูชา ๒๕๖๙</span>
-            <div class="obs-s-row">
-              <span class="obs-s">🕯️<b id="pv-c">0</b></span>
-              <span class="obs-s">🙏<b id="pv-p">0</b></span>
-              <span class="obs-s">👥<b id="pv-v">0</b></span>
-            </div>
-          </div>
-          <div class="obs-bot">
-            <div class="obs-tick" id="pv-ticker"></div>
-          </div>
-        </div>
-      </div>
-      <div style="margin-top:10px;">
-        <div class="monoline">
-          <span id="obs-url-txt">-</span>
-          <button class="copy-btn" onclick="copyTxt(document.getElementById('obs-url-txt').textContent)">คัดลอก URL</button>
-        </div>
-      </div>
+    <div class="divider"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-sm" onclick="fetchStats()">🔄 รีเฟรช</button>
+      <div class="status" id="stat-status"></div>
     </div>
   </div>
 
-  <!-- ═══ Ticker ═══ -->
+  <!-- Ticker -->
   <div class="card">
     <div class="card-title">📺 Ticker ข้อความสาธุ</div>
-    <div class="note" style="margin-bottom:12px;">เพิ่ม / แก้ไข / ลบข้อความที่วิ่งบน OBS Overlay · บันทึกลง Sheet อัตโนมัติ</div>
+    <div class="note" style="margin-bottom:12px;">ข้อความที่วิ่งบน OBS Overlay · บันทึกลง Sheet Config อัตโนมัติ</div>
     <div class="btn-row" style="margin-bottom:12px;">
       <input id="ticker-new" type="text" placeholder="พิมพ์ข้อความใหม่..." maxlength="60"
-        style="flex:1;min-width:0;padding:9px 13px;background:rgba(0,0,0,.4);border:1.5px solid rgba(201,168,76,.2);border-radius:9px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.9rem;outline:none;">
+        style="flex:1;min-width:0;padding:9px 13px;background:rgba(0,0,0,.4);border:1.5px solid rgba(201,168,76,.2);border-radius:9px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;">
       <button class="btn btn-primary btn-sm" onclick="addTicker()">+ เพิ่ม</button>
     </div>
-    <div class="ticker-list" id="ticker-list"></div>
+    <div class="ticker-list" id="ticker-list">
+      <div style="text-align:center;color:var(--muted);padding:14px;font-size:.85rem;">⏳ กำลังโหลด Ticker...</div>
+    </div>
     <div class="status" id="ticker-status"></div>
   </div>
 
-  <!-- ═══ Site Config + Logo ═══ -->
+  <!-- Site Config + Logo -->
   <div class="grid-2">
     <div class="card">
       <div class="card-title">⚙️ ตั้งค่าเว็บไซต์</div>
@@ -180,7 +134,7 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
         <input id="cfg-title" type="text" placeholder="วันวิสาขบูชา ๒๕๖๙" maxlength="60">
       </div>
       <div class="field">
-        <label>คำบรรยายย่อย (subtitle)</label>
+        <label>คำบรรยายย่อย</label>
         <input id="cfg-subtitle" type="text" placeholder="น้อมนำจิตใจ · สู่ความสงบ…" maxlength="80">
       </div>
       <button class="btn btn-primary btn-full" id="btn-save-cfg" onclick="saveConfig()">💾 บันทึกการตั้งค่า</button>
@@ -192,13 +146,13 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
       <div class="logo-preview-wrap">
         <img id="logo-preview-img" src="" alt="logo">
         <div id="logo-preview-emoji">🪔</div>
-        <div class="logo-preview-info">
-          อัปโหลดรูปโลโก้<br>รองรับ PNG · JPG · SVG<br>
-          <span style="font-size:.72rem;color:var(--gold-dim);">แนะนำ 256×256px ขึ้นไป</span>
+        <div class="logo-info">
+          อัปโหลดรูปโลโก้<br>PNG · JPG · SVG<br>
+          <span style="font-size:.72rem;color:var(--gold-dim);">แนะนำ: ขนาดไม่เกิน 200KB</span>
         </div>
       </div>
       <div class="field">
-        <label>เลือกไฟล์รูปโลโก้</label>
+        <label>เลือกไฟล์</label>
         <input type="file" id="logo-file" accept="image/*" onchange="previewLogo(event)"
           style="padding:8px 12px;background:rgba(0,0,0,.3);border:1.5px solid rgba(201,168,76,.2);border-radius:9px;color:var(--text);width:100%;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:.85rem;">
       </div>
@@ -210,23 +164,13 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
     </div>
   </div>
 
-  <!-- ═══ Visitor Table ═══ -->
+  <!-- Visitor Log -->
   <div class="card">
     <div class="card-title">👥 ผู้เข้าใช้งาน <small id="visitor-count-lbl"></small></div>
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>รูป</th>
-            <th>ชื่อ LINE</th>
-            <th>LINE ID</th>
-            <th>เวลา</th>
-            <th style="text-align:center;">จำนวนครั้ง</th>
-          </tr>
-        </thead>
-        <tbody id="visitor-tbody">
-          <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">⏳ กำลังโหลด...</td></tr>
-        </tbody>
+        <thead><tr><th>รูป</th><th>ชื่อ LINE</th><th>LINE ID</th><th>เข้าล่าสุด</th><th style="text-align:center;">จำนวนครั้ง</th></tr></thead>
+        <tbody id="visitor-tbody"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">⏳ กำลังโหลด...</td></tr></tbody>
       </table>
     </div>
     <div class="btn-row" style="margin-top:10px;">
@@ -235,15 +179,13 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
     </div>
   </div>
 
-  <!-- ═══ Candle Log ═══ -->
+  <!-- Candle Log -->
   <div class="card">
     <div class="card-title">🕯️ ประวัติจุดเทียน</div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>เวลา</th><th>ชื่อ</th><th>คำอธิษฐาน</th><th>LINE Name</th></tr></thead>
-        <tbody id="candle-tbody">
-          <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">⏳ กำลังโหลด...</td></tr>
-        </tbody>
+        <tbody id="candle-tbody"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">⏳ กำลังโหลด...</td></tr></tbody>
       </table>
     </div>
     <div class="btn-row" style="margin-top:10px;">
@@ -252,15 +194,13 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
     </div>
   </div>
 
-  <!-- ═══ Chant Log ═══ -->
+  <!-- Prayer Log (upserted) -->
   <div class="card">
-    <div class="card-title">📿 ประวัติสวดมนต์</div>
+    <div class="card-title">📿 ยอดรวมสวดมนต์ (แยกตาม LINE)</div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>เวลา</th><th>บทสวด</th><th style="text-align:center;">จำนวน</th><th>LINE Name</th></tr></thead>
-        <tbody id="prayer-tbody">
-          <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">⏳ กำลังโหลด...</td></tr>
-        </tbody>
+        <thead><tr><th>LINE Name</th><th>บทสวด</th><th style="text-align:center;">จำนวนสวด</th><th>อัปเดตล่าสุด</th></tr></thead>
+        <tbody id="prayer-tbody"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">⏳ กำลังโหลด...</td></tr></tbody>
       </table>
     </div>
     <div class="btn-row" style="margin-top:10px;">
@@ -273,167 +213,125 @@ tbody tr:hover td{background:rgba(201,168,76,.04);color:var(--text);}
 <div id="toast"></div>
 
 <script>
-// ════════════════════════════════════
-// CONFIG
-// ════════════════════════════════════
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbOkYcp1g-HPSl1HsxP0_sVtudfxvU_Kkg-GPzT5dbIBrwPnludL6X59GERUK1-xyN5Q/exec";
 
-// ════════════════════════════════════
-// STATE
-// ════════════════════════════════════
+// ── State ──
 let tickerArr = [];
+let logoDataUrl = "";
 
-// ════════════════════════════════════
-// TOAST / STATUS
-// ════════════════════════════════════
+// ── Toast / Status ──
 let tTmr;
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tTmr);tTmr=setTimeout(()=>t.classList.remove("show"),2700);}
 function setSt(id,msg,type=""){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.className="status "+(type||"");}
 
-// ════════════════════════════════════
-// FETCH CONFIG (title, subtitle, logo, ticker)
-// ════════════════════════════════════
+// ════════════════════
+// FETCH CONFIG — โหลด title, subtitle, logo, ticker จาก Sheet
+// ════════════════════
 async function fetchConfig(){
   try{
     const r = await fetch(SCRIPT_URL+"?action=config");
     if(!r.ok) throw new Error("HTTP "+r.status);
     const d = await r.json();
-
     // fill form
     document.getElementById("cfg-title").value    = d.title    || "";
     document.getElementById("cfg-subtitle").value = d.subtitle || "";
-
     // logo
-    if(d.logo){
-      document.getElementById("logo-preview-img").src = d.logo;
-      document.getElementById("logo-preview-img").style.display = "block";
+    if(d.logo && d.logo.length > 4){
+      const img = document.getElementById("logo-preview-img");
+      img.src = d.logo; img.style.display = "block";
       document.getElementById("logo-preview-emoji").style.display = "none";
-      document.getElementById("pv-title").textContent = (d.title||"วันวิสาขบูชา ๒๕๖๙");
+      logoDataUrl = d.logo;
     }
-
-    // ticker
-    tickerArr = d.ticker || [];
+    // ticker — d.ticker เป็น array จาก Apps Script
+    tickerArr = Array.isArray(d.ticker) ? d.ticker : [];
     renderTickerList();
-    renderOBSTicker();
-
-  }catch(e){ console.warn("fetchConfig:",e); }
+  }catch(e){
+    console.warn("fetchConfig:",e);
+    setSt("ticker-status","⚠️ ไม่สามารถโหลด Config ได้: "+e.message,"err");
+  }
 }
 
-// ════════════════════════════════════
-// SAVE CONFIG → POST to Sheet
-// ════════════════════════════════════
+// ════════════════════
+// SAVE CONFIG
+// ════════════════════
 async function saveConfig(){
   const btn = document.getElementById("btn-save-cfg");
-  btn.disabled = true; btn.textContent = "⏳ กำลังบันทึก...";
+  btn.disabled=true; btn.textContent="⏳ กำลังบันทึก...";
   const title    = document.getElementById("cfg-title").value.trim()    || "วันวิสาขบูชา ๒๕๖๙";
   const subtitle = document.getElementById("cfg-subtitle").value.trim() || "";
-
   try{
-    await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({type:"config", key:"title",    value:title}),    mode:"no-cors"});
-    await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({type:"config", key:"subtitle", value:subtitle}), mode:"no-cors"});
-
-    document.getElementById("pv-title").textContent = "🪔 "+title;
-    setSt("cfg-status","✅ บันทึกแล้ว · หน้าหลักจะอัปเดตในครั้งถัดไปที่โหลด","ok");
+    await postSheet("config",{key:"title",    value:title});
+    await postSheet("config",{key:"subtitle", value:subtitle});
+    setSt("cfg-status","✅ บันทึกแล้ว · หน้าหลักจะอัปเดตเมื่อโหลดใหม่","ok");
     toast("💾 บันทึกการตั้งค่าแล้ว");
-  }catch(e){
-    setSt("cfg-status","❌ "+e.message,"err");
-  }finally{
-    btn.disabled=false; btn.textContent="💾 บันทึกการตั้งค่า";
-  }
+  }catch(e){setSt("cfg-status","❌ "+e.message,"err");}
+  finally{btn.disabled=false;btn.textContent="💾 บันทึกการตั้งค่า";}
 }
 
-// ════════════════════════════════════
-// LOGO
-// ════════════════════════════════════
-let logoDataUrl = "";
-
+// ════════════════════
+// LOGO — เก็บเป็น base64 ใน Sheet
+// ════════════════════
 function previewLogo(e){
   const file=e.target.files[0];if(!file)return;
-  // ตรวจขนาด: base64 ห้ามเกิน 1MB (ประมาณ 750KB file)
-  if(file.size > 750*1024){
-    setSt("logo-status","⚠️ รูปใหญ่เกินไป กรุณาใช้ไฟล์ขนาดต่ำกว่า 750KB","err");
-    return;
-  }
+  if(file.size>200*1024){setSt("logo-status","⚠️ ไฟล์ใหญ่เกินไป กรุณาใช้ไฟล์ไม่เกิน 200KB","err");return;}
   const reader=new FileReader();
   reader.onload=ev=>{
-    logoDataUrl = ev.target.result;
-    const img = document.getElementById("logo-preview-img");
-    img.src = logoDataUrl;
-    img.style.display = "block";
-    document.getElementById("logo-preview-emoji").style.display = "none";
-    setSt("logo-status","✅ พรีวิวแล้ว · กด 'บันทึกโลโก้' เพื่อใช้งาน","ok");
+    logoDataUrl=ev.target.result;
+    const img=document.getElementById("logo-preview-img");
+    img.src=logoDataUrl; img.style.display="block";
+    document.getElementById("logo-preview-emoji").style.display="none";
+    setSt("logo-status","✅ พรีวิวแล้ว · กด 'บันทึกโลโก้'","ok");
   };
   reader.readAsDataURL(file);
 }
 
 async function saveLogo(){
-  if(!logoDataUrl){ setSt("logo-status","⚠️ กรุณาเลือกไฟล์ก่อน","err"); return; }
-  const btn = document.getElementById("btn-save-logo");
-  btn.disabled=true; btn.textContent="⏳ กำลังบันทึก...";
+  if(!logoDataUrl){setSt("logo-status","⚠️ กรุณาเลือกไฟล์ก่อน","err");return;}
+  const btn=document.getElementById("btn-save-logo");
+  btn.disabled=true;btn.textContent="⏳ กำลังบันทึก...";
   try{
-    // POST logo as base64 ไปเก็บใน Sheet Config
-    await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({type:"config", key:"logo", value:logoDataUrl}), mode:"no-cors"});
-    setSt("logo-status","✅ บันทึกโลโก้แล้ว · หน้าหลักจะอัปเดตในครั้งถัดไปที่โหลด","ok");
+    await postSheet("config",{key:"logo",value:logoDataUrl});
+    setSt("logo-status","✅ บันทึกโลโก้แล้ว · หน้าหลักจะแสดงเมื่อโหลดใหม่","ok");
     toast("🖼️ บันทึกโลโก้แล้ว");
-  }catch(e){
-    setSt("logo-status","❌ "+e.message,"err");
-  }finally{
-    btn.disabled=false; btn.textContent="💾 บันทึกโลโก้";
-  }
+  }catch(e){setSt("logo-status","❌ "+e.message,"err");}
+  finally{btn.disabled=false;btn.textContent="💾 บันทึกโลโก้";}
 }
 
 async function removeLogo(){
-  await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({type:"config", key:"logo", value:""}), mode:"no-cors"});
+  await postSheet("config",{key:"logo",value:""});
   logoDataUrl="";
   document.getElementById("logo-file").value="";
   document.getElementById("logo-preview-img").style.display="none";
   document.getElementById("logo-preview-emoji").style.display="flex";
-  setSt("logo-status","🗑️ ลบโลโก้แล้ว","ok");
-  toast("🗑️ ลบโลโก้แล้ว");
+  setSt("logo-status","🗑️ ลบโลโก้แล้ว","ok");toast("🗑️ ลบโลโก้แล้ว");
 }
 
-// ════════════════════════════════════
+// ════════════════════
 // STATS
-// ════════════════════════════════════
+// ════════════════════
 async function fetchStats(){
   setSt("stat-status","⏳ กำลังดึงข้อมูล...");
   try{
-    const r = await fetch(SCRIPT_URL+"?action=summary");
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    const d = await r.json();
-    renderStats(d);
+    const r=await fetch(SCRIPT_URL+"?action=summary");
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const d=await r.json();
+    document.getElementById("stat-grid").innerHTML=[
+      {v:d.candles??0,l:"🕯️ เทียนจุดแล้ว",u:"เล่ม"},
+      {v:d.chants??0, l:"🙏 สวดมนต์รวม",u:"ครั้ง"},
+      {v:d.visitors??0,l:"👥 ผู้เข้าใช้งาน",u:"คน"},
+      {v:tickerArr.length,l:"📺 Ticker",u:"ข้อความ"},
+    ].map(s=>`<div class="stat-tile"><span class="val">${s.v}</span><span class="lbl">${s.l}<br><span style="font-size:.62rem;opacity:.7;">${s.u}</span></span></div>`).join("");
     setSt("stat-status","✅ "+new Date().toLocaleTimeString("th-TH"),"ok");
-    document.getElementById("stat-ts").textContent = new Date().toLocaleTimeString("th-TH");
-  }catch(e){ setSt("stat-status","❌ "+e.message,"err"); }
+    document.getElementById("stat-ts").textContent=new Date().toLocaleTimeString("th-TH");
+  }catch(e){setSt("stat-status","❌ "+e.message,"err");}
 }
 
-function renderStats(d){
-  const items=[
-    {v:d.candles??0, l:"🕯️ เทียนจุดแล้ว", u:"เล่ม"},
-    {v:d.chants??0,  l:"🙏 สวดมนต์รวม",  u:"ครั้ง"},
-    {v:d.visitors??0,l:"👥 ผู้เข้าใช้งาน",u:"คน"},
-    {v:tickerArr.length,l:"📺 Ticker",u:"ข้อความ"},
-  ];
-  document.getElementById("stat-grid").innerHTML=items.map(s=>`
-    <div class="stat-tile">
-      <span class="val">${s.v}</span>
-      <span class="lbl">${s.l}<br><span style="font-size:.62rem;opacity:.7;">${s.u}</span></span>
-    </div>`).join("");
-  document.getElementById("pv-c").textContent = d.candles??0;
-  document.getElementById("pv-p").textContent = d.chants??0;
-  document.getElementById("pv-v").textContent = d.visitors??0;
-}
-
-// ════════════════════════════════════
-// TICKER
-// ════════════════════════════════════
+// ════════════════════
+// TICKER — save array to Sheet as JSON string under key "ticker"
+// ════════════════════
 function renderTickerList(){
   const list=document.getElementById("ticker-list");
-  if(!tickerArr.length){ list.innerHTML='<div style="text-align:center;color:var(--muted);padding:14px;font-size:.85rem;">ยังไม่มีข้อความ</div>'; return; }
+  if(!tickerArr.length){list.innerHTML='<div style="text-align:center;color:var(--muted);padding:14px;font-size:.85rem;">ยังไม่มีข้อความ · กดเพิ่มด้านบน</div>';return;}
   list.innerHTML=tickerArr.map((msg,i)=>`
     <div class="t-row" id="tr-${i}">
       <span class="t-msg">${esc(msg)}</span>
@@ -443,148 +341,113 @@ function renderTickerList(){
     </div>`).join("");
 }
 
+async function saveTicker(){
+  // บันทึก tickerArr ทั้ง array ลง Config key "ticker"
+  await postSheet("config",{key:"ticker", value:JSON.stringify(tickerArr)});
+}
+
 function addTicker(){
   const inp=document.getElementById("ticker-new");
-  const v=inp.value.trim(); if(!v)return;
-  tickerArr.push(v);
-  inp.value="";
-  postSheet("ticker_add",{message:v, index:tickerArr.length-1});
-  renderTickerList(); renderOBSTicker();
-  setSt("ticker-status","✅ เพิ่มแล้ว","ok");
-  toast("✅ เพิ่ม Ticker แล้ว");
+  const v=inp.value.trim();if(!v)return;
+  tickerArr.push(v);inp.value="";
+  saveTicker();renderTickerList();
+  setSt("ticker-status","✅ เพิ่มแล้ว","ok");toast("✅ เพิ่ม Ticker แล้ว");
 }
 
 function editTicker(i){
-  const row=document.getElementById("tr-${i}".replace("${i}",i));
-  if(!row)return;
+  const row=document.getElementById("tr-"+i);if(!row)return;
   row.classList.add("editing");
   const span=row.querySelector(".t-msg");
   const inp=document.createElement("input");
-  inp.className="t-edit-inp"; inp.value=tickerArr[i];
-  span.replaceWith(inp); inp.focus();
-  // swap buttons
-  row.querySelectorAll("button").forEach(b=>b.remove());
-  const num=row.querySelector(".t-num"); if(num)num.remove();
+  inp.className="t-edit-inp";inp.value=tickerArr[i];
+  span.replaceWith(inp);inp.focus();
+  row.querySelectorAll("button,.t-num").forEach(b=>b.remove());
   const ok=Object.assign(document.createElement("button"),{className:"btn btn-primary btn-xs",textContent:"💾"});
   const no=Object.assign(document.createElement("button"),{className:"btn btn-ghost btn-xs",textContent:"✖"});
   row.append(ok,no);
-  ok.onclick=()=>{
-    const nv=inp.value.trim(); if(!nv)return;
-    tickerArr[i]=nv;
-    postSheet("ticker_edit",{index:i,message:nv});
-    renderTickerList(); renderOBSTicker();
-    setSt("ticker-status","✅ แก้ไขแล้ว","ok");
-  };
+  ok.onclick=()=>{const nv=inp.value.trim();if(!nv)return;tickerArr[i]=nv;saveTicker();renderTickerList();setSt("ticker-status","✅ แก้ไขแล้ว","ok");};
   no.onclick=()=>renderTickerList();
 }
 
 function delTicker(i){
   if(!confirm(`ลบ: "${tickerArr[i]}"?`))return;
-  const msg=tickerArr[i];
   tickerArr.splice(i,1);
-  postSheet("ticker_delete",{index:i,message:msg});
-  renderTickerList(); renderOBSTicker();
-  setSt("ticker-status","🗑️ ลบแล้ว","ok");
-  toast("🗑️ ลบ Ticker แล้ว");
+  saveTicker();renderTickerList();
+  setSt("ticker-status","🗑️ ลบแล้ว","ok");toast("🗑️ ลบ Ticker แล้ว");
 }
 
-function renderOBSTicker(){
-  const db=[...tickerArr,...tickerArr];
-  document.getElementById("pv-ticker").innerHTML=db.map(m=>`<span class="obs-ti">${esc(m)}</span><span class="obs-td"> ✦ </span>`).join("");
-}
-
-// ════════════════════════════════════
-// VISITORS (visitCount ไม่แสดง UA)
-// ════════════════════════════════════
+// ════════════════════
+// VISITORS
+// ════════════════════
 async function fetchVisitors(){
   setSt("visitor-status","⏳ กำลังดึงข้อมูล...");
   try{
-    const r=await fetch(SCRIPT_URL+"?action=visitors");
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    const d=await r.json();
-    const rows=d.rows||[];
-    document.getElementById("visitor-count-lbl").textContent=rows.length+" รายการ";
-    document.getElementById("visitor-tbody").innerHTML=rows.length ? rows.map(row=>`
+    const r=await fetch(SCRIPT_URL+"?action=visitors");if(!r.ok)throw new Error("HTTP "+r.status);
+    const d=await r.json();const rows=d.rows||[];
+    document.getElementById("visitor-count-lbl").textContent=rows.length+" คน";
+    document.getElementById("visitor-tbody").innerHTML=rows.length?rows.map(row=>`
       <tr>
         <td>${row.pic?`<img class="td-av" src="${esc(row.pic)}" onerror="this.style.display='none'">`:"—"}</td>
         <td class="td-name">${esc(row.name||"—")}</td>
-        <td style="font-size:.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(row.lineId||"—")}</td>
+        <td style="font-size:.7rem;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(row.lineId||"—")}</td>
         <td style="font-size:.72rem;white-space:nowrap;">${esc(row.ts||"—")}</td>
         <td style="text-align:center;font-weight:700;color:var(--amber);">${row.visitCount||1}</td>
-      </tr>`).join("") : '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">ยังไม่มีข้อมูล</td></tr>';
+      </tr>`).join(""):'<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">ยังไม่มีข้อมูล</td></tr>';
     setSt("visitor-status","✅ "+rows.length+" คน","ok");
   }catch(e){setSt("visitor-status","❌ "+e.message,"err");}
 }
 
-// ════════════════════════════════════
+// ════════════════════
 // CANDLE LOG
-// ════════════════════════════════════
+// ════════════════════
 async function fetchCandleLog(){
   setSt("candle-log-status","⏳ กำลังดึงข้อมูล...");
   try{
-    const r=await fetch(SCRIPT_URL+"?action=candles");
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    const d=await r.json();
-    const rows=d.rows||[];
-    document.getElementById("candle-tbody").innerHTML=rows.length ? rows.map(row=>`
+    const r=await fetch(SCRIPT_URL+"?action=candles");if(!r.ok)throw new Error("HTTP "+r.status);
+    const d=await r.json();const rows=d.rows||[];
+    document.getElementById("candle-tbody").innerHTML=rows.length?rows.map(row=>`
       <tr>
         <td style="font-size:.72rem;white-space:nowrap;">${esc(row.ts||"")}</td>
         <td class="td-name">${esc(row.name||"—")}</td>
         <td>${esc(row.wish||"—")}</td>
         <td>${esc(row.lineName||"—")}</td>
-      </tr>`).join("") : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">ยังไม่มีข้อมูล</td></tr>';
+      </tr>`).join(""):'<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">ยังไม่มีข้อมูล</td></tr>';
     setSt("candle-log-status","✅ "+rows.length+" รายการ","ok");
   }catch(e){setSt("candle-log-status","❌ "+e.message,"err");}
 }
 
-// ════════════════════════════════════
-// PRAYER LOG
-// ════════════════════════════════════
+// ════════════════════
+// PRAYER LOG (upserted — แสดงรายบุคคล)
+// ════════════════════
 async function fetchPrayerLog(){
   setSt("prayer-log-status","⏳ กำลังดึงข้อมูล...");
   try{
-    const r=await fetch(SCRIPT_URL+"?action=prayers");
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    const d=await r.json();
-    const rows=d.rows||[];
-    document.getElementById("prayer-tbody").innerHTML=rows.length ? rows.map(row=>`
+    const r=await fetch(SCRIPT_URL+"?action=prayers");if(!r.ok)throw new Error("HTTP "+r.status);
+    const d=await r.json();const rows=d.rows||[];
+    document.getElementById("prayer-tbody").innerHTML=rows.length?rows.map(row=>`
       <tr>
-        <td style="font-size:.72rem;white-space:nowrap;">${esc(row.ts||"")}</td>
-        <td class="td-name">${esc(row.prayer||"—")}</td>
+        <td class="td-name">${esc(row.lineName||"—")}</td>
+        <td>${esc(row.prayer||"—")}</td>
         <td style="text-align:center;font-weight:700;color:var(--amber);">${row.count||0}</td>
-        <td>${esc(row.lineName||"—")}</td>
-      </tr>`).join("") : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">ยังไม่มีข้อมูล</td></tr>';
+        <td style="font-size:.72rem;white-space:nowrap;">${esc(row.ts||"—")}</td>
+      </tr>`).join(""):'<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">ยังไม่มีข้อมูล</td></tr>';
     setSt("prayer-log-status","✅ "+rows.length+" รายการ","ok");
   }catch(e){setSt("prayer-log-status","❌ "+e.message,"err");}
 }
 
-// ════════════════════════════════════
+// ════════════════════
 // POST SHEET
-// ════════════════════════════════════
+// ════════════════════
 async function postSheet(type,data){
-  try{
-    await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({type,...data}),mode:"no-cors"});
-  }catch(e){console.warn("Sheet:",e);}
+  await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({type,...data}),mode:"no-cors"});
 }
 
-// ════════════════════════════════════
-// UTIL
-// ════════════════════════════════════
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function copyTxt(t){navigator.clipboard.writeText(t).then(()=>toast("📋 คัดลอกแล้ว!")).catch(()=>{const el=document.createElement("textarea");el.value=t;document.body.appendChild(el);el.select();document.execCommand("copy");el.remove();toast("📋 คัดลอกแล้ว!");});}
 
-function getOBSUrl(){
-  return location.href.replace("visakha-admin.html","visakha-obs-overlay.html");
-}
-
-// ════════════════════════════════════
-// INIT
-// ════════════════════════════════════
-document.getElementById("obs-url-txt").textContent = getOBSUrl();
+// ── Init ──
 document.getElementById("ticker-new").addEventListener("keydown",e=>{if(e.key==="Enter")addTicker();});
-
-fetchConfig();
+fetchConfig();  // โหลด config + ticker พร้อมกัน
 fetchStats();
 fetchVisitors();
 fetchCandleLog();
