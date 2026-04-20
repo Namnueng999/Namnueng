@@ -20,8 +20,27 @@ body{background:var(--deep);color:var(--text);font-family:'Sarabun',sans-serif;m
 #stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
 #app{position:relative;z-index:10;max-width:820px;margin:0 auto;padding:0 20px 60px;}
 
+/* ── LIFF gate (บังคับเปิดผ่าน LIFF) ── */
+#liff-gate{
+  position:fixed;inset:0;z-index:200;
+  background:var(--deep);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;padding:32px;text-align:center;
+}
+#liff-gate .gate-icon{font-size:56px;animation:pulse 3s ease-in-out infinite;}
+#liff-gate h2{font-family:'Noto Serif Thai',serif;font-size:1.4rem;color:var(--gold-lt);}
+#liff-gate p{color:var(--muted);font-size:.9rem;line-height:1.8;max-width:320px;}
+.btn-line-login{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 32px;background:linear-gradient(135deg,#00a000,#00c300);
+  border:none;border-radius:40px;color:#fff;font-family:'Sarabun',sans-serif;
+  font-size:1.1rem;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 20px rgba(0,195,0,.4);transition:all .25s;
+}
+.btn-line-login:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,195,0,.6);}
+
 /* Header */
-header{text-align:center;padding:48px 0 32px;}
+header{text-align:center;padding:48px 0 28px;}
 .logo-wrap{display:inline-flex;align-items:center;justify-content:center;
   width:80px;height:80px;border-radius:50%;margin-bottom:16px;
   background:radial-gradient(circle,rgba(201,168,76,.15),transparent 70%);
@@ -36,11 +55,10 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
 /* LINE profile strip */
 #line-profile{display:none;align-items:center;gap:10px;
   background:rgba(0,185,0,.08);border:1px solid rgba(0,185,0,.2);
-  border-radius:40px;padding:8px 16px;margin:0 auto 24px;
+  border-radius:40px;padding:8px 16px;margin:0 auto 20px;
   width:fit-content;max-width:100%;}
 #line-profile img{width:32px;height:32px;border-radius:50%;object-fit:cover;}
 .ln-name{font-size:.88rem;color:#7df07d;font-weight:600;}
-.ln-id{font-size:.72rem;color:var(--muted);}
 
 /* Tabs */
 .tab-bar{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);
@@ -62,9 +80,11 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
 /* Form */
 .field{margin-bottom:18px;}
 .field label{display:block;font-size:.76rem;font-weight:600;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.08em;}
+.field label .req{color:var(--amber);margin-left:2px;}
 .field input{width:100%;padding:12px 15px;background:rgba(0,0,0,.4);border:1.5px solid rgba(201,168,76,.2);border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:.97rem;outline:none;transition:border-color .2s,box-shadow .2s;}
 .field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.1);}
 .field input::placeholder{color:rgba(138,116,80,.5);}
+.field input.err-field{border-color:#e07070!important;box-shadow:0 0 0 3px rgba(224,112,112,.15)!important;}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 @media(max-width:520px){.row-2{grid-template-columns:1fr;}}
 
@@ -73,13 +93,16 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
 .btn-primary{background:linear-gradient(135deg,#a07830,var(--gold));color:#0a0503;box-shadow:0 4px 16px rgba(201,168,76,.25);}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.4);}
 .btn-primary:active{transform:translateY(0) scale(.98);}
+.btn-primary:disabled{opacity:.55;transform:none;cursor:not-allowed;}
 .btn-sm{padding:9px 18px;font-size:.84rem;border-radius:8px;}
 .btn-full{width:100%;}
 .divider{height:1px;background:var(--border);margin:20px 0;}
 
 /* Candle zone */
 .candle-zone{min-height:180px;display:flex;flex-wrap:wrap;gap:16px;align-content:flex-start;padding:4px 0;margin-top:16px;}
-.candle-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+.candle-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+.candle-wrap:hover .c-flame-g{filter:brightness(1.3);}
 @keyframes popIn{from{opacity:0;transform:scale(.4) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .candle-lbl{font-size:.64rem;color:var(--gold-lt);text-align:center;max-width:60px;line-height:1.3;word-break:break-word;}
 .c-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(201,168,76,.4);}
@@ -90,6 +113,31 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
 .counter-pill b{color:var(--amber);}
 .candle-empty{width:100%;text-align:center;padding:32px 0;color:var(--muted);font-size:.9rem;}
 .loading-txt{width:100%;text-align:center;padding:24px 0;color:var(--muted);font-size:.85rem;}
+
+/* ── Candle Popup Modal ── */
+#candle-modal{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+#candle-modal.show{opacity:1;pointer-events:auto;}
+.modal-box{
+  background:var(--card);border:1px solid rgba(201,168,76,.4);
+  border-radius:20px;padding:28px 32px;max-width:340px;width:90%;
+  text-align:center;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(201,168,76,.1);
+  transform:scale(.9);transition:transform .25s;
+}
+#candle-modal.show .modal-box{transform:scale(1);}
+.modal-avatar{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid rgba(201,168,76,.5);margin:0 auto 12px;}
+.modal-avatar-d{width:60px;height:60px;border-radius:50%;background:rgba(201,168,76,.15);border:2px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--gold);font-weight:700;margin:0 auto 12px;}
+.modal-name{font-family:'Noto Serif Thai',serif;font-size:1.1rem;color:var(--gold-lt);margin-bottom:6px;}
+.modal-candle{font-size:2.5rem;margin-bottom:12px;}
+.modal-wish{font-size:.9rem;color:var(--text);background:rgba(0,0,0,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-style:italic;line-height:1.7;border-left:2px solid var(--gold-dim);}
+.modal-no-wish{font-size:.85rem;color:var(--muted);margin-bottom:16px;}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;padding:4px;}
+.modal-close:hover{color:var(--text);}
 
 /* Prayer */
 .prayer-card{margin-bottom:10px;}
@@ -114,7 +162,16 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
 <body>
 <div id="bg"></div>
 <canvas id="stars"></canvas>
-<div id="app">
+
+<!-- LIFF Gate — บังคับเปิดผ่าน LINE -->
+<div id="liff-gate">
+  <div class="gate-icon">🪔</div>
+  <h2>วันวิสาขบูชา ๒๕๖๙</h2>
+  <p>กรุณาเปิดผ่าน LINE เพื่อเข้าใช้งาน<br>ระบบต้องการข้อมูลโปรไฟล์ LINE ของคุณ</p>
+  <button class="btn-line-login" onclick="loginLiff()">💚 เข้าสู่ระบบด้วย LINE</button>
+</div>
+
+<div id="app" style="display:none;">
   <header>
     <div class="logo-wrap">
       <img id="logo-img" src="" alt="logo">
@@ -126,10 +183,7 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
 
   <div id="line-profile">
     <img id="lp-img" src="" alt="">
-    <div>
-      <div class="ln-name" id="lp-name"></div>
-      <div class="ln-id" id="lp-id"></div>
-    </div>
+    <div class="ln-name" id="lp-name"></div>
   </div>
 
   <nav class="tab-bar">
@@ -137,14 +191,13 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
     <button class="tab" data-p="prayer">📿 บทสวด</button>
   </nav>
 
-  <!-- เวียนเทียน -->
   <div class="panel on" id="panel-candle">
     <div class="card">
       <div class="card-title">🕯️ จุดเทียนออนไลน์</div>
       <div class="row-2">
         <div class="field">
-          <label>ชื่อของคุณ</label>
-          <input id="c-name" type="text" placeholder="กรอกชื่อ..." maxlength="30">
+          <label>ชื่อของคุณ <span class="req">*</span></label>
+          <input id="c-name" type="text" placeholder="จำเป็นต้องกรอก" maxlength="30" required>
         </div>
         <div class="field">
           <label>คำอธิษฐาน (ไม่บังคับ)</label>
@@ -160,33 +213,40 @@ h1{font-family:'Noto Serif Thai',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-w
     </div>
   </div>
 
-  <!-- บทสวด -->
   <div class="panel" id="panel-prayer">
     <div id="prayer-list"></div>
   </div>
 </div>
+
+<!-- Candle Popup -->
+<div id="candle-modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('candle-modal').classList.remove('show')">✕</button>
+    <div class="modal-candle">🕯️</div>
+    <div id="modal-avatar-wrap"></div>
+    <div class="modal-name" id="modal-name"></div>
+    <div id="modal-wish-wrap"></div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 // CONFIG
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbOkYcp1g-HPSl1HsxP0_sVtudfxvU_Kkg-GPzT5dbIBrwPnludL6X59GERUK1-xyN5Q/exec";
 const DISCORD_WH = "https://discord.com/api/webhooks/1495459514348994692/o61b7SllQmS06vi7TG9AKie4pLEYXkTYTJ2AlcVMjWCvJzNkbcONSyYb0zqhqFGSHJo8";
 const LIFF_ID    = "2007719419-hN3Ikxwz";
 
-// ═══════════════════════════════════════════
-// STATE (local chants count only — candles fetched from sheet)
-// ═══════════════════════════════════════════
-let chants      = JSON.parse(localStorage.getItem("vb3_p") || "{}");
+let chants      = JSON.parse(localStorage.getItem("vb4_p") || "{}");
 let lineProfile = null;
-let remoteCandleCount = 0; // total from sheet (for discord milestone)
 
-function saveChants(){ localStorage.setItem("vb3_p", JSON.stringify(chants)); }
+function saveChants(){ localStorage.setItem("vb4_p", JSON.stringify(chants)); }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 // STARS
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 (()=>{
   const c=document.getElementById("stars"),cx=c.getContext("2d");
   const s=Array.from({length:80},()=>({x:Math.random(),y:Math.random(),r:Math.random()*.9+.2,ph:Math.random()*Math.PI*2,sp:Math.random()*.01+.004}));
@@ -195,9 +255,9 @@ function saveChants(){ localStorage.setItem("vb3_p", JSON.stringify(chants)); }
   requestAnimationFrame(draw);
 })();
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 // TABS
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 document.querySelector(".tab-bar").addEventListener("click",e=>{
   const b=e.target.closest(".tab");if(!b)return;
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));
@@ -206,90 +266,92 @@ document.querySelector(".tab-bar").addEventListener("click",e=>{
   document.getElementById("panel-"+b.dataset.p).classList.add("on");
 });
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 // TOAST
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 let tTmr;
-function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tTmr);tTmr=setTimeout(()=>t.classList.remove("show"),2700);}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tTmr);tTmr=setTimeout(()=>t.classList.remove("show"),2800);}
 
-// ═══════════════════════════════════════════
-// APPLY CONFIG FROM SHEET
-// applyConfig() — เรียกหลัง fetchConfig() ส่งข้อมูลมา
-// ═══════════════════════════════════════════
-function applyConfig(cfg){
-  // ชื่อเว็บ
-  const title = cfg.title || "วันวิสาขบูชา ๒๕๖๙";
-  document.getElementById("site-title").textContent = title;
-  document.getElementById("page-title").textContent = title;
-
-  // subtitle
-  const sub = cfg.subtitle || "น้อมนำจิตใจ · สู่ความสงบ · บุญ · ธรรมะ";
-  document.getElementById("site-subtitle").textContent = sub;
-
-  // โลโก้ — logo เป็น base64 หรือ URL
-  const logoUrl = cfg.logo || "";
-  if(logoUrl){
-    const img = document.getElementById("logo-img");
-    img.src = logoUrl;
-    img.style.display = "block";
-    document.getElementById("logo-emoji").style.display = "none";
-  } else {
-    document.getElementById("logo-img").style.display = "none";
-    document.getElementById("logo-emoji").style.display = "block";
-  }
-}
-
+// ═══════════════════════════════════
+// CONFIG (title/subtitle จาก Sheet, logo จาก localStorage)
+// ═══════════════════════════════════
 async function fetchConfig(){
+  // logo เก็บใน localStorage (set โดย admin บนเครื่องนั้น → แต่ผู้ใช้ไม่มี)
+  // วิธีที่ถูก: เก็บ logo URL ใน Sheet Config → fetch มา
   try{
-    const r = await fetch(SCRIPT_URL + "?action=config");
-    if(!r.ok) throw new Error("HTTP "+r.status);
+    const r = await fetch(SCRIPT_URL+"?action=config");
+    if(!r.ok) throw new Error();
     const d = await r.json();
-    applyConfig(d);
-  }catch(e){
-    // fallback ไม่แสดง error แค่ใช้ default
-    applyConfig({});
-    console.warn("fetchConfig:",e);
-  }
+    if(d.title){
+      document.getElementById("site-title").textContent = d.title;
+      document.getElementById("page-title").textContent = d.title;
+    }
+    if(d.subtitle) document.getElementById("site-subtitle").textContent = d.subtitle;
+    // logo — เก็บเป็น key "logo" ใน Config sheet
+    if(d.logo && d.logo.length > 4){
+      document.getElementById("logo-img").src = d.logo;
+      document.getElementById("logo-img").style.display = "block";
+      document.getElementById("logo-emoji").style.display = "none";
+    }
+  }catch(e){ /* ใช้ default */ }
 }
 
-// ═══════════════════════════════════════════
-// LIFF — ดึงโปรไฟล์ LINE
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
+// LIFF — บังคับ login
+// ═══════════════════════════════════
 async function initLiff(){
   try{
     await liff.init({liffId: LIFF_ID});
-    if(liff.isLoggedIn()){
-      const p = await liff.getProfile();
-      lineProfile = {name:p.displayName, id:p.userId, pic:p.pictureUrl||""};
-      document.getElementById("lp-img").src = lineProfile.pic;
-      document.getElementById("lp-name").textContent = lineProfile.name;
-      document.getElementById("lp-id").textContent = "LINE: "+lineProfile.id.slice(0,14)+"…";
-      document.getElementById("line-profile").style.display = "flex";
-      if(!document.getElementById("c-name").value)
-        document.getElementById("c-name").value = lineProfile.name;
+    if(!liff.isLoggedIn()){
+      // แสดง gate บังคับ login
+      document.getElementById("liff-gate").style.display = "flex";
+      document.getElementById("app").style.display = "none";
+      return;
     }
+    // ล็อกอินแล้ว → ดึงโปรไฟล์
+    const p = await liff.getProfile();
+    lineProfile = {name:p.displayName, id:p.userId, pic:p.pictureUrl||""};
+    // แสดง app
+    document.getElementById("liff-gate").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    // แสดง profile strip
+    document.getElementById("lp-img").src = lineProfile.pic;
+    document.getElementById("lp-name").textContent = lineProfile.name;
+    document.getElementById("line-profile").style.display = "flex";
+    // prefill ชื่อ
+    document.getElementById("c-name").value = lineProfile.name;
     // บันทึก visitor
-    postSheet("visitor",{
-      lineId:   lineProfile?.id    || "",
-      lineName: lineProfile?.name  || "",
-      linePic:  lineProfile?.pic   || "",
-    });
+    postSheet("visitor",{lineId:lineProfile.id, lineName:lineProfile.name, linePic:lineProfile.pic});
+    // โหลดข้อมูล
+    fetchConfig();
+    fetchCandles();
+    renderPrayers();
+    setInterval(fetchCandles, 30000);
   }catch(e){
-    console.warn("LIFF:",e);
-    postSheet("visitor",{lineId:"",lineName:"",linePic:""});
+    console.error("LIFF init error:",e);
+    // fallback: ถ้า LIFF init fail (เช่น dev environment) ให้ผ่านได้
+    document.getElementById("liff-gate").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    fetchConfig();
+    fetchCandles();
+    renderPrayers();
   }
 }
 
-// ═══════════════════════════════════════════
-// CANDLE — fetch จาก Sheet (เห็นของทุกคน)
-// ═══════════════════════════════════════════
+function loginLiff(){
+  liff.login();
+}
+
+// ═══════════════════════════════════
+// CANDLE
+// ═══════════════════════════════════
 const hues=[44,30,200,340,280,120,180,60,260];
 
 function candleSVG(h){
   return `<svg width="32" height="68" viewBox="0 0 36 74" overflow="visible">
     <ellipse cx="18" cy="14" rx="13" ry="13" fill="rgba(245,166,35,.1)"/>
     <ellipse cx="18" cy="15" rx="7" ry="7" fill="rgba(245,166,35,.14)"/>
-    <g class="flame">
+    <g class="flame c-flame-g">
       <ellipse cx="18" cy="13" rx="4.5" ry="8" fill="#f5a623" opacity=".9"/>
       <ellipse cx="18" cy="15" rx="2.8" ry="5" fill="#fff2aa"/>
       <ellipse cx="18" cy="17" rx="1.6" ry="2.8" fill="white"/>
@@ -303,87 +365,121 @@ function candleSVG(h){
 }
 
 function avatarEl(pic,name){
-  if(pic) return `<img class="c-avatar" src="${esc(pic)}" alt="" onerror="this.outerHTML='<div class=c-avatar-d>${esc((name||"?")[0].toUpperCase())}</div>'">`;
-  return `<div class="c-avatar-d">${esc((name||"?")[0].toUpperCase())}</div>`;
+  const init = esc((name||"?")[0].toUpperCase());
+  if(pic) return `<img class="c-avatar" src="${esc(pic)}" alt="" onerror="this.outerHTML='<div class=c-avatar-d>${init}</div>'">`;
+  return `<div class="c-avatar-d">${init}</div>`;
 }
+
+let candleRows = []; // เก็บไว้ใช้กับ popup
 
 async function fetchCandles(){
   try{
     const r = await fetch(SCRIPT_URL+"?action=candles");
     if(!r.ok) throw new Error("HTTP "+r.status);
     const d = await r.json();
-    const rows = d.rows || [];
-    remoteCandleCount = d.total || rows.length;
-    renderCandleGrid(rows);
+    candleRows = d.rows || [];
+    renderCandleGrid(candleRows, d.total ?? candleRows.length);
   }catch(e){
-    document.getElementById("candle-grid").innerHTML='<div class="candle-empty">ไม่สามารถโหลดข้อมูลได้ · ลองใหม่อีกครั้ง</div>';
+    document.getElementById("candle-grid").innerHTML='<div class="candle-empty">ไม่สามารถโหลดได้ · ลองใหม่อีกครั้ง</div>';
     console.warn("fetchCandles:",e);
   }
 }
 
-function renderCandleGrid(rows){
-  // rows มาจาก Sheet เรียงใหม่สุดก่อน → เราแสดงล่าสุด 20 เล่ม
+function renderCandleGrid(rows, total){
+  document.getElementById("candle-total").textContent = total;
   const display = rows.slice(0,20);
-  document.getElementById("candle-total").textContent = rows.length;
-  if(display.length===0){
+  if(!display.length){
     document.getElementById("candle-grid").innerHTML='<div class="candle-empty">ยังไม่มีการจุดเทียน · เป็นคนแรกได้เลย 🙏</div>';
     return;
   }
   document.getElementById("candle-grid").innerHTML = display.map((c,i)=>`
-    <div class="candle-wrap">
+    <div class="candle-wrap" onclick="showCandlePopup(${i})" title="คลิกดูคำอธิษฐาน">
       ${candleSVG(hues[i%hues.length])}
       ${avatarEl(c.pic, c.name)}
       <div class="candle-lbl">${esc(c.name)}</div>
     </div>`).join("");
 }
 
+// ── Candle Popup ──
+function showCandlePopup(i){
+  const c = candleRows[i];
+  if(!c) return;
+  const aw = document.getElementById("modal-avatar-wrap");
+  const init = esc((c.name||"?")[0].toUpperCase());
+  aw.innerHTML = c.pic
+    ? `<img class="modal-avatar" src="${esc(c.pic)}" alt="" onerror="this.outerHTML='<div class=modal-avatar-d>${init}</div>'">`
+    : `<div class="modal-avatar-d">${init}</div>`;
+  document.getElementById("modal-name").textContent = c.name || "";
+  const ww = document.getElementById("modal-wish-wrap");
+  if(c.wish){
+    ww.innerHTML = `<div class="modal-wish">"${esc(c.wish)}"</div>`;
+  } else {
+    ww.innerHTML = `<div class="modal-no-wish">ไม่ได้ใส่คำอธิษฐาน</div>`;
+  }
+  document.getElementById("candle-modal").classList.add("show");
+}
+
+function closeModal(e){
+  if(e.target === document.getElementById("candle-modal"))
+    document.getElementById("candle-modal").classList.remove("show");
+}
+
+// ── Light Candle ──
 async function lightCandle(){
-  const btn  = document.getElementById("btn-light");
-  const name = document.getElementById("c-name").value.trim() || "ไม่ระบุชื่อ";
-  const wish = document.getElementById("c-wish").value.trim();
-  const pic  = lineProfile?.pic  || "";
-  const lineId   = lineProfile?.id   || "";
+  const nameEl = document.getElementById("c-name");
+  const name   = nameEl.value.trim();
+  const wish   = document.getElementById("c-wish").value.trim();
+
+  // validate ชื่อบังคับ
+  if(!name){
+    nameEl.classList.add("err-field");
+    nameEl.focus();
+    toast("❗ กรุณากรอกชื่อก่อนจุดเทียน");
+    setTimeout(()=>nameEl.classList.remove("err-field"), 2000);
+    return;
+  }
+
+  const btn = document.getElementById("btn-light");
+  btn.disabled = true; btn.textContent = "⏳ กำลังจุด...";
+
+  const pic    = lineProfile?.pic  || "";
+  const lineId = lineProfile?.id   || "";
   const lineName = lineProfile?.name || "";
 
-  btn.disabled = true;
-  btn.textContent = "⏳ กำลังจุด...";
-
   try{
-    // POST ไป Sheet ก่อน
-    await fetch(SCRIPT_URL, {
+    await fetch(SCRIPT_URL,{
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({type:"candle", name, wish, pic, lineId, lineName}),
       mode:"no-cors"
     });
-    // รอ 1.2s แล้ว re-fetch เพื่อโหลด candle ใหม่จาก Sheet
-    await new Promise(r=>setTimeout(r,1200));
+    await new Promise(r=>setTimeout(r,1400));
     await fetchCandles();
 
-    document.getElementById("c-name").value = "";
+    document.getElementById("c-name").value = lineProfile?.name || "";
     document.getElementById("c-wish").value = "";
     toast(`🕯️ จุดเทียนให้ "${name}" แล้ว · สาธุ! 🙏`);
 
-    // Discord: มีคำอธิษฐาน
-    if(wish) autoDiscord(`🕯️ **${name}** จุดเทียนพร้อมคำอธิษฐาน\n> *"${wish}"*`);
+    // Discord — แจ้งทุกครั้งที่จุดเทียน
+    const cnt = parseInt(document.getElementById("candle-total").textContent) || 0;
+    const wishPart = wish ? `\n> *"${wish}"*` : "";
+    autoDiscord(`🕯️ **${name}** จุดเทียนบูชาแล้ว${wishPart}`);
 
-    // Discord: milestone
-    const cnt = parseInt(document.getElementById("candle-total").textContent)||0;
+    // Discord milestone
     if(cnt > 0 && cnt % 10 === 0)
       autoDiscord(`🪔 มีผู้จุดเทียนออนไลน์ครบ **${cnt} เล่ม**แล้ว! สาธุ 🙏`);
 
   }catch(e){
-    toast("❌ เกิดข้อผิดพลาด ลองใหม่อีกครั้ง");
+    toast("❌ เกิดข้อผิดพลาด ลองใหม่");
   }finally{
-    btn.disabled = false;
-    btn.textContent = "🕯️ จุดเทียนบูชา";
+    btn.disabled = false; btn.textContent = "🕯️ จุดเทียนบูชา";
   }
 }
 
 document.getElementById("c-name").addEventListener("keydown",e=>{if(e.key==="Enter")lightCandle();});
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 // PRAYERS
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 const prayers=[
   {id:"itipiso",icon:"📿",title:"อิติปิโส — บทพุทธคุณ",
    text:`อิ ติ ปิ โส ภะ คะ วา อะ ระ หัง สัม มา สัม พุท โธ
@@ -395,15 +491,9 @@ const prayers=[
 นะ โม ตัส สะ ภะ คะ วะ โต อะ ระ หะ โต สัม มา สัม พุท ธัส สะ
 นะ โม ตัส สะ ภะ คะ วะ โต อะ ระ หะ โต สัม มา สัม พุท ธัส สะ`},
   {id:"tisarana",icon:"☸️",title:"ไตรสรณคมน์",
-   text:`พุท ธัง สะ ระ ณัง คัจ ฉา มิ
-ธัม มัง สะ ระ ณัง คัจ ฉา มิ
-สัง ฆัง สะ ระ ณัง คัจ ฉา มิ
-ทุ ติ ยัม ปิ พุท ธัง สะ ระ ณัง คัจ ฉา มิ
-ทุ ติ ยัม ปิ ธัม มัง สะ ระ ณัง คัจ ฉา มิ
-ทุ ติ ยัม ปิ สัง ฆัง สะ ระ ณัง คัจ ฉา มิ
-ตะ ติ ยัม ปิ พุท ธัง สะ ระ ณัง คัจ ฉา มิ
-ตะ ติ ยัม ปิ ธัม มัง สะ ระ ณัง คัจ ฉา มิ
-ตะ ติ ยัม ปิ สัง ฆัง สะ ระ ณัง คัจ ฉา มิ`},
+   text:`พุท ธัง สะ ระ ณัง คัจ ฉา มิ · ธัม มัง สะ ระ ณัง คัจ ฉา มิ · สัง ฆัง สะ ระ ณัง คัจ ฉา มิ
+ทุ ติ ยัม ปิ พุท ธัง สะ ระ ณัง คัจ ฉา มิ · ทุ ติ ยัม ปิ ธัม มัง สะ ระ ณัง คัจ ฉา มิ · ทุ ติ ยัม ปิ สัง ฆัง สะ ระ ณัง คัจ ฉา มิ
+ตะ ติ ยัม ปิ พุท ธัง สะ ระ ณัง คัจ ฉา มิ · ตะ ติ ยัม ปิ ธัม มัง สะ ระ ณัง คัจ ฉา มิ · ตะ ติ ยัม ปิ สัง ฆัง สะ ระ ณัง คัจ ฉา มิ`},
   {id:"sila5",icon:"📜",title:"ศีล ๕",
    text:`ปา ณา ติ ปา ตา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ
 อะ ทิน นา ทา นา เว ระ มะ ณี สิก ขา ปะ ทัง สะ มา ทิ ยา มิ
@@ -416,13 +506,12 @@ const prayers=[
 ตัง ปุน นะ มีนัง ชะ นะ ตา ปะ สัน ตา
 วิ สา ขะ ปุ ณ ณะ มีนัง มุ นิ นา วิ สิฏ ฐัง`},
 ];
-
 const ML=[
-  {min:0,  l:"เริ่มต้นบุญ",    c:"#7a5f28",bg:"rgba(122,95,40,.2)"},
-  {min:3,  l:"สะสมบุญ",        c:"#c9a84c",bg:"rgba(201,168,76,.2)"},
-  {min:9,  l:"บุญงอกงาม",      c:"#f0d080",bg:"rgba(240,208,128,.2)"},
-  {min:27, l:"บุญเต็มเปี่ยม ✨",c:"#f5a623",bg:"rgba(245,166,35,.2)"},
-  {min:108,l:"บุญ ๑๐๘ 🌟",    c:"#e8821a",bg:"rgba(232,130,26,.25)"},
+  {min:0,l:"เริ่มต้นบุญ",c:"#7a5f28",bg:"rgba(122,95,40,.2)"},
+  {min:3,l:"สะสมบุญ",c:"#c9a84c",bg:"rgba(201,168,76,.2)"},
+  {min:9,l:"บุญงอกงาม",c:"#f0d080",bg:"rgba(240,208,128,.2)"},
+  {min:27,l:"บุญเต็มเปี่ยม ✨",c:"#f5a623",bg:"rgba(245,166,35,.2)"},
+  {min:108,l:"บุญ ๑๐๘ 🌟",c:"#e8821a",bg:"rgba(232,130,26,.25)"},
 ];
 function merit(n){for(let i=ML.length-1;i>=0;i--)if(n>=ML[i].min)return ML[i];return ML[0];}
 
@@ -458,13 +547,14 @@ function doChant(id,e){
   const b=document.getElementById("badge-"+id);
   b.textContent=m.l;b.style.color=m.c;b.style.background=m.bg;b.style.borderColor=m.c;
   toast(`🙏 สาธุ! สวดครั้งที่ ${n}`);
-  postSheet("chant",{prayer:prayers.find(p=>p.id===id)?.title,count:n,lineName:lineProfile?.name||""});
+  // upsert ใน sheet (ส่ง lineId ไปด้วยเพื่อ upsert per user)
+  postSheet("chant",{prayer:prayers.find(p=>p.id===id)?.title, prayerId:id, count:n, lineId:lineProfile?.id||"", lineName:lineProfile?.name||""});
   if(n===108) autoDiscord(`🌟 **${prayers.find(p=>p.id===id)?.title}** — สวดครบ 108 ครั้ง! สาธุ 🙏`);
 }
 
-// ═══════════════════════════════════════════
-// SHEET POST (no-cors — ไม่สามารถรับ response ได้)
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
+// SHEET POST
+// ═══════════════════════════════════
 async function postSheet(type,data){
   try{
     await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
@@ -472,17 +562,18 @@ async function postSheet(type,data){
   }catch(e){console.warn("Sheet:",e);}
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 // DISCORD
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 async function autoDiscord(content){
   try{
-    const tot=Object.values(chants).reduce((a,b)=>a+b,0);
+    const tot = Object.values(chants).reduce((a,b)=>a+b,0);
+    const cnt = parseInt(document.getElementById("candle-total").textContent)||0;
     await fetch(DISCORD_WH,{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({username:"วิสาขบูชา 🪔",embeds:[{
         title:"🪔 วันวิสาขบูชา ๒๕๖๙",description:content,color:0xc9a84c,
         fields:[
-          {name:"🕯️ เทียนทั้งหมด",value:`${document.getElementById("candle-total").textContent} เล่ม`,inline:true},
+          {name:"🕯️ เทียนทั้งหมด",value:`${cnt} เล่ม`,inline:true},
           {name:"🙏 สวดมนต์รวม",value:`${tot} ครั้ง`,inline:true},
         ],
         footer:{text:"สาธุ 🙏"},timestamp:new Date().toISOString()
@@ -490,21 +581,15 @@ async function autoDiscord(content){
   }catch(e){console.warn("Discord:",e);}
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 // UTIL
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
-// ═══════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════
-fetchConfig();       // โหลด title + logo + subtitle จาก Sheet
-fetchCandles();      // โหลดเทียนจาก Sheet (เห็นของทุกคน)
-renderPrayers();
+// ═══════════════════════════════════
+// INIT — เริ่มที่ LIFF ก่อนเสมอ
+// ═══════════════════════════════════
 initLiff();
-
-// auto-refresh เทียนทุก 30 วินาที
-setInterval(fetchCandles, 30000);
 </script>
 </body>
 </html>
