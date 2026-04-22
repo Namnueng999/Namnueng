@@ -309,10 +309,30 @@
     line-height: 1.2;
   }
 
+  #name-input {
+    font-family: 'Mitr', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gold);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(244,197,66,0.3);
+    outline: none;
+    width: 100%;
+    padding: 2px 0;
+    line-height: 1.4;
+  }
+  #name-input:focus {
+    border-bottom-color: var(--gold);
+  }
+  #name-input::placeholder { color: rgba(244,197,66,0.4); }
+
   .user-sub {
     font-size: 11px;
-    color: rgba(255,255,255,0.5);
-    margin-top: 2px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 3px;
+    font-family: monospace;
+    letter-spacing: 0.02em;
   }
 
   .form-title {
@@ -823,9 +843,9 @@
   <div id="form-card">
     <div class="form-header">
       <img id="user-avatar" src="https://via.placeholder.com/46x46/1a3a5c/gold?text=👤" alt="avatar">
-      <div>
-        <div class="user-name" id="user-display-name">กำลังโหลด...</div>
-        <div class="user-sub">เข้าสู่ระบบด้วย LINE แล้ว ✓</div>
+      <div style="flex:1;min-width:0;">
+        <input id="name-input" type="text" maxlength="30" placeholder="ชื่อของคุณ..." value="">
+        <div class="user-sub" id="user-uid">กำลังโหลด...</div>
       </div>
     </div>
 
@@ -1132,14 +1152,28 @@ async function initLiff() {
 
     const profile = await liff.getProfile();
     userProfile = {
-      userId: profile.userId,
+      userId:      profile.userId,
       displayName: profile.displayName,
-      pictureUrl: profile.pictureUrl || 'https://via.placeholder.com/46x46/1a3a5c/gold?text=%F0%9F%AA%B7',
+      pictureUrl:  profile.pictureUrl || 'https://via.placeholder.com/46x46/1a3a5c/gold?text=%F0%9F%AA%B7',
     };
 
-    document.getElementById('user-display-name').textContent = userProfile.displayName;
-    document.getElementById('user-avatar').src = userProfile.pictureUrl;
+    // โหลดชื่อที่บันทึกไว้ก่อน (ถ้ามี) หรือใช้ชื่อจาก LINE
+    const savedName = localStorage.getItem('kr_name_' + userProfile.userId);
+    userProfile.displayName = savedName || userProfile.displayName;
+
+    document.getElementById('name-input').value  = userProfile.displayName;
+    document.getElementById('user-uid').textContent = userProfile.userId;
+    document.getElementById('user-avatar').src   = userProfile.pictureUrl;
     document.getElementById('login-screen').style.display = 'none';
+
+    // บันทึกชื่อเมื่อแก้ไข
+    document.getElementById('name-input').addEventListener('input', function() {
+      userProfile.displayName = this.value.trim() || profile.displayName;
+      localStorage.setItem('kr_name_' + userProfile.userId, userProfile.displayName);
+    });
+
+    // บันทึก user ลง sheet (upsert — ไม่เพิ่ม row ใหม่ถ้ามีอยู่แล้ว)
+    saveUserToSheet(userProfile);
   
   } catch (err) {
     console.error('LIFF init error:', err);
@@ -1192,7 +1226,7 @@ async function floatKrathong() {
 
   const krathong = {
     userId:      userProfile.userId,
-    displayName: userProfile.displayName,
+    displayName: document.getElementById('name-input').value.trim() || userProfile.displayName,
     pictureUrl:  userProfile.pictureUrl,
     wish:        wish,
     krathongId:  selectedKrathong.fileId || selectedKrathong.id || '',
@@ -1241,6 +1275,21 @@ async function floatKrathong() {
 
   btn.disabled = false;
   btn.innerHTML = '🪷 &nbsp;ลอยกระทง';
+}
+
+// ===== SAVE USER TO SHEET (upsert — ไม่เพิ่ม row ซ้ำ) =====
+async function saveUserToSheet(u) {
+  try {
+    await gasGet({
+      action:      'upsertUser',
+      userId:      u.userId,
+      displayName: u.displayName,
+      pictureUrl:  u.pictureUrl,
+      lastSeen:    new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' }),
+    });
+  } catch(e) {
+    console.warn('saveUserToSheet error:', e.message);
+  }
 }
 
 // ===== SAVE TO SHEET =====
