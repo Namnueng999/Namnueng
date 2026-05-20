@@ -751,11 +751,7 @@
     margin-top: 1px;
   }
 
-  .recent-badge {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
+
 
   /* Loading spinner */
   .spinner {
@@ -1173,10 +1169,7 @@ async function initLiff() {
       pictureUrl:  profile.pictureUrl || 'https://via.placeholder.com/46x46/1a3a5c/gold?text=%F0%9F%AA%B7',
     };
 
-    // โหลดชื่อที่บันทึกไว้ก่อน (ถ้ามี) หรือใช้ชื่อจาก LINE
-    const savedName = localStorage.getItem('kr_name_' + userProfile.userId);
-    userProfile.displayName = savedName || userProfile.displayName;
-
+    // ใช้ชื่อจาก LINE เสมอ ไม่จำข้ามครั้ง
     document.getElementById('name-input').value  = userProfile.displayName;
     document.getElementById('user-uid').textContent = userProfile.userId;
     document.getElementById('user-avatar').src   = userProfile.pictureUrl;
@@ -1185,7 +1178,7 @@ async function initLiff() {
     // บันทึกชื่อเมื่อแก้ไข
     document.getElementById('name-input').addEventListener('input', function() {
       userProfile.displayName = this.value.trim() || profile.displayName;
-      localStorage.setItem('kr_name_' + userProfile.userId, userProfile.displayName);
+      // (ไม่บันทึก localStorage)
     });
 
     // บันทึก user ลง sheet (upsert — ไม่เพิ่ม row ใหม่ถ้ามีอยู่แล้ว)
@@ -1208,18 +1201,20 @@ async function loadExistingKrathongs() {
 
     const data = await gasGet({ action: 'list' });
     const rows = data.rows || [];
+    // เก็บข้อมูลทั้งหมดไว้ใน krathongData แต่ render แค่ 5 อันล่าสุด
     rows.forEach(row => {
-      const k = {
+      krathongData.push({
         userId:      row[0] || '',
         displayName: row[1] || '',
         pictureUrl:  row[2] || '',
         wish:        row[3] || '',
-        style:       parseInt(row[4]) || 0,
-        timestamp:   row[5] || '',
-      };
-      krathongData.push(k);
-      renderKrathong(k);
+        krathongId:  row[4] || '',
+        krathongUrl: row[5] || '',
+        timestamp:   row[6] || row[5] || '',
+      });
     });
+    // render แค่ 5 อันล่าสุด
+    krathongData.slice(-5).forEach(k => renderKrathong(k));
     updateCounter();
     updateRecent();
   } catch(e) {
@@ -1456,7 +1451,7 @@ function updateRecent() {
           <div class="recent-name">${escHtml(k.displayName)}</div>
           <div class="recent-wish">${k.wish ? escHtml(k.wish) : '—'}</div>
         </div>
-        <div class="recent-badge" style="background:${color};opacity:0.8;box-shadow:0 0 6px ${color}55;"></div>
+
       </div>`;
   }).join('');
 }
