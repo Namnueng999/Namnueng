@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0b0b0f;
+    --surface: #131318;
+    --surface2: #1c1c24;
+    --surface3: #22222e;
+    --border: #2a2a38;
+    --text: #e8e8f0;
+    --text-muted: #6b6b88;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --blue: #6366f1;
+    --purple: #a78bfa;
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans Thai', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .sidebar-logo h2 { font-size: 16px; font-weight: 700; }
+  .sidebar-logo p { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 0;
+    transition: all 0.2s;
+    color: var(--text-muted);
+    border-left: 3px solid transparent;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: var(--surface2); color: var(--text); border-left-color: var(--purple); }
+  .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Main Content */
+  .main {
+    margin-left: 240px;
+    padding: 32px;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .page-title { font-size: 24px; font-weight: 700; }
+  .page-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+  /* Stats Row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .stat-value { font-size: 28px; font-weight: 700; line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+  .stat-card.pending .stat-value { color: var(--yellow); }
+  .stat-card.approved .stat-value { color: var(--green); }
+  .stat-card.rejected .stat-value { color: var(--red); }
+  .stat-card.total .stat-value { color: var(--purple); }
+
+  /* Control Panel */
+  .control-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .control-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  .control-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+
+  /* Toggle Switch */
+  .toggle-wrap { display: flex; align-items: center; gap: 12px; }
+  .toggle {
+    position: relative;
+    width: 52px; height: 28px;
+    cursor: pointer;
+  }
+  .toggle input { display: none; }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--surface3);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .toggle input:checked + .toggle-track { background: var(--green); border-color: var(--green); }
+  .toggle-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: left 0.3s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .toggle input:checked ~ .toggle-thumb { left: 27px; }
+  .toggle-status { font-size: 13px; font-weight: 600; }
+  .toggle-status.on { color: var(--green); }
+  .toggle-status.off { color: var(--text-muted); }
+
+  .divider { width: 1px; height: 40px; background: var(--border); }
+
+  /* Filter Tabs */
+  .filter-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .filter-tab {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .filter-tab:hover { color: var(--text); border-color: var(--text-muted); }
+  .filter-tab.active { background: var(--purple); border-color: var(--purple); color: white; }
+  .filter-tab .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 1px 7px;
+    border-radius: 20px;
+    font-size: 11px;
+    margin-left: 5px;
+  }
+
+  /* Cards Grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .photo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .photo-card:hover { border-color: var(--purple); transform: translateY(-2px); }
+
+  .card-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    background: var(--surface3);
+    display: block;
+    cursor: pointer;
+  }
+
+  .card-body { padding: 14px; }
+
+  .card-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .card-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--surface3);
+  }
+  .card-username { font-size: 14px; font-weight: 600; }
+  .card-time { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+  .card-social {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .social-tag {
+    font-size: 11px;
+    background: var(--surface3);
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: var(--text-muted);
+  }
+
+  .card-msg {
+    font-size: 13px;
+    color: var(--text-muted);
+    background: var(--surface3);
+    padding: 8px 10px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .status-pending { background: rgba(245,158,11,0.15); color: var(--yellow); }
+  .status-approved { background: rgba(34,197,94,0.15); color: var(--green); }
+  .status-rejected { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .action-btn {
+    flex: 1;
+    padding: 9px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-approve {
+    background: rgba(34,197,94,0.15);
+    color: var(--green);
+    border: 1px solid rgba(34,197,94,0.3);
+  }
+  .btn-approve:hover { background: var(--green); color: white; }
+  .btn-reject {
+    background: rgba(239,68,68,0.1);
+    color: var(--red);
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+  .btn-reject:hover { background: var(--red); color: white; }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    grid-column: 1/-1;
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-text { font-size: 15px; }
+
+  /* Image Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: none;
+    cursor: zoom-out;
+    backdrop-filter: blur(8px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 12px;
+    cursor: default;
+  }
+  .modal-close {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    font-size: 28px;
+    cursor: pointer;
+    color: white;
+    line-height: 1;
+    z-index: 1001;
+  }
+
+  /* Loader */
+  .loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    grid-column: 1/-1;
+  }
+  .loader-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--purple);
+    margin: 0 4px;
+    animation: loader 1.2s ease-in-out infinite;
+  }
+  .loader-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loader-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes loader {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .refresh-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 16px;
+    border-radius: 9px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .refresh-btn:hover { border-color: var(--purple); color: var(--purple); }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 16px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h2>🎛️ Admin Panel</h2>
+    <p>Digital Photo Display</p>
+  </div>
+
+  <a class="nav-item active" onclick="showTab('submissions')">
+    <span class="nav-icon">📸</span> รูปที่ส่งมา
+  </a>
+  <a class="nav-item" onclick="window.open('?page=overlay','_blank')">
+    <span class="nav-icon">🖥️</span> OBS Overlay
+  </a>
+  <a class="nav-item" onclick="window.open('?page=upload','_blank')">
+    <span class="nav-icon">📤</span> หน้าส่งรูป
+  </a>
+
+  <div class="sidebar-bottom">
+    <div style="font-size:11px; color:var(--text-muted);">Auto refresh ทุก 30 วิ</div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="page-header">
+    <div>
+      <div class="page-title">📸 รูปที่ส่งมา</div>
+      <div class="page-sub">จัดการและอนุมัติรูปภาพก่อนขึ้นจอ</div>
+    </div>
+    <button class="refresh-btn" onclick="loadData()">🔄 รีเฟรช</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card pending">
+      <div class="stat-value" id="statPending">-</div>
+      <div class="stat-label">⏳ รอการอนุมัติ</div>
+    </div>
+    <div class="stat-card approved">
+      <div class="stat-value" id="statApproved">-</div>
+      <div class="stat-label">✅ อนุมัติแล้ว</div>
+    </div>
+    <div class="stat-card rejected">
+      <div class="stat-value" id="statRejected">-</div>
+      <div class="stat-label">❌ ปฏิเสธ</div>
+    </div>
+    <div class="stat-card total">
+      <div class="stat-value" id="statTotal">-</div>
+      <div class="stat-label">📊 ทั้งหมด</div>
+    </div>
+  </div>
+
+  <!-- Control Panel -->
+  <div class="control-panel">
+    <div>
+      <div class="control-title">⚡ อนุมัติอัตโนมัติ</div>
+      <div class="control-label">เปิดเมื่อไม่ต้องการ review ทุกรูป</div>
+    </div>
+    <div class="toggle-wrap">
+      <label class="toggle">
+        <input type="checkbox" id="autoApproveToggle" onchange="toggleAutoApprove()">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+      <span class="toggle-status off" id="autoApproveStatus">ปิดอยู่</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="font-size:13px; color:var(--text-muted);">
+      💡 เมื่อเปิด รูปจะขึ้นจออัตโนมัติ<br>โดยไม่ต้องรออนุมัติ
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <div class="filter-tab active" onclick="filterCards('all')" data-filter="all">
+      ทั้งหมด <span class="badge" id="tabAll">0</span>
+    </div>
+    <div class="filter-tab" onclick="filterCards('pending')" data-filter="pending">
+      ⏳ รอการอนุมัติ <span class="badge" id="tabPending">0</span>
+    </div>
+    <div class="filter-tab" onclick="filterCards('approved')" data-filter="approved">
+      ✅ อนุมัติแล้ว <span class="badge" id="tabApproved">0</span>
+    </div>
+    <div class="filter-tab" onclick="filterCards('rejected')" data-filter="rejected">
+      ❌ ปฏิเสธ <span class="badge" id="tabRejected">0</span>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="cards-grid" id="cardsGrid">
+    <div class="loader">
+      <div class="loader-dot"></div>
+      <div class="loader-dot"></div>
+      <div class="loader-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal-overlay" id="imageModal" onclick="closeModal()">
+  <span class="modal-close" onclick="closeModal()">✕</span>
+  <img class="modal-img" id="modalImg" onclick="event.stopPropagation()">
+</div>
+
+<script>
+let allData = [];
+let currentFilter = 'all';
+
+// ---- GAS BRIDGE ----
+function callServer(action, params = {}) {
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler(resolve)
+      .withFailureHandler(reject)
+      [action](params);
+  });
+}
+
+// ---- LOAD DATA ----
+async function loadData() {
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
+
+  try {
+    const [subResult, config] = await Promise.all([
+      new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).getSubmissionsFromClient()),
+      new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej).getConfigFromClient())
+    ]);
+
+    allData = subResult.data || [];
+    updateStats();
+    updateAutoToggle(config);
+    renderCards(currentFilter);
+  } catch (err) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">โหลดข้อมูลไม่ได้: ${err.message}</div></div>`;
+  }
+}
+
+function updateStats() {
+  const pending = allData.filter(d => d['Status'] === 'pending').length;
+  const approved = allData.filter(d => d['Status'] === 'approved').length;
+  const rejected = allData.filter(d => d['Status'] === 'rejected').length;
+  const total = allData.length;
+
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('statApproved').textContent = approved;
+  document.getElementById('statRejected').textContent = rejected;
+  document.getElementById('statTotal').textContent = total;
+
+  document.getElementById('tabAll').textContent = total;
+  document.getElementById('tabPending').textContent = pending;
+  document.getElementById('tabApproved').textContent = approved;
+  document.getElementById('tabRejected').textContent = rejected;
+}
+
+function updateAutoToggle(config) {
+  const toggle = document.getElementById('autoApproveToggle');
+  const status = document.getElementById('autoApproveStatus');
+  const isOn = config && config.autoApprove === 'true';
+  toggle.checked = isOn;
+  status.textContent = isOn ? 'เปิดอยู่' : 'ปิดอยู่';
+  status.className = `toggle-status ${isOn ? 'on' : 'off'}`;
+}
+
+// ---- RENDER CARDS ----
+function filterCards(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.filter === filter);
+  });
+  renderCards(filter);
+}
+
+function renderCards(filter) {
+  const grid = document.getElementById('cardsGrid');
+  const filtered = filter === 'all' ? allData : allData.filter(d => d['Status'] === filter);
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🖼️</div><div class="empty-text">ไม่มีรูปในหมวดนี้</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(item => {
+    const status = item['Status'];
+    const statusHTML = status === 'approved'
+      ? '<span class="card-status status-approved">✅ อนุมัติแล้ว</span>'
+      : status === 'rejected'
+        ? '<span class="card-status status-rejected">❌ ปฏิเสธ</span>'
+        : '<span class="card-status status-pending">⏳ รอการอนุมัติ</span>';
+
+    const time = item['Timestamp'] ? new Date(item['Timestamp']).toLocaleString('th-TH') : '';
+    const fb = item['Facebook'] ? `<span class="social-tag">📘 ${item['Facebook']}</span>` : '';
+    const ig = item['Instagram'] ? `<span class="social-tag">📷 @${item['Instagram']}</span>` : '';
+    const msg = item['Message'] ? `<div class="card-msg">"${item['Message']}"</div>` : '';
+
+    const actions = status === 'pending'
+      ? `<button class="action-btn btn-approve" onclick="approveCard('${item['ID']}', this)">✅ อนุมัติ</button>
+         <button class="action-btn btn-reject" onclick="rejectCard('${item['ID']}', this)">❌ ปฏิเสธ</button>`
+      : status === 'approved'
+        ? `<button class="action-btn btn-reject" style="flex:1" onclick="rejectCard('${item['ID']}', this)">❌ ยกเลิกอนุมัติ</button>`
+        : `<button class="action-btn btn-approve" style="flex:1" onclick="approveCard('${item['ID']}', this)">✅ อนุมัติ</button>`;
+
+    return `
+      <div class="photo-card" data-id="${item['ID']}" data-status="${status}">
+        <img class="card-image" src="${item['Image URL (Drive)']}" loading="lazy" 
+             onclick="openModal('${item['Image URL (Drive)']}')"
+             onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22><rect fill=%22%231c1c24%22 width=%22400%22 height=%22300%22/><text x=%22200%22 y=%22150%22 fill=%22%23666%22 text-anchor=%22middle%22 font-size=%2240%22>🖼️</text></svg>'">
+        <div class="card-body">
+          <div class="card-user">
+            <img class="card-avatar" src="${item['Profile Pic'] || ''}" 
+                 onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%231c1c24%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 fill=%22%23666%22 text-anchor=%22middle%22 font-size=%2216%22>👤</text></svg>'">
+            <div>
+              <div class="card-username">${item['Display Name'] || 'Unknown'}</div>
+              <div class="card-time">${time}</div>
+            </div>
+          </div>
+          ${statusHTML}
+          ${(fb || ig) ? `<div class="card-social">${fb}${ig}</div>` : ''}
+          ${msg}
+          <div class="card-actions">${actions}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ---- ACTIONS ----
+async function approveCard(id, btn) {
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  try {
+    await new Promise((res, rej) =>
+      google.script.run.withSuccessHandler(res).withFailureHandler(rej).handleApproveFromClient({ id })
+    );
+
+    const card = document.querySelector(`[data-id="${id}"]`);
+    card.dataset.status = 'approved';
+    const item = allData.find(d => d['ID'] === id);
+    if (item) item['Status'] = 'approved';
+    updateStats();
+    renderCards(currentFilter);
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = '✅ อนุมัติ';
+    alert('เกิดข้อผิดพลาด: ' + err.message);
+  }
+}
+
+async function rejectCard(id, btn) {
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  try {
+    await new Promise((res, rej) =>
+      google.script.run.withSuccessHandler(res).withFailureHandler(rej).handleRejectFromClient({ id })
+    );
+
+    const item = allData.find(d => d['ID'] === id);
+    if (item) item['Status'] = 'rejected';
+    updateStats();
+    renderCards(currentFilter);
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = '❌ ปฏิเสธ';
+    alert('เกิดข้อผิดพลาด: ' + err.message);
+  }
+}
+
+async function toggleAutoApprove() {
+  const val = document.getElementById('autoApproveToggle').checked;
+  const status = document.getElementById('autoApproveStatus');
+  status.textContent = val ? 'เปิดอยู่' : 'ปิดอยู่';
+  status.className = `toggle-status ${val ? 'on' : 'off'}`;
+
+  try {
+    await new Promise((res, rej) =>
+      google.script.run.withSuccessHandler(res).withFailureHandler(rej).handleToggleAutoFromClient({ value: val })
+    );
+  } catch (err) {
+    // revert
+    document.getElementById('autoApproveToggle').checked = !val;
+    status.textContent = !val ? 'เปิดอยู่' : 'ปิดอยู่';
+    status.className = `toggle-status ${!val ? 'on' : 'off'}`;
+  }
+}
+
+// ---- MODAL ----
+function openModal(url) {
+  document.getElementById('modalImg').src = url;
+  document.getElementById('imageModal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('imageModal').classList.remove('open');
+}
+
+// Auto refresh
+setInterval(loadData, 30000);
+loadData();
+</script>
+</body>
+</html>
