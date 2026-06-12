@@ -18,23 +18,18 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx
 .pill{width:calc(100% - 32px);max-width:480px;margin:-22px auto 0;position:relative;z-index:10;background:var(--s1);border:1px solid var(--bd);border-radius:50px;padding:10px 16px 10px 10px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 28px rgba(0,0,0,.5)}
 .ava{width:40px;height:40px;border-radius:50%;background:var(--s2);border:2px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden}
 .ava img{width:100%;height:100%;object-fit:cover}
-.pn{font-size:14px;font-weight:600;flex:1}
-.ps{font-size:11px;color:var(--g)}
+.pn{font-size:14px;font-weight:600;flex:1}.ps{font-size:11px;color:var(--g)}
 .lbtn{background:var(--g);color:#fff;border:none;padding:8px 16px;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
-.lbtn:hover{background:var(--gd)}
 .wrap{width:calc(100% - 32px);max-width:480px;margin:20px auto 0;display:flex;flex-direction:column;gap:14px}
 .card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:18px}
 .lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);margin-bottom:11px;display:flex;align-items:center;gap:6px}
 .req{color:var(--red)}.opt{font-size:10px;background:var(--s2);color:var(--mu);padding:2px 7px;border-radius:20px;font-weight:400;letter-spacing:0;text-transform:none}
 .dz{border:2px dashed var(--bd);border-radius:12px;min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;background:var(--s2);transition:.25s;-webkit-tap-highlight-color:transparent}
 .dz:hover,.dz.over{border-color:var(--g);background:rgba(6,199,85,.05)}
-.dz-ico{font-size:46px;pointer-events:none}
-.dz-txt{font-size:14px;color:var(--mu);margin-top:8px;pointer-events:none}
-.dz-sub{font-size:11px;color:var(--mu);opacity:.65;margin-top:3px;pointer-events:none}
+.dz-ico{font-size:46px;pointer-events:none}.dz-txt{font-size:14px;color:var(--mu);margin-top:8px;pointer-events:none}.dz-sub{font-size:11px;color:var(--mu);opacity:.65;margin-top:3px;pointer-events:none}
 #fileInput{display:none}
 #prevImg{width:100%;max-height:300px;object-fit:cover;border-radius:10px;display:none}
 .rmbtn{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.7);color:#fff;border:none;padding:5px 10px;border-radius:8px;font-size:12px;cursor:pointer;display:none;font-family:inherit;z-index:2}
-.rmbtn:hover{background:rgba(239,68,68,.9)}
 .progwrap{background:var(--s2);border-radius:8px;height:5px;overflow:hidden;margin-top:10px;display:none}
 .progbar{height:100%;background:linear-gradient(90deg,var(--g),#06ffaa);border-radius:8px;width:0%;transition:width .3s}
 .inp{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:11px 13px;font-size:14px;color:var(--tx);font-family:inherit;outline:none;transition:.2s}
@@ -48,8 +43,7 @@ textarea.inp{resize:none;min-height:86px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .char{text-align:right;font-size:11px;color:var(--mu);margin-top:5px}
 .sbtn{width:100%;background:linear-gradient(135deg,#06C755,#028a3b);color:#fff;border:none;padding:15px;border-radius:var(--r);font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(6,199,85,.3);transition:.25s}
-.sbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(6,199,85,.4)}
-.sbtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.sbtn:hover:not(:disabled){transform:translateY(-2px)}.sbtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 .okbox{text-align:center;padding:40px 20px;display:none}
@@ -72,7 +66,6 @@ textarea.inp{resize:none;min-height:86px}
   <h1>ส่งรูปขึ้นจอ</h1>
   <p>แชร์ช่วงเวลาพิเศษของคุณ</p>
 </div>
-
 <div class="pill">
   <div class="ava" id="ava">👤</div>
   <div style="flex:1;min-width:0">
@@ -81,10 +74,8 @@ textarea.inp{resize:none;min-height:86px}
   </div>
   <button class="lbtn" id="lBtn" onclick="doLogin()" style="display:none">เข้าสู่ระบบ</button>
 </div>
-
 <div class="wrap">
   <div class="noln" id="noln"><span>🔐</span><p>กรุณาเข้าสู่ระบบด้วย LINE<br>เพื่อส่งรูปขึ้นจอ</p></div>
-
   <div class="card" id="cImg" style="display:none">
     <div class="lbl">📷 รูปภาพ <span class="req">*</span></div>
     <div class="dz" id="dz" onclick="triggerFile()">
@@ -97,7 +88,6 @@ textarea.inp{resize:none;min-height:86px}
     <input type="file" id="fileInput" accept="image/*" onchange="onFile(event)">
     <div class="progwrap" id="progWrap"><div class="progbar" id="progBar"></div></div>
   </div>
-
   <div class="card" id="cSoc" style="display:none">
     <div class="lbl">🔗 โซเชียล <span class="opt">ไม่บังคับ</span></div>
     <div class="row2">
@@ -105,20 +95,17 @@ textarea.inp{resize:none;min-height:86px}
       <div class="ipre"><span class="pre">@</span><input class="preinp" id="ig" type="text" placeholder="Instagram"></div>
     </div>
   </div>
-
   <div class="card" id="cMsg" style="display:none">
     <div class="lbl">💬 ข้อความ <span class="opt">ไม่บังคับ</span></div>
     <textarea class="inp" id="msg" placeholder="ส่งความรู้สึกถึงทุกคนในงาน..." maxlength="150" oninput="cc()"></textarea>
     <div class="char"><span id="cn">0</span>/150</div>
   </div>
-
   <div id="subWrap" style="display:none">
     <button class="sbtn" id="subBtn" onclick="doSubmit()">
       <div class="spin" id="sp"></div>
       <span id="bTxt">🚀 ส่งรูปขึ้นจอ</span>
     </button>
   </div>
-
   <div class="okbox" id="okBox">
     <div class="okico">🎊</div>
     <h2>ส่งสำเร็จแล้ว!</h2>
@@ -126,77 +113,60 @@ textarea.inp{resize:none;min-height:86px}
     <button class="again" onclick="resetForm()">📤 ส่งรูปเพิ่มเติม</button>
   </div>
 </div>
-
 <div class="toast" id="toast"><span id="tIco"></span><span id="tTxt"></span></div>
 
 <script>
-/* ══════════════════════════════════════════════════
+/* ══════════════════════════════════════
    CONFIG
-══════════════════════════════════════════════════ */
+══════════════════════════════════════ */
 const API     = 'https://script.google.com/macros/s/AKfycbyxZPU2Y-BJrZE2vzkYUS6VVxl8NOULz_0mf_X8lIRfpYNIVdbKdpQkTqRd_43DmvQ/exec';
 const LIFF_ID = '2007719419-R2sSoxYq';
 const MAX_PX  = 1200;
 const QUALITY = 0.82;
 
-let profile = null;
-let imgB64  = null;
-let ttTimer = null;
+let profile = null, imgB64 = null, ttTimer = null;
 
-/* ── LIFF ────────────────────────────────────── */
+/* ── LIFF ──────────────────────────────── */
 async function initLiff() {
   try {
     await liff.init({ liffId: LIFF_ID });
     if (liff.isLoggedIn()) await loadProfile();
     else liff.isInClient() ? liff.login() : showNoLogin();
-  } catch(e) {
-    console.error('LIFF:', e);
-    showNoLogin();
-  }
+  } catch(e) { console.error('LIFF:', e); showNoLogin(); }
 }
-
 async function loadProfile() {
   profile = await liff.getProfile();
   document.getElementById('pName').textContent = profile.displayName;
   document.getElementById('pStat').textContent = '✅ เข้าสู่ระบบแล้ว';
   document.getElementById('lBtn').style.display = 'none';
-  if (profile.pictureUrl) {
+  if (profile.pictureUrl)
     document.getElementById('ava').innerHTML = '<img src="'+profile.pictureUrl+'">';
-  }
   showForm();
 }
-
 function showNoLogin() {
   document.getElementById('pName').textContent = 'ยังไม่ได้เข้าสู่ระบบ';
   document.getElementById('pStat').textContent = 'กรุณา Login LINE ก่อน';
   document.getElementById('lBtn').style.display = 'block';
   document.getElementById('noln').style.display = 'block';
 }
-
 function doLogin() { liff.login({ redirectUri: location.href }); }
-
 function showForm() {
   document.getElementById('noln').style.display = 'none';
-  ['cImg','cSoc','cMsg','subWrap'].forEach(id => document.getElementById(id).style.display = 'block');
+  ['cImg','cSoc','cMsg','subWrap'].forEach(id => document.getElementById(id).style.display='block');
 }
 
-/* ── IMAGE ───────────────────────────────────── */
-function triggerFile() {
-  document.getElementById('fileInput').click();
-}
-
+/* ── IMAGE ─────────────────────────────── */
+function triggerFile() { document.getElementById('fileInput').click(); }
 function onFile(e) {
   const f = e.target.files[0];
   if (!f) return;
   if (f.size > 10*1024*1024) { toast('รูปใหญ่เกิน 10 MB', false); return; }
   compress(f);
 }
-
 function compress(file) {
   const pw = document.getElementById('progWrap');
   const pb = document.getElementById('progBar');
-  pw.style.display = 'block';
-  pb.style.width   = '20%';
-
+  pw.style.display = 'block'; pb.style.width = '20%';
   const reader = new FileReader();
   reader.onload = ev => {
     const img = new Image();
@@ -204,68 +174,82 @@ function compress(file) {
       pb.style.width = '60%';
       let w = img.width, h = img.height;
       if (w > MAX_PX || h > MAX_PX) {
-        if (w > h) { h = Math.round(h * MAX_PX / w); w = MAX_PX; }
-        else        { w = Math.round(w * MAX_PX / h); h = MAX_PX; }
+        if (w > h) { h = Math.round(h*MAX_PX/w); w = MAX_PX; }
+        else       { w = Math.round(w*MAX_PX/h); h = MAX_PX; }
       }
-      const canvas = document.createElement('canvas');
-      canvas.width  = w;
-      canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      imgB64 = canvas.toDataURL('image/jpeg', QUALITY);
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      imgB64 = c.toDataURL('image/jpeg', QUALITY);
       pb.style.width = '100%';
-      setTimeout(() => {
-        pw.style.display = 'none';
-        pb.style.width   = '0%';
-        showPreview(imgB64);
-      }, 350);
+      setTimeout(() => { pw.style.display='none'; pb.style.width='0%'; showPreview(imgB64); }, 350);
     };
     img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 }
-
 function showPreview(b64) {
-  const img = document.getElementById('prevImg');
-  img.src   = b64;
-  img.style.display = 'block';
+  document.getElementById('prevImg').src = b64;
+  document.getElementById('prevImg').style.display = 'block';
   document.getElementById('rmBtn').style.display = 'block';
-  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub')
-    .forEach(el => el.style.display = 'none');
+  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub').forEach(el => el.style.display='none');
 }
-
 function rmImg(e) {
-  e.stopPropagation();
-  imgB64 = null;
-  document.getElementById('fileInput').value    = '';
+  e.stopPropagation(); imgB64 = null;
+  document.getElementById('fileInput').value = '';
   document.getElementById('prevImg').style.display = 'none';
-  document.getElementById('rmBtn').style.display   = 'none';
-  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub')
-    .forEach(el => el.style.display = '');
+  document.getElementById('rmBtn').style.display = 'none';
+  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub').forEach(el => el.style.display='');
 }
-
-// Drag-drop
 const dzEl = document.getElementById('dz');
 dzEl.addEventListener('dragover',  e => { e.preventDefault(); dzEl.classList.add('over'); });
-dzEl.addEventListener('dragleave', ()=> dzEl.classList.remove('over'));
+dzEl.addEventListener('dragleave', () => dzEl.classList.remove('over'));
 dzEl.addEventListener('drop', e => {
   e.preventDefault(); dzEl.classList.remove('over');
   const f = e.dataTransfer.files[0];
   if (f && f.type.startsWith('image/')) compress(f);
 });
-
 function cc() { document.getElementById('cn').textContent = document.getElementById('msg').value.length; }
 
-/* ── SUBMIT ───────────────────────────────────
-   ใช้ GET + encodeURIComponent(JSON)
-   เพราะ GAS POST มีปัญหา CORS redirect
-──────────────────────────────────────────────── */
+/* ══════════════════════════════════════
+   GAS API CALL — ใช้ XHR แทน fetch
+   เพราะ LINE WebView บล็อก fetch cross-origin
+   XHR follow redirect ได้และ work ใน LINE
+══════════════════════════════════════ */
+function gasRequest(params) {
+  return new Promise((resolve, reject) => {
+    const qs  = Object.entries(params)
+      .map(([k,v]) => k + '=' + encodeURIComponent(typeof v === 'object' ? JSON.stringify(v) : v))
+      .join('&');
+    const url = API + '?' + qs;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.timeout = 60000; // 60s timeout สำหรับรูปใหญ่
+
+    xhr.onload = function() {
+      try {
+        const data = JSON.parse(xhr.responseText);
+        resolve(data);
+      } catch(_) {
+        reject(new Error('Parse error: ' + xhr.responseText.substring(0, 100)));
+      }
+    };
+    xhr.onerror   = () => reject(new Error('Network error'));
+    xhr.ontimeout = () => reject(new Error('Timeout — รูปใหญ่เกินไป ลองอัดรูปขนาดเล็กลง'));
+    xhr.send();
+  });
+}
+
+/* ── SUBMIT ────────────────────────────── */
 async function doSubmit() {
   if (!profile) { toast('กรุณาเข้าสู่ระบบก่อน', false); return; }
   if (!imgB64)  { toast('กรุณาเลือกรูปภาพ', false);     return; }
 
   loading(true);
   try {
-    const payload = {
+    const data = await gasRequest({
+      action     : 'submit',
       lineUserId : profile.userId,
       displayName: profile.displayName,
       profilePic : profile.pictureUrl || '',
@@ -273,15 +257,7 @@ async function doSubmit() {
       facebook   : document.getElementById('fb').value.trim(),
       instagram  : document.getElementById('ig').value.trim(),
       message    : document.getElementById('msg').value.trim(),
-    };
-
-    const url  = API + '?action=submit&payload=' + encodeURIComponent(JSON.stringify(payload));
-    const res  = await fetch(url, { method: 'GET', redirect: 'follow' });
-    const text = await res.text();
-
-    let data;
-    try { data = JSON.parse(text); }
-    catch(_) { throw new Error('Response ผิดปกติ: ' + text.substring(0, 120)); }
+    });
 
     if (data.success) showOk(data.status);
     else toast('❗ ' + (data.error || 'เกิดข้อผิดพลาด'), false);
@@ -294,31 +270,27 @@ async function doSubmit() {
 }
 
 function showOk(status) {
-  ['cImg','cSoc','cMsg','subWrap'].forEach(id => document.getElementById(id).style.display = 'none');
+  ['cImg','cSoc','cMsg','subWrap'].forEach(id => document.getElementById(id).style.display='none');
   document.getElementById('okBox').style.display = 'block';
   document.getElementById('okMsg').innerHTML = status === 'approved'
     ? 'รูปได้รับการอนุมัติอัตโนมัติ<br>กำลังขึ้นจอเลย! 🎉'
     : 'รูปของคุณกำลังรอการอนุมัติ<br>และจะขึ้นจอในไม่ช้า ✨';
 }
-
 function resetForm() {
   imgB64 = null;
   ['fileInput','fb','ig','msg'].forEach(id => { try{ document.getElementById(id).value=''; }catch(_){} });
   cc();
   document.getElementById('prevImg').style.display = 'none';
   document.getElementById('rmBtn').style.display   = 'none';
-  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub')
-    .forEach(el => el.style.display = '');
+  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub').forEach(el => el.style.display='');
   document.getElementById('okBox').style.display = 'none';
-  ['cImg','cSoc','cMsg','subWrap'].forEach(id => document.getElementById(id).style.display = 'block');
+  ['cImg','cSoc','cMsg','subWrap'].forEach(id => document.getElementById(id).style.display='block');
 }
-
 function loading(on) {
-  document.getElementById('subBtn').disabled    = on;
-  document.getElementById('sp').style.display   = on ? 'block' : 'none';
-  document.getElementById('bTxt').textContent   = on ? 'กำลังส่ง...' : '🚀 ส่งรูปขึ้นจอ';
+  document.getElementById('subBtn').disabled  = on;
+  document.getElementById('sp').style.display = on ? 'block' : 'none';
+  document.getElementById('bTxt').textContent = on ? 'กำลังส่ง...' : '🚀 ส่งรูปขึ้นจอ';
 }
-
 function toast(msg, ok=true) {
   const el = document.getElementById('toast');
   document.getElementById('tIco').textContent = ok ? '✅' : '❌';
