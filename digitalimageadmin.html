@@ -9,64 +9,54 @@
 :root{--bg:#09090d;--s1:#111116;--s2:#18181f;--s3:#1e1e27;--bd:#27273a;--tx:#e4e4f0;--mu:#66667a;--green:#22c55e;--red:#ef4444;--yel:#f59e0b;--pur:#a78bfa;--r:13px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex}
-.sb{width:220px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.sb{width:220px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
 .sb-top{padding:22px 18px 18px;border-bottom:1px solid var(--bd)}
-.sb-top h2{font-size:15px;font-weight:700}
-.sb-top p{font-size:11px;color:var(--mu);margin-top:2px}
-.sb-lnk{display:flex;align-items:center;gap:9px;padding:11px 18px;font-size:13px;color:var(--mu);cursor:pointer;border-left:3px solid transparent;text-decoration:none;transition:.15s;user-select:none}
-.sb-lnk:hover{background:var(--s2);color:var(--tx)}
-.sb-lnk.on{background:var(--s2);color:var(--tx);border-left-color:var(--pur)}
+.sb-top h2{font-size:15px;font-weight:700}.sb-top p{font-size:11px;color:var(--mu);margin-top:2px}
+.sb-lnk{display:flex;align-items:center;gap:9px;padding:11px 18px;font-size:13px;color:var(--mu);cursor:pointer;border-left:3px solid transparent;transition:.15s;user-select:none}
+.sb-lnk:hover{background:var(--s2);color:var(--tx)}.sb-lnk.on{background:var(--s2);color:var(--tx);border-left-color:var(--pur)}
 .sb-ico{font-size:17px;width:22px;text-align:center}
 .sb-foot{margin-top:auto;padding:14px 18px;border-top:1px solid var(--bd);font-size:11px;color:var(--mu)}
 .main{flex:1;padding:28px;overflow-x:hidden}
 .ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px}
-.ph h1{font-size:22px;font-weight:700}
-.ph p{font-size:13px;color:var(--mu);margin-top:3px}
+.ph h1{font-size:22px;font-weight:700}.ph p{font-size:13px;color:var(--mu);margin-top:3px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
 .stat{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:18px}
-.sv{font-size:30px;font-weight:700;line-height:1}
-.sl{font-size:12px;color:var(--mu);margin-top:5px}
+.sv{font-size:30px;font-weight:700;line-height:1}.sl{font-size:12px;color:var(--mu);margin-top:5px}
 .stat.p .sv{color:var(--yel)}.stat.a .sv{color:var(--green)}.stat.r .sv{color:var(--red)}.stat.t .sv{color:var(--pur)}
 .ctrl{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.ct{font-size:14px;font-weight:600}
-.cd{font-size:12px;color:var(--mu);margin-top:2px}
+.ct{font-size:14px;font-weight:600}.cd{font-size:12px;color:var(--mu);margin-top:2px}
 .tog{position:relative;width:48px;height:26px;cursor:pointer;flex-shrink:0}
 .tog input{display:none}
 .tog-t{position:absolute;inset:0;background:var(--s3);border:1px solid var(--bd);border-radius:13px;transition:.3s}
 .tog input:checked+.tog-t{background:var(--green);border-color:var(--green)}
 .tog-th{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
 .tog input:checked~.tog-th{left:25px}
-.tl{font-size:13px;font-weight:600}
-.tl.on{color:var(--green)}.tl.off{color:var(--mu)}
+.tl{font-size:13px;font-weight:600}.tl.on{color:var(--green)}.tl.off{color:var(--mu)}
 .sep{width:1px;height:36px;background:var(--bd)}
 .ftabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
 .ft{padding:7px 15px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--s1);color:var(--mu);transition:.15s}
-.ft:hover{color:var(--tx);border-color:var(--mu)}
-.ft.on{background:var(--pur);border-color:var(--pur);color:#fff}
+.ft:hover{color:var(--tx);border-color:var(--mu)}.ft.on{background:var(--pur);border-color:var(--pur);color:#fff}
 .ft .n{display:inline-block;background:rgba(255,255,255,.18);padding:1px 7px;border-radius:20px;margin-left:4px;font-size:10px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
 .card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:.2s}
 .card:hover{border-color:rgba(167,139,250,.4);transform:translateY(-2px)}
-.ci{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--s2);cursor:zoom-in;display:block}
+/* รูปใน card — ใช้ background-image แทน img เพื่อหลีกเลี่ยง Drive hotlink block */
+.ci{width:100%;aspect-ratio:4/3;background:var(--s2) center/cover no-repeat;cursor:zoom-in;display:block;border:none;position:relative}
+.ci-err{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px;background:var(--s2);display:none}
 .cb{padding:13px}
 .cu{display:flex;align-items:center;gap:9px;margin-bottom:9px}
-.cav{width:30px;height:30px;border-radius:50%;object-fit:cover;background:var(--s2);flex-shrink:0;font-size:16px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.cav img{width:100%;height:100%;object-fit:cover}
-.cn2{font-size:14px;font-weight:600}
-.ct2{font-size:11px;color:var(--mu);margin-top:1px}
+.cav{width:30px;height:30px;border-radius:50%;background:var(--s2);flex-shrink:0;font-size:16px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.cav img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.cn2{font-size:14px;font-weight:600}.ct2{font-size:11px;color:var(--mu);margin-top:1px}
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin-bottom:9px}
-.bp{background:rgba(245,158,11,.12);color:var(--yel)}
-.ba{background:rgba(34,197,94,.12);color:var(--green)}
-.br{background:rgba(239,68,68,.10);color:var(--red)}
+.bp{background:rgba(245,158,11,.12);color:var(--yel)}.ba{background:rgba(34,197,94,.12);color:var(--green)}.br{background:rgba(239,68,68,.10);color:var(--red)}
 .socs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .stag{font-size:11px;background:var(--s2);color:var(--mu);padding:3px 8px;border-radius:6px}
 .cmsg{font-size:13px;color:var(--mu);background:var(--s2);padding:8px 10px;border-radius:8px;margin-bottom:10px;line-height:1.5;font-style:italic}
 .cbtns{display:flex;gap:7px}
 .cbtn{flex:1;padding:8px;border-radius:9px;font-size:12px;font-weight:700;border:1px solid;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;transition:.2s}
-.bap{background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.25)}
-.bap:hover{background:var(--green);color:#fff}
-.brj{background:rgba(239,68,68,.08);color:var(--red);border-color:rgba(239,68,68,.2)}
-.brj:hover{background:var(--red);color:#fff}
+.bap{background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.25)}.bap:hover{background:var(--green);color:#fff}
+.brj{background:rgba(239,68,68,.08);color:var(--red);border-color:rgba(239,68,68,.2)}.brj:hover{background:var(--red);color:#fff}
 .cbtn:disabled{opacity:.5;cursor:not-allowed}
 .loader{grid-column:1/-1;display:flex;justify-content:center;padding:56px;gap:8px}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--pur);animation:bounce 1.2s ease-in-out infinite}
@@ -76,11 +66,13 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx
 .empty span{font-size:44px}.empty p{margin-top:10px;font-size:15px}
 .rbtn{background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:8px 15px;border-radius:9px;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;transition:.15s}
 .rbtn:hover{border-color:var(--pur);color:var(--pur)}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;display:none;align-items:center;justify-content:center;cursor:zoom-out;backdrop-filter:blur(10px)}
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:999;display:none;align-items:center;justify-content:center;cursor:zoom-out;backdrop-filter:blur(12px)}
 .modal.open{display:flex}
-.modal img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:10px;cursor:default}
-.mx{position:fixed;top:18px;right:22px;font-size:26px;cursor:pointer;color:#fff;z-index:1000;line-height:1}
-@media(max-width:700px){.sb{display:none}.stats{grid-template-columns:repeat(2,1fr)}}
+.modal-inner{max-width:90vw;max-height:90vh;background:var(--s2);border-radius:12px;overflow:hidden;cursor:default;display:flex;align-items:center;justify-content:center}
+.modal-inner img{max-width:90vw;max-height:90vh;object-fit:contain;display:block}
+.mx{position:fixed;top:18px;right:22px;font-size:26px;cursor:pointer;color:#fff;z-index:1000;line-height:1;background:rgba(0,0,0,.5);width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+@media(max-width:700px){.sb{display:none}.stats{grid-template-columns:repeat(2,1fr)}.main{padding:16px}}
 </style>
 </head>
 <body>
@@ -89,25 +81,23 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx
   <div class="sb-lnk on"><span class="sb-ico">📸</span> รูปที่ส่งมา</div>
   <div class="sb-lnk" onclick="window.open('overlay.html','_blank')"><span class="sb-ico">🖥️</span> OBS Overlay</div>
   <div class="sb-lnk" onclick="window.open('upload.html','_blank')"><span class="sb-ico">📤</span> หน้าส่งรูป</div>
-  <div class="sb-foot">Auto refresh ทุก 30 วิ</div>
+  <div class="sb-foot" id="lastUpdate">รอโหลดข้อมูล...</div>
 </div>
+
 <div class="main">
   <div class="ph">
     <div><h1>📸 รูปที่ส่งมา</h1><p>จัดการและอนุมัติรูปก่อนขึ้นจอ</p></div>
     <button class="rbtn" onclick="load()">🔄 รีเฟรช</button>
   </div>
   <div class="stats">
-    <div class="stat p"><div class="sv" id="sp2">–</div><div class="sl">⏳ รอการอนุมัติ</div></div>
-    <div class="stat a"><div class="sv" id="sa">–</div><div class="sl">✅ อนุมัติแล้ว</div></div>
-    <div class="stat r"><div class="sv" id="sr">–</div><div class="sl">❌ ปฏิเสธ</div></div>
-    <div class="stat t"><div class="sv" id="st">–</div><div class="sl">📊 ทั้งหมด</div></div>
+    <div class="stat p"><div class="sv" id="sP">–</div><div class="sl">⏳ รอการอนุมัติ</div></div>
+    <div class="stat a"><div class="sv" id="sA">–</div><div class="sl">✅ อนุมัติแล้ว</div></div>
+    <div class="stat r"><div class="sv" id="sR">–</div><div class="sl">❌ ปฏิเสธ</div></div>
+    <div class="stat t"><div class="sv" id="sT">–</div><div class="sl">📊 ทั้งหมด</div></div>
   </div>
   <div class="ctrl">
     <div><div class="ct">⚡ อนุมัติอัตโนมัติ</div><div class="cd">รูปขึ้นจอทันทีโดยไม่ต้องรีวิว</div></div>
-    <label class="tog">
-      <input type="checkbox" id="autoTog" onchange="toggleAuto()">
-      <div class="tog-t"></div><div class="tog-th"></div>
-    </label>
+    <label class="tog"><input type="checkbox" id="autoTog" onchange="toggleAuto()"><div class="tog-t"></div><div class="tog-th"></div></label>
     <span class="tl off" id="autoLbl">ปิดอยู่</span>
     <div class="sep"></div>
     <div style="font-size:12px;color:var(--mu)">💡 เปิดตอนงานไม่ยุ่ง<br>ปิดตอนต้องการกลั่นกรอง</div>
@@ -122,107 +112,165 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx
     <div class="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
   </div>
 </div>
+
 <div class="modal" id="modal" onclick="closeMod()">
-  <span class="mx" onclick="closeMod()">✕</span>
-  <img id="mimg" onclick="event.stopPropagation()">
+  <div class="mx" onclick="closeMod()">✕</div>
+  <div class="modal-inner" onclick="event.stopPropagation()">
+    <img id="mImg" src="" alt="">
+  </div>
 </div>
+
 <script>
-const API='https://script.google.com/macros/s/AKfycbyxZPU2Y-BJrZE2vzkYUS6VVxl8NOULz_0mf_X8lIRfpYNIVdbKdpQkTqRd_43DmvQ/exec';
-let all=[],curF='all';
+const API = 'https://script.google.com/macros/s/AKfycbyxZPU2Y-BJrZE2vzkYUS6VVxl8NOULz_0mf_X8lIRfpYNIVdbKdpQkTqRd_43DmvQ/exec';
+let all = [], curF = 'all';
 
-async function api(action){const r=await fetch(API+'?action='+action);return r.json();}
-async function post(body){const r=await fetch(API,{method:'POST',body:JSON.stringify(body)});return r.json();}
+/* ── API (GET เท่านั้น) ─────────────────────── */
+async function apiGet(action, payload) {
+  let url = API + '?action=' + action;
+  if (payload) url += '&payload=' + encodeURIComponent(JSON.stringify(payload));
+  const res  = await fetch(url, { redirect: 'follow' });
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch(_) { throw new Error('Parse error: ' + text.substring(0,80)); }
+}
 
-async function load(){
-  document.getElementById('grid').innerHTML='<div class="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-  try{
-    const [sub,cfg]=await Promise.all([api('getSubmissions'),api('getConfig')]);
-    all=sub.data||[];
-    stats();
-    setAutoUI(cfg.autoApprove==='true');
+/* ── LOAD ───────────────────────────────────── */
+async function load() {
+  grid('<div class="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>');
+  try {
+    const [sub, cfg] = await Promise.all([apiGet('getSubmissions'), apiGet('getConfig')]);
+    all = sub.data || [];
+    updateStats();
+    setAutoUI(cfg.autoApprove === 'true');
     render();
-  }catch(e){document.getElementById('grid').innerHTML='<div class="empty"><span>⚠️</span><p>โหลดไม่ได้: '+e.message+'</p></div>';}
+    document.getElementById('lastUpdate').textContent = 'อัพเดท ' + new Date().toLocaleTimeString('th-TH');
+  } catch(e) {
+    grid('<div class="empty"><span>⚠️</span><p>โหลดไม่ได้: ' + e.message + '</p></div>');
+  }
 }
 
-function stats(){
-  const p=all.filter(d=>d['Status']==='pending').length;
-  const a=all.filter(d=>d['Status']==='approved').length;
-  const r=all.filter(d=>d['Status']==='rejected').length;
-  const t=all.length;
-  document.getElementById('sp2').textContent=p;
-  document.getElementById('sa').textContent=a;
-  document.getElementById('sr').textContent=r;
-  document.getElementById('st').textContent=t;
-  document.getElementById('fA').textContent=t;
-  document.getElementById('fP').textContent=p;
-  document.getElementById('fAp').textContent=a;
-  document.getElementById('fR').textContent=r;
+function grid(html) { document.getElementById('grid').innerHTML = html; }
+
+function updateStats() {
+  const p = all.filter(d => d['Status']==='pending').length;
+  const a = all.filter(d => d['Status']==='approved').length;
+  const r = all.filter(d => d['Status']==='rejected').length;
+  document.getElementById('sP').textContent  = p;
+  document.getElementById('sA').textContent  = a;
+  document.getElementById('sR').textContent  = r;
+  document.getElementById('sT').textContent  = all.length;
+  document.getElementById('fA').textContent  = all.length;
+  document.getElementById('fP').textContent  = p;
+  document.getElementById('fAp').textContent = a;
+  document.getElementById('fR').textContent  = r;
 }
 
-function setAutoUI(on){
-  document.getElementById('autoTog').checked=on;
-  const l=document.getElementById('autoLbl');
-  l.textContent=on?'เปิดอยู่':'ปิดอยู่';
-  l.className='tl '+(on?'on':'off');
+function setAutoUI(on) {
+  document.getElementById('autoTog').checked = on;
+  const l = document.getElementById('autoLbl');
+  l.textContent = on ? 'เปิดอยู่' : 'ปิดอยู่';
+  l.className   = 'tl ' + (on ? 'on' : 'off');
 }
 
-async function toggleAuto(){
-  const on=document.getElementById('autoTog').checked;
+async function toggleAuto() {
+  const on = document.getElementById('autoTog').checked;
   setAutoUI(on);
-  try{await post({action:'toggleAuto',value:on});}
-  catch(e){setAutoUI(!on);}
+  try { await apiGet('toggleAuto', { value: on }); }
+  catch(_) { setAutoUI(!on); }
 }
 
-function setF(f){
-  curF=f;
-  document.querySelectorAll('.ft').forEach(el=>el.classList.toggle('on',el.dataset.f===f));
+function setF(f) {
+  curF = f;
+  document.querySelectorAll('.ft').forEach(el => el.classList.toggle('on', el.dataset.f === f));
   render();
 }
 
-function render(){
-  const data=curF==='all'?all:all.filter(d=>d['Status']===curF);
-  if(!data.length){document.getElementById('grid').innerHTML='<div class="empty"><span>🖼️</span><p>ไม่มีรูปในหมวดนี้</p></div>';return;}
-  document.getElementById('grid').innerHTML=data.map(item=>{
-    const s=item['Status'];
-    const badge=s==='approved'?'<span class="badge ba">✅ อนุมัติแล้ว</span>':s==='rejected'?'<span class="badge br">❌ ปฏิเสธ</span>':'<span class="badge bp">⏳ รอการอนุมัติ</span>';
-    const t=item['Timestamp']?new Date(item['Timestamp']).toLocaleString('th-TH'):'';
-    const fb=item['Facebook']?'<span class="stag">📘 '+item['Facebook']+'</span>':'';
-    const ig=item['Instagram']?'<span class="stag">📷 @'+item['Instagram']+'</span>':'';
-    const msg=item['Message']?'<div class="cmsg">"'+item['Message']+'"</div>':'';
-    const soc=(fb||ig)?'<div class="socs">'+fb+ig+'</div>':'';
-    let btns='';
-    if(s==='pending') btns='<button class="cbtn bap" onclick="approve(\''+item['ID']+'\',this)">✅ อนุมัติ</button><button class="cbtn brj" onclick="reject(\''+item['ID']+'\',this)">❌ ปฏิเสธ</button>';
-    else if(s==='approved') btns='<button class="cbtn brj" style="flex:1" onclick="reject(\''+item['ID']+'\',this)">❌ ยกเลิกอนุมัติ</button>';
-    else btns='<button class="cbtn bap" style="flex:1" onclick="approve(\''+item['ID']+'\',this)">✅ อนุมัติ</button>';
-    const ava=item['Profile Pic URL']?'<img src="'+item['Profile Pic URL']+'" onerror="this.style.display=\'none\'">':'👤';
-    const imgUrl=item['Image URL (Drive)']||'';
-    return '<div class="card"><img class="ci" src="'+imgUrl+'" loading="lazy" onclick="openMod(\''+imgUrl+'\')" onerror="this.style.background=\'#1e1e27\'"><div class="cb"><div class="cu"><div class="cav">'+ava+'</div><div><div class="cn2">'+(item['Display Name']||'Unknown')+'</div><div class="ct2">'+t+'</div></div></div>'+badge+soc+msg+'<div class="cbtns">'+btns+'</div></div></div>';
-  }).join('');
+/* ── RENDER ─────────────────────────────────── */
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+function render() {
+  const data = curF === 'all' ? all : all.filter(d => d['Status'] === curF);
+  if (!data.length) { grid('<div class="empty"><span>🖼️</span><p>ไม่มีรูปในหมวดนี้</p></div>'); return; }
+
+  grid(data.map(item => {
+    const s      = item['Status'] || '';
+    const id     = item['ID']     || '';
+    const imgUrl = item['Image URL'] || '';
+    const picUrl = item['Profile Pic URL'] || '';
+    const t      = item['Timestamp'] ? new Date(item['Timestamp']).toLocaleString('th-TH') : '';
+
+    const badge  = s==='approved' ? '<span class="badge ba">✅ อนุมัติแล้ว</span>'
+                 : s==='rejected' ? '<span class="badge br">❌ ปฏิเสธ</span>'
+                                  : '<span class="badge bp">⏳ รอการอนุมัติ</span>';
+
+    const soc = [
+      item['Facebook']  ? '<span class="stag">📘 '+esc(item['Facebook'])+'</span>' : '',
+      item['Instagram'] ? '<span class="stag">📷 @'+esc(item['Instagram'])+'</span>' : '',
+    ].filter(Boolean).join('');
+
+    const msg  = item['Message'] ? '<div class="cmsg">'+esc(item['Message'])+'</div>' : '';
+    const avHtml = picUrl ? '<img src="'+esc(picUrl)+'" onerror="this.style.display=\'none\'">' : '👤';
+
+    let btns = '';
+    if (s==='pending') {
+      btns = `<button class="cbtn bap" onclick="doApprove('${esc(id)}',this)">✅ อนุมัติ</button>
+              <button class="cbtn brj" onclick="doReject('${esc(id)}',this)">❌ ปฏิเสธ</button>`;
+    } else if (s==='approved') {
+      btns = `<button class="cbtn brj" style="flex:1" onclick="doReject('${esc(id)}',this)">❌ ยกเลิก</button>`;
+    } else {
+      btns = `<button class="cbtn bap" style="flex:1" onclick="doApprove('${esc(id)}',this)">✅ อนุมัติ</button>`;
+    }
+
+    // ใช้ onclick เปิด modal แทน href เพื่อหลีกเลี่ยงปัญหา Drive redirect
+    return `<div class="card">
+      <div class="ci" style="background-image:url('${esc(imgUrl)}')" onclick="openMod('${esc(imgUrl)}')">
+        <div class="ci-err" id="err_${esc(id)}">🖼️</div>
+      </div>
+      <div class="cb">
+        <div class="cu">
+          <div class="cav">${avHtml}</div>
+          <div><div class="cn2">${esc(item['Display Name']||'Unknown')}</div><div class="ct2">${t}</div></div>
+        </div>
+        ${badge}
+        ${soc ? '<div class="socs">'+soc+'</div>' : ''}
+        ${msg}
+        <div class="cbtns">${btns}</div>
+      </div>
+    </div>`;
+  }).join(''));
 }
 
-async function approve(id,btn){
-  btn.disabled=true;btn.textContent='...';
-  try{
-    await post({action:'approve',id});
-    const item=all.find(d=>d['ID']===id);
-    if(item)item['Status']='approved';
-    stats();render();
-  }catch(e){btn.disabled=false;btn.textContent='✅ อนุมัติ';}
-}
-async function reject(id,btn){
-  btn.disabled=true;btn.textContent='...';
-  try{
-    await post({action:'reject',id});
-    const item=all.find(d=>d['ID']===id);
-    if(item)item['Status']='rejected';
-    stats();render();
-  }catch(e){btn.disabled=false;btn.textContent='❌ ปฏิเสธ';}
+/* ── ACTIONS ────────────────────────────────── */
+async function doApprove(id, btn) {
+  btn.disabled = true; btn.textContent = '...';
+  try {
+    await apiGet('approve', { id });
+    const item = all.find(d => d['ID']===id); if (item) item['Status']='approved';
+    updateStats(); render();
+  } catch(_) { btn.disabled=false; btn.textContent='✅ อนุมัติ'; }
 }
 
-function openMod(url){document.getElementById('mimg').src=url;document.getElementById('modal').classList.add('open');}
-function closeMod(){document.getElementById('modal').classList.remove('open');}
+async function doReject(id, btn) {
+  btn.disabled = true; btn.textContent = '...';
+  try {
+    await apiGet('reject', { id });
+    const item = all.find(d => d['ID']===id); if (item) item['Status']='rejected';
+    updateStats(); render();
+  } catch(_) { btn.disabled=false; btn.textContent='❌ ปฏิเสธ'; }
+}
 
-setInterval(load,30000);
+/* ── MODAL ──────────────────────────────────── */
+function openMod(url) {
+  document.getElementById('mImg').src = url;
+  document.getElementById('modal').classList.add('open');
+}
+function closeMod() {
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('mImg').src = '';
+}
+
+/* ── BOOT ───────────────────────────────────── */
+setInterval(load, 30000);
 load();
 </script>
 </body>
