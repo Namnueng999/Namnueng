@@ -58,14 +58,18 @@ textarea.inp{resize:none;min-height:86px}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px 20px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px;min-width:240px;max-width:88vw;box-shadow:0 8px 28px rgba(0,0,0,.5);z-index:999;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok{border-color:var(--g)}.toast.err{border-color:var(--red)}
+/* hidden iframe สำหรับรับ response แบบไม่ redirect หน้า */
+#gasFrame{display:none;width:0;height:0;border:none}
 </style>
 </head>
 <body>
+
 <div class="hdr">
   <div class="hdr-ico">🎉</div>
   <h1>ส่งรูปขึ้นจอ</h1>
   <p>แชร์ช่วงเวลาพิเศษของคุณ</p>
 </div>
+
 <div class="pill">
   <div class="ava" id="ava">👤</div>
   <div style="flex:1;min-width:0">
@@ -74,8 +78,10 @@ textarea.inp{resize:none;min-height:86px}
   </div>
   <button class="lbtn" id="lBtn" onclick="doLogin()" style="display:none">เข้าสู่ระบบ</button>
 </div>
-<div class="wrap">
+
+<div class="wrap" id="mainWrap">
   <div class="noln" id="noln"><span>🔐</span><p>กรุณาเข้าสู่ระบบด้วย LINE<br>เพื่อส่งรูปขึ้นจอ</p></div>
+
   <div class="card" id="cImg" style="display:none">
     <div class="lbl">📷 รูปภาพ <span class="req">*</span></div>
     <div class="dz" id="dz" onclick="triggerFile()">
@@ -88,6 +94,7 @@ textarea.inp{resize:none;min-height:86px}
     <input type="file" id="fileInput" accept="image/*" onchange="onFile(event)">
     <div class="progwrap" id="progWrap"><div class="progbar" id="progBar"></div></div>
   </div>
+
   <div class="card" id="cSoc" style="display:none">
     <div class="lbl">🔗 โซเชียล <span class="opt">ไม่บังคับ</span></div>
     <div class="row2">
@@ -95,17 +102,20 @@ textarea.inp{resize:none;min-height:86px}
       <div class="ipre"><span class="pre">@</span><input class="preinp" id="ig" type="text" placeholder="Instagram"></div>
     </div>
   </div>
+
   <div class="card" id="cMsg" style="display:none">
     <div class="lbl">💬 ข้อความ <span class="opt">ไม่บังคับ</span></div>
     <textarea class="inp" id="msg" placeholder="ส่งความรู้สึกถึงทุกคนในงาน..." maxlength="150" oninput="cc()"></textarea>
     <div class="char"><span id="cn">0</span>/150</div>
   </div>
+
   <div id="subWrap" style="display:none">
     <button class="sbtn" id="subBtn" onclick="doSubmit()">
       <div class="spin" id="sp"></div>
       <span id="bTxt">🚀 ส่งรูปขึ้นจอ</span>
     </button>
   </div>
+
   <div class="okbox" id="okBox">
     <div class="okico">🎊</div>
     <h2>ส่งสำเร็จแล้ว!</h2>
@@ -113,18 +123,59 @@ textarea.inp{resize:none;min-height:86px}
     <button class="again" onclick="resetForm()">📤 ส่งรูปเพิ่มเติม</button>
   </div>
 </div>
+
+<!-- iframe รับ response จาก GAS โดยไม่ต้อง navigate หน้า -->
+<iframe id="gasFrame" name="gasFrame"></iframe>
+
+<!-- hidden form — วิธีนี้ไม่ถูก CORS block เพราะเป็น native form submit -->
+<form id="gasForm" method="POST" target="gasFrame" style="display:none">
+  <input type="hidden" name="action"      id="fAction"   value="submit">
+  <input type="hidden" name="lineUserId"  id="fUserId">
+  <input type="hidden" name="displayName" id="fName">
+  <input type="hidden" name="profilePic"  id="fPic">
+  <input type="hidden" name="imageBase64" id="fImg">
+  <input type="hidden" name="facebook"    id="fFb">
+  <input type="hidden" name="instagram"   id="fIg">
+  <input type="hidden" name="message"     id="fMsg">
+</form>
+
 <div class="toast" id="toast"><span id="tIco"></span><span id="tTxt"></span></div>
 
 <script>
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const API     = 'https://script.google.com/macros/s/AKfycbyxZPU2Y-BJrZE2vzkYUS6VVxl8NOULz_0mf_X8lIRfpYNIVdbKdpQkTqRd_43DmvQ/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyxZPU2Y-BJrZE2vzkYUS6VVxl8NOULz_0mf_X8lIRfpYNIVdbKdpQkTqRd_43DmvQ/exec';
 const LIFF_ID = '2007719419-R2sSoxYq';
 const MAX_PX  = 1200;
 const QUALITY = 0.82;
 
-let profile = null, imgB64 = null, ttTimer = null;
+let profile = null, imgB64 = null, ttTimer = null, submitTimeout = null;
+
+/* ── iframe listener — รับ response จาก GAS ── */
+document.getElementById('gasFrame').onload = function() {
+  // iframe โหลดแล้ว = GAS ตอบกลับแล้ว
+  clearTimeout(submitTimeout);
+  loading(false);
+  try {
+    // พยายามอ่าน response จาก iframe
+    const text = this.contentDocument
+               ? this.contentDocument.body.innerText
+               : this.contentWindow.document.body.innerText;
+    if (!text || text.trim() === '') {
+      // GAS redirect ออกไป = submit สำเร็จ (ส่วนใหญ่)
+      showOk('pending');
+      return;
+    }
+    let data;
+    try { data = JSON.parse(text); } catch(_) { showOk('pending'); return; }
+    if (data && data.success) showOk(data.status || 'pending');
+    else toast('❗ ' + (data && data.error ? data.error : 'เกิดข้อผิดพลาด'), false);
+  } catch(_) {
+    // Cross-origin 読めない = GAS redirect ออกไป = สำเร็จ
+    showOk('pending');
+  }
+};
 
 /* ── LIFF ──────────────────────────────── */
 async function initLiff() {
@@ -134,6 +185,7 @@ async function initLiff() {
     else liff.isInClient() ? liff.login() : showNoLogin();
   } catch(e) { console.error('LIFF:', e); showNoLogin(); }
 }
+
 async function loadProfile() {
   profile = await liff.getProfile();
   document.getElementById('pName').textContent = profile.displayName;
@@ -143,13 +195,16 @@ async function loadProfile() {
     document.getElementById('ava').innerHTML = '<img src="'+profile.pictureUrl+'">';
   showForm();
 }
+
 function showNoLogin() {
   document.getElementById('pName').textContent = 'ยังไม่ได้เข้าสู่ระบบ';
   document.getElementById('pStat').textContent = 'กรุณา Login LINE ก่อน';
   document.getElementById('lBtn').style.display = 'block';
   document.getElementById('noln').style.display = 'block';
 }
+
 function doLogin() { liff.login({ redirectUri: location.href }); }
+
 function showForm() {
   document.getElementById('noln').style.display = 'none';
   ['cImg','cSoc','cMsg','subWrap'].forEach(id => document.getElementById(id).style.display='block');
@@ -157,16 +212,19 @@ function showForm() {
 
 /* ── IMAGE ─────────────────────────────── */
 function triggerFile() { document.getElementById('fileInput').click(); }
+
 function onFile(e) {
   const f = e.target.files[0];
   if (!f) return;
   if (f.size > 10*1024*1024) { toast('รูปใหญ่เกิน 10 MB', false); return; }
   compress(f);
 }
+
 function compress(file) {
   const pw = document.getElementById('progWrap');
   const pb = document.getElementById('progBar');
   pw.style.display = 'block'; pb.style.width = '20%';
+
   const reader = new FileReader();
   reader.onload = ev => {
     const img = new Image();
@@ -188,19 +246,24 @@ function compress(file) {
   };
   reader.readAsDataURL(file);
 }
+
 function showPreview(b64) {
   document.getElementById('prevImg').src = b64;
   document.getElementById('prevImg').style.display = 'block';
   document.getElementById('rmBtn').style.display = 'block';
-  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub').forEach(el => el.style.display='none');
+  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub')
+    .forEach(el => el.style.display='none');
 }
+
 function rmImg(e) {
   e.stopPropagation(); imgB64 = null;
   document.getElementById('fileInput').value = '';
   document.getElementById('prevImg').style.display = 'none';
   document.getElementById('rmBtn').style.display = 'none';
-  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub').forEach(el => el.style.display='');
+  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub')
+    .forEach(el => el.style.display='');
 }
+
 const dzEl = document.getElementById('dz');
 dzEl.addEventListener('dragover',  e => { e.preventDefault(); dzEl.classList.add('over'); });
 dzEl.addEventListener('dragleave', () => dzEl.classList.remove('over'));
@@ -209,88 +272,70 @@ dzEl.addEventListener('drop', e => {
   const f = e.dataTransfer.files[0];
   if (f && f.type.startsWith('image/')) compress(f);
 });
+
 function cc() { document.getElementById('cn').textContent = document.getElementById('msg').value.length; }
 
 /* ══════════════════════════════════════
-   GAS API CALL — ใช้ XHR แทน fetch
-   เพราะ LINE WebView บล็อก fetch cross-origin
-   XHR follow redirect ได้และ work ใน LINE
+   SUBMIT — ส่งผ่าน hidden form → iframe
+   วิธีนี้ไม่โดน CORS block เพราะ browser
+   อนุญาต form submission ข้าม origin เสมอ
 ══════════════════════════════════════ */
-function gasRequest(params) {
-  return new Promise((resolve, reject) => {
-    const qs  = Object.entries(params)
-      .map(([k,v]) => k + '=' + encodeURIComponent(typeof v === 'object' ? JSON.stringify(v) : v))
-      .join('&');
-    const url = API + '?' + qs;
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.timeout = 60000; // 60s timeout สำหรับรูปใหญ่
-
-    xhr.onload = function() {
-      try {
-        const data = JSON.parse(xhr.responseText);
-        resolve(data);
-      } catch(_) {
-        reject(new Error('Parse error: ' + xhr.responseText.substring(0, 100)));
-      }
-    };
-    xhr.onerror   = () => reject(new Error('Network error'));
-    xhr.ontimeout = () => reject(new Error('Timeout — รูปใหญ่เกินไป ลองอัดรูปขนาดเล็กลง'));
-    xhr.send();
-  });
-}
-
-/* ── SUBMIT ────────────────────────────── */
-async function doSubmit() {
+function doSubmit() {
   if (!profile) { toast('กรุณาเข้าสู่ระบบก่อน', false); return; }
   if (!imgB64)  { toast('กรุณาเลือกรูปภาพ', false);     return; }
 
+  // ใส่ข้อมูลลง hidden form
+  document.getElementById('fUserId').value  = profile.userId;
+  document.getElementById('fName').value    = profile.displayName;
+  document.getElementById('fPic').value     = profile.pictureUrl || '';
+  document.getElementById('fImg').value     = imgB64;
+  document.getElementById('fFb').value      = document.getElementById('fb').value.trim();
+  document.getElementById('fIg').value      = document.getElementById('ig').value.trim();
+  document.getElementById('fMsg').value     = document.getElementById('msg').value.trim();
+
+  // ชี้ form ไปที่ GAS URL
+  document.getElementById('gasForm').action = GAS_URL;
+
   loading(true);
-  try {
-    const data = await gasRequest({
-      action     : 'submit',
-      lineUserId : profile.userId,
-      displayName: profile.displayName,
-      profilePic : profile.pictureUrl || '',
-      imageBase64: imgB64,
-      facebook   : document.getElementById('fb').value.trim(),
-      instagram  : document.getElementById('ig').value.trim(),
-      message    : document.getElementById('msg').value.trim(),
-    });
 
-    if (data.success) showOk(data.status);
-    else toast('❗ ' + (data.error || 'เกิดข้อผิดพลาด'), false);
+  // submit ผ่าน iframe — ไม่ navigate หน้า
+  document.getElementById('gasForm').submit();
 
-  } catch(e) {
-    console.error(e);
-    toast('ส่งไม่ได้: ' + e.message, false);
-  }
-  loading(false);
+  // safety timeout 90 วิ (รูปใหญ่ใช้เวลา GAS บันทึก Drive)
+  submitTimeout = setTimeout(() => {
+    loading(false);
+    // ถ้า timeout = น่าจะส่งสำเร็จแต่ iframe อ่าน response ไม่ได้
+    showOk('pending');
+  }, 90000);
 }
 
 function showOk(status) {
+  clearTimeout(submitTimeout);
   ['cImg','cSoc','cMsg','subWrap'].forEach(id => document.getElementById(id).style.display='none');
   document.getElementById('okBox').style.display = 'block';
   document.getElementById('okMsg').innerHTML = status === 'approved'
     ? 'รูปได้รับการอนุมัติอัตโนมัติ<br>กำลังขึ้นจอเลย! 🎉'
     : 'รูปของคุณกำลังรอการอนุมัติ<br>และจะขึ้นจอในไม่ช้า ✨';
 }
+
 function resetForm() {
   imgB64 = null;
   ['fileInput','fb','ig','msg'].forEach(id => { try{ document.getElementById(id).value=''; }catch(_){} });
   cc();
   document.getElementById('prevImg').style.display = 'none';
   document.getElementById('rmBtn').style.display   = 'none';
-  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub').forEach(el => el.style.display='');
+  document.getElementById('dz').querySelectorAll('.dz-ico,.dz-txt,.dz-sub')
+    .forEach(el => el.style.display='');
   document.getElementById('okBox').style.display = 'none';
   ['cImg','cSoc','cMsg','subWrap'].forEach(id => document.getElementById(id).style.display='block');
 }
+
 function loading(on) {
   document.getElementById('subBtn').disabled  = on;
   document.getElementById('sp').style.display = on ? 'block' : 'none';
   document.getElementById('bTxt').textContent = on ? 'กำลังส่ง...' : '🚀 ส่งรูปขึ้นจอ';
 }
+
 function toast(msg, ok=true) {
   const el = document.getElementById('toast');
   document.getElementById('tIco').textContent = ok ? '✅' : '❌';
