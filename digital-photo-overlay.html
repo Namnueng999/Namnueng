@@ -2,189 +2,235 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>OBS Overlay – Digital Photo Display</title>
+<title>OBS Overlay</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;700;900&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:'Noto Sans Thai',sans-serif}
 
-/* ── Particles ── */
-.ptc{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
-.p{position:absolute;border-radius:50%;animation:rise linear infinite;opacity:0}
-@keyframes rise{0%{transform:translateY(110vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:.4}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+/* ══ LAYOUT — รูปซ้าย ข้อความขวา ══ */
+.stage{
+  width:100%;height:100%;
+  display:flex;flex-direction:row;
+  align-items:center;justify-content:center;
+  gap:64px;
+  padding:60px 80px;
+}
 
-/* ── Wipe ── */
-.wipe{position:absolute;inset:0;background:linear-gradient(135deg,#08080e,#0e061c);z-index:50;transform:translateX(-100%);transition:transform .65s cubic-bezier(.77,0,.175,1)}
-.wipe.in{transform:translateX(0)}.wipe.out{transform:translateX(100%)}
+/* ══ รูป (ซ้าย) ══ */
+.photo-wrap{
+  flex-shrink:0;
+  width:680px;height:680px;
+  position:relative;
+}
 
-/* ── Stage ── */
-.stage{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:1}
+/* Polaroid frame */
+.polaroid{
+  width:100%;height:100%;
+  background:#fff;
+  padding:18px 18px 60px;
+  border-radius:4px;
+  box-shadow:0 32px 80px rgba(0,0,0,.85), 0 6px 20px rgba(0,0,0,.6);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
 
-/* ── Idle ── */
-.idle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;opacity:0;transition:opacity 1.2s;pointer-events:none;z-index:2}
-.idle.vis{opacity:1}
-.idle-ico{font-size:80px;animation:flt 4s ease-in-out infinite}
-@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-.idle-txt{font-size:30px;color:rgba(255,255,255,.45);font-weight:300;letter-spacing:.1em;text-shadow:0 2px 12px rgba(0,0,0,.6)}
-.idle-sub{font-size:17px;color:rgba(255,255,255,.22);letter-spacing:.2em;text-transform:uppercase}
+/* รูปใน polaroid */
+.pimg{
+  width:100%;height:100%;
+  background:center/cover no-repeat #1a1a1a;
+  border-radius:2px;
+}
 
-/* ── Photo frame (Polaroid) ── */
-.frame{opacity:0;transform:scale(.88) translateY(-28px);transition:opacity .85s cubic-bezier(.34,1.56,.64,1),transform .85s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 32px 64px rgba(0,0,0,.9));z-index:3}
-.frame.vis{opacity:1;transform:scale(1) translateY(0)}
-.polaroid{background:#fff;padding:16px 16px 8px;border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.75),0 4px 12px rgba(0,0,0,.5)}
-.polaroid.rl{transform:rotate(-2.5deg)}.polaroid.rr{transform:rotate(1.8deg)}.polaroid.rc{transform:rotate(-.5deg)}
+/* ══ ข้อความ (ขวา) ══ */
+.info-wrap{
+  flex:1;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  gap:28px;
+  min-width:0;
+}
 
-/* รูปใน polaroid — ใช้ div + background-image */
-.pimg{width:568px;height:420px;background:center/cover no-repeat #1a1a1a;display:block;border-radius:2px}
-.pbot{height:14px;background:#fff}
+/* ชื่อผู้ส่ง */
+.user-row{
+  display:flex;align-items:center;gap:20px;
+}
 
-/* ── Info box ── */
-.info{margin-top:22px;background:rgba(6,6,12,.88);backdrop-filter:blur(24px) saturate(200%);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:22px 44px;min-width:600px;max-width:760px;text-align:center;position:relative;overflow:hidden;opacity:0;transform:translateY(30px);transition:opacity .85s ease .38s,transform .85s ease .38s;box-shadow:0 20px 60px rgba(0,0,0,.7);z-index:3}
-.info.vis{opacity:1;transform:translateY(0)}
-.info::before{content:'';position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(90deg,transparent,#a78bfa,#06C755,#a78bfa,transparent)}
+.u-ava{
+  width:72px;height:72px;flex-shrink:0;
+  border-radius:50%;
+  background:rgba(167,139,250,.2) center/cover no-repeat;
+  border:3px solid rgba(167,139,250,.6);
+  box-shadow:0 0 24px rgba(167,139,250,.4);
+  font-size:36px;display:flex;align-items:center;justify-content:center;
+}
 
-.urow{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:12px}
-/* avatar — background-image */
-.uava{width:50px;height:50px;border-radius:50%;background:rgba(167,139,250,.15) center/cover no-repeat;border:2px solid rgba(167,139,250,.6);box-shadow:0 0 20px rgba(167,139,250,.35);flex-shrink:0}
-.uname{font-size:26px;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.u-name{
+  font-size:52px;
+  font-weight:900;
+  color:#ffffff;
+  line-height:1.1;
+  text-shadow:0 4px 16px rgba(0,0,0,.7);
+  letter-spacing:-.01em;
+  word-break:break-word;
+}
 
-.srow{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;min-height:0}
-.stag{font-size:15px;color:rgba(255,255,255,.62);background:rgba(255,255,255,.07);padding:4px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.1)}
+/* โซเชียล */
+.social-row{
+  display:flex;gap:14px;flex-wrap:wrap;align-items:center;
+}
 
-.umsg{font-size:20px;color:rgba(255,255,255,.9);line-height:1.6;font-style:italic;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);text-shadow:0 1px 4px rgba(0,0,0,.5)}
-.umsg::before{content:'\201C ';color:rgba(167,139,250,.7);font-style:normal;font-size:28px}
-.umsg::after{content:' \201D';color:rgba(167,139,250,.7);font-style:normal;font-size:28px}
+.stag{
+  font-size:28px;
+  color:rgba(255,255,255,.75);
+  background:rgba(255,255,255,.1);
+  padding:6px 20px;
+  border-radius:50px;
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(8px);
+}
 
-/* ── Progress bar ── */
-.prog{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.07);opacity:0;transition:opacity .5s;z-index:10}
+/* ข้อความ */
+.msg-box{
+  background:rgba(6,6,14,.75);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;
+  padding:28px 36px;
+  position:relative;
+  overflow:hidden;
+}
+
+.msg-box::before{
+  content:'';position:absolute;top:0;left:6%;right:6%;
+  height:2px;
+  background:linear-gradient(90deg,transparent,#a78bfa,#06C755,#a78bfa,transparent);
+}
+
+.msg-text{
+  font-size:38px;
+  font-weight:500;
+  color:rgba(255,255,255,.95);
+  line-height:1.5;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);
+  word-break:break-word;
+}
+
+.msg-text::before{content:'\201C';color:rgba(167,139,250,.8);font-size:56px;font-weight:900;margin-right:4px;line-height:0;vertical-align:-.2em}
+.msg-text::after {content:'\201D';color:rgba(167,139,250,.8);font-size:56px;font-weight:900;margin-left:4px; line-height:0;vertical-align:-.2em}
+
+/* ══ Progress bar ══ */
+.prog{
+  position:fixed;bottom:0;left:0;right:0;
+  height:4px;background:rgba(255,255,255,.06);
+  opacity:0;transition:opacity .4s;
+}
 .prog.vis{opacity:1}
 .pf{height:100%;background:linear-gradient(90deg,#a78bfa,#06C755);transform-origin:left;transform:scaleX(0)}
+
+/* ══ ไม่มี idle state ══ */
 </style>
 </head>
 <body>
 
-<div class="ptc" id="ptc"></div>
-<div class="wipe" id="wipe"></div>
-
-<div class="stage">
-  <!-- Idle -->
-  <div class="idle vis" id="idle">
-    <div class="idle-ico">🎉</div>
-    <div class="idle-txt">รอรูปจากผู้ร่วมงาน</div>
-    <div class="idle-sub">Send your photo to the screen</div>
-  </div>
-
-  <!-- Photo -->
-  <div class="frame" id="frame">
-    <div class="polaroid rc" id="pol">
-      <div class="pimg" id="dImg"></div>
-      <div class="pbot"></div>
+<div class="stage" id="stage" style="display:none">
+  <!-- รูป ซ้าย -->
+  <div class="photo-wrap">
+    <div class="polaroid">
+      <div class="pimg" id="pImg"></div>
     </div>
   </div>
 
-  <!-- Info -->
-  <div class="info" id="info">
-    <div class="urow">
-      <div class="uava" id="uAva"></div>
-      <div class="uname" id="uName"></div>
+  <!-- ข้อความ ขวา -->
+  <div class="info-wrap" id="infoWrap">
+    <div class="user-row">
+      <div class="u-ava" id="uAva"></div>
+      <div class="u-name" id="uName"></div>
     </div>
-    <div class="srow" id="sRow"></div>
-    <div class="umsg" id="uMsg" style="display:none"></div>
+    <div class="social-row" id="socialRow" style="display:none"></div>
+    <div class="msg-box" id="msgBox" style="display:none">
+      <div class="msg-text" id="msgText"></div>
+    </div>
   </div>
 </div>
 
 <div class="prog" id="prog"><div class="pf" id="pf"></div></div>
 
 <script>
-const API      = 'https://script.google.com/macros/s/AKfycbyxZPU2Y-BJrZE2vzkYUS6VVxl8NOULz_0mf_X8lIRfpYNIVdbKdpQkTqRd_43DmvQ/exec';
-const SHOW_MS  = 12000;
-const POLL_MS  = 4000;
+const API     = 'https://script.google.com/macros/s/AKfycbyxZPU2Y-BJrZE2vzkYUS6VVxl8NOULz_0mf_X8lIRfpYNIVdbKdpQkTqRd_43DmvQ/exec';
+const POLL_MS = 4000;
 
-let queue  = [], qIdx = 0, curId = null, busy = false;
-let showTm = null, progTm = null;
+let queue    = [];
+let qIdx     = 0;
+let curId    = null;
+let showTm   = null;
+let progTm   = null;
+let loopOn   = true;
+let showMs   = 12000;
 
-/* ── Particles ─────────────────────────────── */
-(function(){
-  const c = document.getElementById('ptc');
-  const cols = ['rgba(167,139,250,.15)','rgba(6,199,85,.12)','rgba(255,255,255,.08)','rgba(251,191,36,.1)'];
-  for (let i=0; i<22; i++) {
-    const el = document.createElement('div');
-    el.className = 'p';
-    const sz = 3 + Math.floor(Math.random()*6);
-    el.style.cssText = 'width:'+sz+'px;height:'+sz+'px;background:'+cols[~~(Math.random()*cols.length)]+
-      ';left:'+Math.random()*100+'%;animation-duration:'+(8+Math.random()*12)+'s;animation-delay:'+Math.random()*10+'s';
-    c.appendChild(el);
-  }
-})();
-
-function delay(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-/* ── Idle / Show ────────────────────────────── */
-function showIdle() {
-  document.getElementById('idle').classList.add('vis');
-  document.getElementById('frame').classList.remove('vis');
-  document.getElementById('info').classList.remove('vis');
-  document.getElementById('prog').classList.remove('vis');
-  clearTimeout(showTm);
+/* ── XHR ─────────────────────── */
+function xhrGet(params) {
+  return new Promise((resolve, reject) => {
+    const qs  = Object.entries(params).map(([k,v]) => encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', API + '?' + qs, true);
+    xhr.timeout = 15000;
+    xhr.onload  = () => { try{ resolve(JSON.parse(xhr.responseText)); }catch(_){ reject(new Error('parse')); } };
+    xhr.onerror = xhr.ontimeout = () => reject(new Error('net'));
+    xhr.send();
+  });
 }
 
-async function showPhoto(item) {
-  if (busy) return;
-  busy = true;
+/* ── แสดงรูป (ไม่มี animation) ── */
+function showPhoto(item) {
+  const stage = document.getElementById('stage');
+  stage.style.display = 'flex';
 
-  // wipe in
-  const wipe = document.getElementById('wipe');
-  wipe.className = 'wipe in';
-  await delay(700);
+  // รูป
+  document.getElementById('pImg').style.backgroundImage = "url('" + item.imageUrl + "')";
 
-  // hide elements
-  document.getElementById('idle').classList.remove('vis');
-  document.getElementById('frame').classList.remove('vis');
-  document.getElementById('info').classList.remove('vis');
-
-  // ── รูปหลัก: ใช้ background-image — ไม่มีปัญหา CORS/hotlink ──
-  document.getElementById('dImg').style.backgroundImage = "url('" + item.imageUrl + "')";
-
-  // rotation
-  const rots = ['rl','rr','rc'];
-  document.getElementById('pol').className = 'polaroid ' + rots[~~(Math.random()*3)];
-
-  // avatar — background-image
+  // avatar
   const ava = document.getElementById('uAva');
   if (item.profilePic && item.profilePic.startsWith('http')) {
     ava.style.backgroundImage = "url('" + item.profilePic + "')";
+    ava.textContent = '';
   } else {
     ava.style.backgroundImage = '';
-    ava.style.fontSize = '28px';
     ava.textContent = '👤';
   }
 
-  // name
+  // ชื่อ
   document.getElementById('uName').textContent = item.displayName || 'Unknown';
 
-  // socials
-  const sr = document.getElementById('sRow');
-  sr.innerHTML = '';
-  if (item.facebook)  sr.innerHTML += '<span class="stag">📘 '  + esc(item.facebook)  + '</span>';
-  if (item.instagram) sr.innerHTML += '<span class="stag">📷 @' + esc(item.instagram) + '</span>';
+  // โซเชียล
+  const sr = document.getElementById('socialRow');
+  const tags = [
+    item.facebook  ? '📘 '  + item.facebook  : '',
+    item.instagram ? '📷 @' + item.instagram : '',
+  ].filter(Boolean);
 
-  // message
-  const um = document.getElementById('uMsg');
-  if (item.message) { um.textContent = item.message; um.style.display = 'block'; }
-  else              { um.style.display = 'none'; }
+  if (tags.length) {
+    sr.innerHTML = tags.map(t => '<span class="stag">'+t+'</span>').join('');
+    sr.style.display = 'flex';
+  } else {
+    sr.style.display = 'none';
+  }
 
-  // wipe out — ไม่รอรูปโหลดเพราะใช้ background-image ซึ่งโหลด async
-  wipe.className = 'wipe out';
-  await delay(80);
-  wipe.className = 'wipe';
+  // ข้อความ
+  const mb = document.getElementById('msgBox');
+  if (item.message) {
+    document.getElementById('msgText').textContent = item.message;
+    mb.style.display = 'block';
+  } else {
+    mb.style.display = 'none';
+  }
 
-  document.getElementById('frame').classList.add('vis');
-  document.getElementById('info').classList.add('vis');
+  // progress
+  startProg(showMs);
 
-  busy = false;
-  startProg(SHOW_MS);
+  // ตั้ง timer next
   clearTimeout(showTm);
-  showTm = setTimeout(nextPhoto, SHOW_MS);
+  showTm = setTimeout(nextPhoto, showMs);
 }
 
 function startProg(ms) {
@@ -197,65 +243,69 @@ function startProg(ms) {
   progTm = setTimeout(() => {
     pf.style.transition = 'transform ' + ms + 'ms linear';
     pf.style.transform  = 'scaleX(1)';
-  }, 60);
+  }, 50);
 }
 
 function nextPhoto() {
-  if (!queue.length) { showIdle(); curId = null; return; }
-  qIdx  = (qIdx + 1) % queue.length;
+  if (!queue.length) {
+    // ซ่อนถ้าไม่มีรูป
+    document.getElementById('stage').style.display = 'none';
+    document.getElementById('prog').classList.remove('vis');
+    curId = null;
+    return;
+  }
+
+  if (!loopOn) {
+    // ไม่ loop — หยุดหลังรูปสุดท้าย
+    if (qIdx >= queue.length - 1) {
+      document.getElementById('stage').style.display = 'none';
+      document.getElementById('prog').classList.remove('vis');
+      return;
+    }
+    qIdx++;
+  } else {
+    qIdx = (qIdx + 1) % queue.length;
+  }
+
   curId = queue[qIdx].id;
   showPhoto(queue[qIdx]);
 }
 
-/* ── POLL ───────────────────────────────────── */
-function xhrGet(url) {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.timeout = 15000;
-    xhr.onload = function() {
-      try { resolve(JSON.parse(xhr.responseText)); }
-      catch(_) { reject(new Error('parse error')); }
-    };
-    xhr.onerror   = () => reject(new Error('network error'));
-    xhr.ontimeout = () => reject(new Error('timeout'));
-    xhr.send();
-  });
-}
-
+/* ── POLL ─────────────────────── */
 async function poll() {
   try {
-    const d = await xhrGet(API + '?action=getApproved');
+    const cfg = await xhrGet({ action: 'getConfig' });
+    loopOn  = cfg.loopEnabled !== 'false';
+    showMs  = Math.max(3000, parseInt(cfg.displayDuration || '12') * 1000);
+
+    const d = await xhrGet({ action: 'getApproved' });
     if (!d || !d.data) return;
 
     const prevIds  = new Set(queue.map(i => i.id));
     const newItems = d.data.filter(i => !prevIds.has(i.id));
     queue = d.data;
 
-    if (newItems.length && !busy) {
-      // แสดงรูปใหม่ทันที
+    if (newItems.length) {
+      // มีรูปใหม่ — แสดงทันที
       clearTimeout(showTm);
       const newest = newItems[newItems.length - 1];
       qIdx  = queue.findIndex(i => i.id === newest.id);
       curId = newest.id;
       showPhoto(newest);
-    } else if (queue.length && !curId && !busy) {
-      // เริ่ม cycle
-      qIdx  = queue.length - 1;
-      curId = queue[qIdx].id;
-      showPhoto(queue[qIdx]);
+    } else if (!curId && queue.length) {
+      // เริ่ม cycle ถ้ายังไม่มี
+      qIdx  = 0;
+      curId = queue[0].id;
+      showPhoto(queue[0]);
     } else if (!queue.length) {
-      showIdle(); curId = null;
+      document.getElementById('stage').style.display = 'none';
+      curId = null;
     }
   } catch(e) {
-    console.error('poll error:', e);
+    console.error('poll:', e);
   }
 }
 
-function esc(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* ── Boot ───────────────────────────────────── */
-showIdle();
 poll();
 setInterval(poll, POLL_MS);
 </script>
