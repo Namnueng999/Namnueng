@@ -88,7 +88,26 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   border-radius:50px;
   border:1px solid rgba(255,255,255,.15);
   backdrop-filter:blur(8px);
+  display:flex;align-items:center;gap:10px;
 }
+.stag svg{width:28px;height:28px;flex-shrink:0}
+.stag .icon-fb{background:#1877F2;border-radius:50%;padding:5px}
+.stag .icon-ig{background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);border-radius:50%;padding:5px}
+.stag .icon-fb,.stag .icon-ig{width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-sizing:border-box}
+.stag .icon-fb svg,.stag .icon-ig svg{width:100%;height:100%;fill:#fff}
+
+/* ── Logo มุมขวาบน ── */
+.logo-corner{
+  position:fixed;
+  top:36px;right:36px;
+  max-width:160px;max-height:160px;
+  width:auto;height:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.5));
+  display:none;
+  z-index:20;
+}
+.logo-corner.vis{display:block}
 
 /* ข้อความ — กว้างแค่พอ fit content */
 .msg-box{
@@ -136,6 +155,8 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 </head>
 <body>
 
+<img class="logo-corner" id="logoCorner" src="" alt="">
+
 <div class="stage" id="stage" style="display:none">
   <!-- รูป ซ้าย -->
   <div class="photo-wrap">
@@ -164,12 +185,19 @@ const API     = 'https://script.google.com/macros/s/AKfycbyxZPU2Y-BJrZE2vzkYUS6V
 const POLL_MS = 4000;
 
 let queue    = [];
-let qIdx     = 0;
 let curId    = null;
 let showTm   = null;
 let progTm   = null;
 let loopOn   = true;
 let showMs   = 12000;
+
+function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Facebook "f" glyph
+const FB_SVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.675 0h-21.35C.595 0 0 .593 0 1.325v21.351C0 23.407.595 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.407 24 24 23.407 24 22.676V1.325C24 .593 23.407 0 22.675 0z"/></svg>';
+
+// Instagram glyph
+const IG_SVG = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/></svg>';
 
 /* ── XHR ─────────────────────── */
 function xhrGet(params) {
@@ -207,13 +235,16 @@ function showPhoto(item) {
 
   // โซเชียล
   const sr = document.getElementById('socialRow');
-  const tags = [
-    item.facebook  ? '📘 '  + item.facebook  : '',
-    item.instagram ? '📷 @' + item.instagram : '',
-  ].filter(Boolean);
+  const tags = [];
+  if (item.facebook) {
+    tags.push('<span class="stag"><span class="icon-fb">'+FB_SVG+'</span>'+esc(item.facebook)+'</span>');
+  }
+  if (item.instagram) {
+    tags.push('<span class="stag"><span class="icon-ig">'+IG_SVG+'</span>@'+esc(item.instagram)+'</span>');
+  }
 
   if (tags.length) {
-    sr.innerHTML = tags.map(t => '<span class="stag">'+t+'</span>').join('');
+    sr.innerHTML = tags.join('');
     sr.style.display = 'flex';
   } else {
     sr.style.display = 'none';
@@ -251,27 +282,29 @@ function startProg(ms) {
 
 function nextPhoto() {
   if (!queue.length) {
-    // ซ่อนถ้าไม่มีรูป
     document.getElementById('stage').style.display = 'none';
     document.getElementById('prog').classList.remove('vis');
     curId = null;
     return;
   }
 
+  // หา index ของรูปปัจจุบันใน queue ล่าสุด (queue อาจเปลี่ยนจาก poll)
+  let idx = queue.findIndex(i => i.id === curId);
+
   if (!loopOn) {
     // ไม่ loop — หยุดหลังรูปสุดท้าย
-    if (qIdx >= queue.length - 1) {
+    if (idx >= queue.length - 1) {
       document.getElementById('stage').style.display = 'none';
       document.getElementById('prog').classList.remove('vis');
       return;
     }
-    qIdx++;
+    idx++;
   } else {
-    qIdx = (qIdx + 1) % queue.length;
+    idx = (idx + 1) % queue.length; // idx=-1 -> 0 (เริ่มจากแรก)
   }
 
-  curId = queue[qIdx].id;
-  showPhoto(queue[qIdx]);
+  curId = queue[idx].id;
+  showPhoto(queue[idx]);
 }
 
 /* ── POLL ─────────────────────── */
@@ -281,29 +314,31 @@ async function poll() {
     loopOn  = cfg.loopEnabled !== 'false';
     showMs  = Math.max(3000, parseInt(cfg.displayDuration || '12') * 1000);
 
+    // โลโก้มุมขวาบน
+    const logoEl = document.getElementById('logoCorner');
+    if (cfg.logoUrl) {
+      if (logoEl.src !== cfg.logoUrl) logoEl.src = cfg.logoUrl;
+      logoEl.classList.add('vis');
+    } else {
+      logoEl.classList.remove('vis');
+    }
+
     const d = await xhrGet({ action: 'getApproved' });
     if (!d || !d.data) return;
 
-    const prevIds  = new Set(queue.map(i => i.id));
-    const newItems = d.data.filter(i => !prevIds.has(i.id));
     queue = d.data;
 
-    if (newItems.length) {
-      // มีรูปใหม่ — แสดงทันที
-      clearTimeout(showTm);
-      const newest = newItems[newItems.length - 1];
-      qIdx  = queue.findIndex(i => i.id === newest.id);
-      curId = newest.id;
-      showPhoto(newest);
-    } else if (!curId && queue.length) {
-      // เริ่ม cycle ถ้ายังไม่มี
-      qIdx  = 0;
+    if (!curId && queue.length) {
+      // ยังไม่มีรูปแสดง — เริ่มแสดงรูปแรกในคิว
       curId = queue[0].id;
       showPhoto(queue[0]);
     } else if (!queue.length) {
       document.getElementById('stage').style.display = 'none';
+      document.getElementById('prog').classList.remove('vis');
       curId = null;
     }
+    // ถ้ามีรูปกำลังแสดงอยู่ — ไม่ขัดจังหวะ
+    // รูปใหม่จะถูกเข้าคิวและแสดงตามลำดับโดย nextPhoto()
   } catch(e) {
     console.error('poll:', e);
   }
