@@ -51,6 +51,17 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx
 .dur-input:focus{border-color:var(--pur)}
 .dur-label{font-size:12px;color:var(--mu)}
 
+/* Logo preview */
+.logo-preview{
+  width:44px;height:44px;border-radius:8px;
+  background:var(--s2);border:1px dashed var(--bd);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;overflow:hidden;flex-shrink:0;
+  font-size:20px;color:var(--mu);transition:.2s;
+}
+.logo-preview:hover{border-color:var(--pur);color:var(--pur)}
+.logo-preview img{width:100%;height:100%;object-fit:contain;background:#fff}
+
 /* Filters */
 .ftabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .ft{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--s1);color:var(--mu);transition:.15s}
@@ -168,6 +179,23 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx
       <input type="number" class="dur-input" id="durInput" value="10" min="3" max="60" onchange="saveDuration()">
       <span class="dur-label">วิ</span>
     </div>
+
+    <div class="sep"></div>
+
+    <!-- Logo upload -->
+    <div>
+      <div class="ctrl-title">🖼️ โลโก้ Overlay</div>
+      <div class="ctrl-desc">แสดงมุมขวาบนของจอ</div>
+    </div>
+    <div class="ctrl-group">
+      <div class="logo-preview" id="logoPreview" onclick="document.getElementById('logoInput').click()" title="คลิกเพื่อเปลี่ยนโลโก้">
+        <span id="logoPlaceholder">+</span>
+        <img id="logoPreviewImg" style="display:none">
+      </div>
+      <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="onLogoSelect(event)">
+      <button class="rbtn" id="logoUploadBtn" onclick="uploadLogo()" disabled>⬆️ อัปโหลด</button>
+      <button class="rbtn" onclick="removeLogo()" style="color:var(--red);border-color:rgba(239,68,68,.3)">🗑️ ลบ</button>
+    </div>
   </div>
 
   <!-- Filters -->
@@ -192,6 +220,13 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx
 </div>
 
 <div class="toast" id="toast"><span id="tIco"></span><span id="tTxt"></span></div>
+
+<!-- iframe + hidden form สำหรับอัปโหลดโลโก้ (base64 ผ่าน POST เพื่อหลีกเลี่ยง URL length limit) -->
+<iframe id="logoFrame" name="logoFrame" style="display:none;width:0;height:0;border:none"></iframe>
+<form id="logoForm" method="POST" target="logoFrame" style="display:none">
+  <input type="hidden" name="action" value="uploadLogo">
+  <input type="hidden" name="imageBase64" id="fLogoImg">
+</form>
 
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbyxZPU2Y-BJrZE2vzkYUS6VVxl8NOULz_0mf_X8lIRfpYNIVdbKdpQkTqRd_43DmvQ/exec';
@@ -249,6 +284,16 @@ function applyConfig(cfg) {
   setTogLabel('loopLbl', loopOn);
   // duration
   if (cfg.displayDuration) document.getElementById('durInput').value = cfg.displayDuration;
+  // logo
+  if (cfg.logoUrl) {
+    const img = document.getElementById('logoPreviewImg');
+    img.src = cfg.logoUrl;
+    img.style.display = 'block';
+    document.getElementById('logoPlaceholder').style.display = 'none';
+  } else {
+    document.getElementById('logoPreviewImg').style.display = 'none';
+    document.getElementById('logoPlaceholder').style.display = 'block';
+  }
 }
 
 /* ── STATS ─────────────────────────── */
@@ -305,6 +350,76 @@ async function saveDuration() {
   try {
     await gasGet({ action: 'toggleConfig', key: 'displayDuration', value: String(document.getElementById('durInput').value) });
     toast('บันทึกเวลาแล้ว', true);
+  } catch(e) { toast('เกิดข้อผิดพลาด', false); }
+}
+
+/* ── LOGO UPLOAD ─────────────────────── */
+let logoB64 = null;
+const LOGO_MAX_PX = 400; // โลโก้ไม่ต้องใหญ่
+
+function onLogoSelect(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (f.size > 5*1024*1024) { toast('ไฟล์ใหญ่เกิน 5MB', false); return; }
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > LOGO_MAX_PX || h > LOGO_MAX_PX) {
+        if (w > h) { h = Math.round(h*LOGO_MAX_PX/w); w = LOGO_MAX_PX; }
+        else       { w = Math.round(w*LOGO_MAX_PX/h); h = LOGO_MAX_PX; }
+      }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      // รักษาพื้นหลังโปร่งใสสำหรับโลโก้ PNG
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      logoB64 = c.toDataURL('image/png');
+
+      const prevImg = document.getElementById('logoPreviewImg');
+      prevImg.src = logoB64;
+      prevImg.style.display = 'block';
+      document.getElementById('logoPlaceholder').style.display = 'none';
+      document.getElementById('logoUploadBtn').disabled = false;
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(f);
+}
+
+function uploadLogo() {
+  if (!logoB64) { toast('เลือกไฟล์โลโก้ก่อน', false); return; }
+
+  document.getElementById('fLogoImg').value = logoB64;
+  document.getElementById('logoForm').action = API;
+
+  const btn = document.getElementById('logoUploadBtn');
+  btn.disabled = true; btn.textContent = '...';
+
+  const frame = document.getElementById('logoFrame');
+  const onLoad = function() {
+    frame.removeEventListener('load', onLoad);
+    btn.disabled = false; btn.textContent = '⬆️ อัปโหลด';
+    toast('อัปโหลดโลโก้แล้ว ✅', true);
+    setTimeout(load, 800); // refresh config
+  };
+  frame.addEventListener('load', onLoad);
+
+  document.getElementById('logoForm').submit();
+}
+
+async function removeLogo() {
+  if (!confirm('ลบโลโก้จาก overlay?')) return;
+  try {
+    await gasGet({ action: 'toggleConfig', key: 'logoUrl', value: '' });
+    logoB64 = null;
+    document.getElementById('logoPreviewImg').style.display = 'none';
+    document.getElementById('logoPreviewImg').src = '';
+    document.getElementById('logoPlaceholder').style.display = 'block';
+    document.getElementById('logoInput').value = '';
+    document.getElementById('logoUploadBtn').disabled = true;
+    toast('ลบโลโก้แล้ว', true);
   } catch(e) { toast('เกิดข้อผิดพลาด', false); }
 }
 
