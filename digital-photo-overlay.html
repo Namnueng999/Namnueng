@@ -33,6 +33,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   box-shadow:0 32px 80px rgba(0,0,0,.85), 0 6px 20px rgba(0,0,0,.6);
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;
+  position:relative;
 }
 
 /* รูปใน polaroid */
@@ -96,16 +97,16 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .stag .icon-fb,.stag .icon-ig{width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-sizing:border-box}
 .stag .icon-fb svg,.stag .icon-ig svg{width:100%;height:100%;fill:#fff}
 
-/* ── Logo มุมขวาบน ── */
+/* ── Logo มุมขวาบนของกรอบรูป ── */
 .logo-corner{
-  position:fixed;
-  top:36px;right:36px;
-  max-width:160px;max-height:160px;
+  position:absolute;
+  top:32px;right:32px;
+  max-width:120px;max-height:120px;
   width:auto;height:auto;
   object-fit:contain;
-  filter:drop-shadow(0 6px 18px rgba(0,0,0,.5));
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.5));
   display:none;
-  z-index:20;
+  z-index:5;
 }
 .logo-corner.vis{display:block}
 
@@ -155,13 +156,12 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 </head>
 <body>
 
-<img class="logo-corner" id="logoCorner" src="" alt="">
-
 <div class="stage" id="stage" style="display:none">
   <!-- รูป ซ้าย -->
   <div class="photo-wrap">
     <div class="polaroid">
       <div class="pimg" id="pImg"></div>
+      <img class="logo-corner" id="logoCorner" src="" alt="">
     </div>
   </div>
 
