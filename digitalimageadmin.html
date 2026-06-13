@@ -6,113 +6,184 @@
 <title>Admin – Digital Photo Display</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
-:root{--bg:#09090d;--s1:#111116;--s2:#18181f;--s3:#1e1e27;--bd:#27273a;--tx:#e4e4f0;--mu:#66667a;--green:#22c55e;--red:#ef4444;--yel:#f59e0b;--pur:#a78bfa;--r:13px}
+:root{
+  --bg:#09090d;--s1:#111116;--s2:#18181f;--s3:#1e1e27;--bd:#27273a;
+  --tx:#e4e4f0;--mu:#66667a;--green:#22c55e;--red:#ef4444;--yel:#f59e0b;--pur:#a78bfa;--r:13px
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex}
-.sb{width:220px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
-.sb-top{padding:22px 18px 18px;border-bottom:1px solid var(--bd)}
-.sb-top h2{font-size:15px;font-weight:700}.sb-top p{font-size:11px;color:var(--mu);margin-top:2px}
-.sb-lnk{display:flex;align-items:center;gap:9px;padding:11px 18px;font-size:13px;color:var(--mu);cursor:pointer;border-left:3px solid transparent;transition:.15s;user-select:none}
-.sb-lnk:hover{background:var(--s2);color:var(--tx)}.sb-lnk.on{background:var(--s2);color:var(--tx);border-left-color:var(--pur)}
-.sb-ico{font-size:17px;width:22px;text-align:center}
-.sb-foot{margin-top:auto;padding:14px 18px;border-top:1px solid var(--bd);font-size:11px;color:var(--mu)}
-.main{flex:1;padding:28px;overflow-x:hidden}
-.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px}
-.ph h1{font-size:22px;font-weight:700}.ph p{font-size:13px;color:var(--mu);margin-top:3px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
-.stat{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:18px}
-.sv{font-size:30px;font-weight:700;line-height:1}.sl{font-size:12px;color:var(--mu);margin-top:5px}
+body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+.main{padding:24px}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.ph h1{font-size:20px;font-weight:700}
+.ph p{font-size:12px;color:var(--mu);margin-top:3px}
+.top-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px}
+.sv{font-size:26px;font-weight:700;line-height:1}.sl{font-size:11px;color:var(--mu);margin-top:4px}
 .stat.p .sv{color:var(--yel)}.stat.a .sv{color:var(--green)}.stat.r .sv{color:var(--red)}.stat.t .sv{color:var(--pur)}
-.ctrl{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.ct{font-size:14px;font-weight:600}.cd{font-size:12px;color:var(--mu);margin-top:2px}
-.tog{position:relative;width:48px;height:26px;cursor:pointer;flex-shrink:0}
+
+/* Control bar */
+.ctrl{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.ctrl-group{display:flex;align-items:center;gap:10px}
+.ctrl-title{font-size:13px;font-weight:600}
+.ctrl-desc{font-size:11px;color:var(--mu)}
+
+/* Toggle */
+.tog{position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0}
 .tog input{display:none}
-.tog-t{position:absolute;inset:0;background:var(--s3);border:1px solid var(--bd);border-radius:13px;transition:.3s}
+.tog-t{position:absolute;inset:0;background:var(--s3);border:1px solid var(--bd);border-radius:12px;transition:.3s}
 .tog input:checked+.tog-t{background:var(--green);border-color:var(--green)}
-.tog-th{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
-.tog input:checked~.tog-th{left:25px}
-.tl{font-size:13px;font-weight:600}.tl.on{color:var(--green)}.tl.off{color:var(--mu)}
-.sep{width:1px;height:36px;background:var(--bd)}
-.ftabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-.ft{padding:7px 15px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--s1);color:var(--mu);transition:.15s}
+.tog-th{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.tog input:checked~.tog-th{left:23px}
+.tl{font-size:12px;font-weight:600;min-width:50px}
+.tl.on{color:var(--green)}.tl.off{color:var(--mu)}
+
+.sep{width:1px;height:32px;background:var(--bd);flex-shrink:0}
+
+/* Duration input */
+.dur-input{
+  background:var(--s2);border:1px solid var(--bd);border-radius:8px;
+  padding:6px 10px;font-size:13px;color:var(--tx);font-family:inherit;
+  outline:none;width:64px;text-align:center;transition:.2s
+}
+.dur-input:focus{border-color:var(--pur)}
+.dur-label{font-size:12px;color:var(--mu)}
+
+/* Filters */
+.ftabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.ft{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--s1);color:var(--mu);transition:.15s}
 .ft:hover{color:var(--tx);border-color:var(--mu)}.ft.on{background:var(--pur);border-color:var(--pur);color:#fff}
-.ft .n{display:inline-block;background:rgba(255,255,255,.18);padding:1px 7px;border-radius:20px;margin-left:4px;font-size:10px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.ft .n{display:inline-block;background:rgba(255,255,255,.18);padding:1px 6px;border-radius:20px;margin-left:4px;font-size:10px}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:.2s}
 .card:hover{border-color:rgba(167,139,250,.4);transform:translateY(-2px)}
-/* รูปใน card — ใช้ background-image แทน img เพื่อหลีกเลี่ยง Drive hotlink block */
-.ci{width:100%;aspect-ratio:4/3;background:var(--s2) center/cover no-repeat;cursor:zoom-in;display:block;border:none;position:relative}
-.ci-err{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px;background:var(--s2);display:none}
-.cb{padding:13px}
-.cu{display:flex;align-items:center;gap:9px;margin-bottom:9px}
-.cav{width:30px;height:30px;border-radius:50%;background:var(--s2);flex-shrink:0;font-size:16px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ci{width:100%;aspect-ratio:4/3;background:var(--s2) center/cover no-repeat;cursor:zoom-in;display:block}
+.cb{padding:12px}
+.cu{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.cav{width:28px;height:28px;border-radius:50%;background:var(--s2);flex-shrink:0;font-size:14px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .cav img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.cn2{font-size:14px;font-weight:600}.ct2{font-size:11px;color:var(--mu);margin-top:1px}
-.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin-bottom:9px}
+.cn2{font-size:13px;font-weight:600}.ct2{font-size:11px;color:var(--mu);margin-top:1px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:8px}
 .bp{background:rgba(245,158,11,.12);color:var(--yel)}.ba{background:rgba(34,197,94,.12);color:var(--green)}.br{background:rgba(239,68,68,.10);color:var(--red)}
-.socs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.stag{font-size:11px;background:var(--s2);color:var(--mu);padding:3px 8px;border-radius:6px}
-.cmsg{font-size:13px;color:var(--mu);background:var(--s2);padding:8px 10px;border-radius:8px;margin-bottom:10px;line-height:1.5;font-style:italic}
-.cbtns{display:flex;gap:7px}
-.cbtn{flex:1;padding:8px;border-radius:9px;font-size:12px;font-weight:700;border:1px solid;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;transition:.2s}
-.bap{background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.25)}.bap:hover{background:var(--green);color:#fff}
-.brj{background:rgba(239,68,68,.08);color:var(--red);border-color:rgba(239,68,68,.2)}.brj:hover{background:var(--red);color:#fff}
-.cbtn:disabled{opacity:.5;cursor:not-allowed}
-.loader{grid-column:1/-1;display:flex;justify-content:center;padding:56px;gap:8px}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--pur);animation:bounce 1.2s ease-in-out infinite}
+.socs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.stag{font-size:10px;background:var(--s2);color:var(--mu);padding:2px 7px;border-radius:5px}
+.cmsg{font-size:12px;color:var(--mu);background:var(--s2);padding:7px 9px;border-radius:7px;margin-bottom:9px;line-height:1.5;font-style:italic}
+.cbtns{display:flex;gap:6px}
+.cbtn{flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;transition:.2s}
+.bap{background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.25)}.bap:hover:not(:disabled){background:var(--green);color:#fff}
+.brj{background:rgba(239,68,68,.08);color:var(--red);border-color:rgba(239,68,68,.2)}.brj:hover:not(:disabled){background:var(--red);color:#fff}
+.cbtn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Loader / Empty */
+.loader{grid-column:1/-1;display:flex;justify-content:center;padding:48px;gap:7px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--pur);animation:bounce 1.2s ease-in-out infinite}
 .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
 @keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
-.empty{grid-column:1/-1;text-align:center;padding:60px;color:var(--mu)}
-.empty span{font-size:44px}.empty p{margin-top:10px;font-size:15px}
-.rbtn{background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:8px 15px;border-radius:9px;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;transition:.15s}
+.empty{grid-column:1/-1;text-align:center;padding:56px;color:var(--mu)}
+.empty span{font-size:40px}.empty p{margin-top:9px;font-size:14px}
+
+/* Buttons */
+.rbtn{background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:7px 13px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;transition:.15s}
 .rbtn:hover{border-color:var(--pur);color:var(--pur)}
+
 /* Modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:999;display:none;align-items:center;justify-content:center;cursor:zoom-out;backdrop-filter:blur(12px)}
 .modal.open{display:flex}
-.modal-inner{max-width:90vw;max-height:90vh;background:var(--s2);border-radius:12px;overflow:hidden;cursor:default;display:flex;align-items:center;justify-content:center}
-.modal-inner img{max-width:90vw;max-height:90vh;object-fit:contain;display:block}
-.mx{position:fixed;top:18px;right:22px;font-size:26px;cursor:pointer;color:#fff;z-index:1000;line-height:1;background:rgba(0,0,0,.5);width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%}
-@media(max-width:700px){.sb{display:none}.stats{grid-template-columns:repeat(2,1fr)}.main{padding:16px}}
+.modal-inner{max-width:92vw;max-height:92vh;display:flex;align-items:center;justify-content:center}
+.modal-inner img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:10px;cursor:default}
+.mx{position:fixed;top:16px;right:20px;font-size:22px;cursor:pointer;color:#fff;z-index:1000;background:rgba(0,0,0,.5);width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:1001;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:var(--green)}.toast.err{border-color:var(--red)}
+
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.ctrl{gap:10px}}
 </style>
 </head>
 <body>
-<div class="sb">
-  <div class="sb-top"><h2>🎛️ Admin Panel</h2><p>Digital Photo Display</p></div>
-  <div class="sb-lnk on"><span class="sb-ico">📸</span> รูปที่ส่งมา</div>
-  <div class="sb-lnk" onclick="window.open('overlay.html','_blank')"><span class="sb-ico">🖥️</span> OBS Overlay</div>
-  <div class="sb-lnk" onclick="window.open('upload.html','_blank')"><span class="sb-ico">📤</span> หน้าส่งรูป</div>
-  <div class="sb-foot" id="lastUpdate">รอโหลดข้อมูล...</div>
-</div>
-
 <div class="main">
   <div class="ph">
-    <div><h1>📸 รูปที่ส่งมา</h1><p>จัดการและอนุมัติรูปก่อนขึ้นจอ</p></div>
-    <button class="rbtn" onclick="load()">🔄 รีเฟรช</button>
+    <div>
+      <h1>🎛️ Admin Panel</h1>
+      <p id="lastUp">กำลังโหลด...</p>
+    </div>
+    <div class="top-row">
+      <button class="rbtn" onclick="load()">🔄 รีเฟรช</button>
+      <button class="rbtn" onclick="window.open('overlay.html','_blank')">🖥️ Overlay</button>
+      <button class="rbtn" onclick="window.open('upload.html','_blank')">📤 Upload</button>
+    </div>
   </div>
+
+  <!-- Stats -->
   <div class="stats">
-    <div class="stat p"><div class="sv" id="sP">–</div><div class="sl">⏳ รอการอนุมัติ</div></div>
-    <div class="stat a"><div class="sv" id="sA">–</div><div class="sl">✅ อนุมัติแล้ว</div></div>
+    <div class="stat p"><div class="sv" id="sP">–</div><div class="sl">⏳ รอ</div></div>
+    <div class="stat a"><div class="sv" id="sA">–</div><div class="sl">✅ อนุมัติ</div></div>
     <div class="stat r"><div class="sv" id="sR">–</div><div class="sl">❌ ปฏิเสธ</div></div>
     <div class="stat t"><div class="sv" id="sT">–</div><div class="sl">📊 ทั้งหมด</div></div>
   </div>
+
+  <!-- Controls -->
   <div class="ctrl">
-    <div><div class="ct">⚡ อนุมัติอัตโนมัติ</div><div class="cd">รูปขึ้นจอทันทีโดยไม่ต้องรีวิว</div></div>
-    <label class="tog"><input type="checkbox" id="autoTog" onchange="toggleAuto()"><div class="tog-t"></div><div class="tog-th"></div></label>
-    <span class="tl off" id="autoLbl">ปิดอยู่</span>
+    <!-- Auto approve -->
+    <div>
+      <div class="ctrl-title">⚡ อนุมัติอัตโนมัติ</div>
+      <div class="ctrl-desc">รูปขึ้นจอทันที ไม่ต้องรีวิว</div>
+    </div>
+    <div class="ctrl-group">
+      <label class="tog">
+        <input type="checkbox" id="autoTog" onchange="toggleAuto()">
+        <div class="tog-t"></div><div class="tog-th"></div>
+      </label>
+      <span class="tl off" id="autoLbl">ปิด</span>
+    </div>
+
     <div class="sep"></div>
-    <div style="font-size:12px;color:var(--mu)">💡 เปิดตอนงานไม่ยุ่ง<br>ปิดตอนต้องการกลั่นกรอง</div>
+
+    <!-- Loop -->
+    <div>
+      <div class="ctrl-title">🔁 เล่นแบบ Loop</div>
+      <div class="ctrl-desc">วนซ้ำรูปที่อนุมัติแล้ว</div>
+    </div>
+    <div class="ctrl-group">
+      <label class="tog">
+        <input type="checkbox" id="loopTog" onchange="toggleLoop()" checked>
+        <div class="tog-t"></div><div class="tog-th"></div>
+      </label>
+      <span class="tl on" id="loopLbl">เปิด</span>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Fade duration -->
+    <div>
+      <div class="ctrl-title">⏱️ เวลาแสดงรูป</div>
+      <div class="ctrl-desc">วินาทีต่อรูป (overlay)</div>
+    </div>
+    <div class="ctrl-group">
+      <input type="number" class="dur-input" id="durInput" value="10" min="3" max="60" onchange="saveDuration()">
+      <span class="dur-label">วิ</span>
+    </div>
   </div>
+
+  <!-- Filters -->
   <div class="ftabs">
     <div class="ft on" onclick="setF('all')"      data-f="all">ทั้งหมด <span class="n" id="fA">0</span></div>
     <div class="ft"    onclick="setF('pending')"  data-f="pending">⏳ รอ <span class="n" id="fP">0</span></div>
     <div class="ft"    onclick="setF('approved')" data-f="approved">✅ อนุมัติ <span class="n" id="fAp">0</span></div>
-    <div class="ft"    onclick="setF('rejected')" data-f="rejected">❌ ปฏิเสธ <span class="n" id="fR">0</span></div>
+    <div class="ft"    onclick="setF('rejected')" data-f="rejected">❌ ปฏิเสธ <span class="n" id="fR2">0</span></div>
   </div>
+
   <div class="grid" id="grid">
     <div class="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
   </div>
 </div>
 
+<!-- Modal -->
 <div class="modal" id="modal" onclick="closeMod()">
   <div class="mx" onclick="closeMod()">✕</div>
   <div class="modal-inner" onclick="event.stopPropagation()">
@@ -120,21 +191,27 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx
   </div>
 </div>
 
+<div class="toast" id="toast"><span id="tIco"></span><span id="tTxt"></span></div>
+
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbyxZPU2Y-BJrZE2vzkYUS6VVxl8NOULz_0mf_X8lIRfpYNIVdbKdpQkTqRd_43DmvQ/exec';
-let all = [], curF = 'all';
+let all = [], curF = 'all', ttTimer = null;
 
-/* ── API — ใช้ XHR เพื่อ follow GAS redirect ── */
-function apiGet(action, payload) {
+/* ══════════════════════════════════════
+   XHR wrapper — ส่งทุก param แยกตรงๆ
+   ไม่ใช้ payload JSON เพราะ GAS parse ตรง
+══════════════════════════════════════ */
+function gasGet(params) {
   return new Promise((resolve, reject) => {
-    let url = API + '?action=' + action;
-    if (payload) url += '&payload=' + encodeURIComponent(JSON.stringify(payload));
+    const qs  = Object.entries(params)
+      .map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+      .join('&');
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
+    xhr.open('GET', API + '?' + qs, true);
     xhr.timeout = 30000;
     xhr.onload = function() {
       try { resolve(JSON.parse(xhr.responseText)); }
-      catch(_) { reject(new Error('Parse error: ' + xhr.responseText.substring(0,80))); }
+      catch(_) { reject(new Error('Parse: ' + xhr.responseText.substring(0,60))); }
     };
     xhr.onerror   = () => reject(new Error('Network error'));
     xhr.ontimeout = () => reject(new Error('Timeout'));
@@ -142,27 +219,43 @@ function apiGet(action, payload) {
   });
 }
 
-/* ── LOAD ───────────────────────────────────── */
+/* ── LOAD ───────────────────────────── */
 async function load() {
-  grid('<div class="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>');
+  setGrid('<div class="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>');
   try {
-    const [sub, cfg] = await Promise.all([apiGet('getSubmissions'), apiGet('getConfig')]);
+    const [sub, cfg] = await Promise.all([
+      gasGet({ action: 'getSubmissions' }),
+      gasGet({ action: 'getConfig' }),
+    ]);
     all = sub.data || [];
     updateStats();
-    setAutoUI(cfg.autoApprove === 'true');
+    applyConfig(cfg);
     render();
-    document.getElementById('lastUpdate').textContent = 'อัพเดท ' + new Date().toLocaleTimeString('th-TH');
+    document.getElementById('lastUp').textContent = 'อัพเดท ' + new Date().toLocaleTimeString('th-TH');
   } catch(e) {
-    grid('<div class="empty"><span>⚠️</span><p>โหลดไม่ได้: ' + e.message + '</p></div>');
+    setGrid('<div class="empty"><span>⚠️</span><p>' + e.message + '</p></div>');
   }
 }
 
-function grid(html) { document.getElementById('grid').innerHTML = html; }
+function applyConfig(cfg) {
+  if (!cfg) return;
+  // auto approve
+  const autoOn = cfg.autoApprove === 'true';
+  document.getElementById('autoTog').checked = autoOn;
+  setTogLabel('autoLbl', autoOn);
+  // loop
+  const loopOn = cfg.loopEnabled !== 'false'; // default true
+  document.getElementById('loopTog').checked = loopOn;
+  setTogLabel('loopLbl', loopOn);
+  // duration
+  if (cfg.displayDuration) document.getElementById('durInput').value = cfg.displayDuration;
+}
 
+/* ── STATS ─────────────────────────── */
 function updateStats() {
-  const p = all.filter(d => d['Status']==='pending').length;
-  const a = all.filter(d => d['Status']==='approved').length;
-  const r = all.filter(d => d['Status']==='rejected').length;
+  const p = all.filter(d=>d['Status']==='pending').length;
+  const a = all.filter(d=>d['Status']==='approved').length;
+  const r = all.filter(d=>d['Status']==='rejected').length;
   document.getElementById('sP').textContent  = p;
   document.getElementById('sA').textContent  = a;
   document.getElementById('sR').textContent  = r;
@@ -170,46 +263,78 @@ function updateStats() {
   document.getElementById('fA').textContent  = all.length;
   document.getElementById('fP').textContent  = p;
   document.getElementById('fAp').textContent = a;
-  document.getElementById('fR').textContent  = r;
+  document.getElementById('fR2').textContent = r;
 }
 
-function setAutoUI(on) {
-  document.getElementById('autoTog').checked = on;
-  const l = document.getElementById('autoLbl');
-  l.textContent = on ? 'เปิดอยู่' : 'ปิดอยู่';
-  l.className   = 'tl ' + (on ? 'on' : 'off');
+/* ── TOGGLE HELPERS ─────────────────── */
+function setTogLabel(id, on) {
+  const el = document.getElementById(id);
+  el.textContent = on ? 'เปิด' : 'ปิด';
+  el.className   = 'tl ' + (on ? 'on' : 'off');
 }
 
 async function toggleAuto() {
   const on = document.getElementById('autoTog').checked;
-  setAutoUI(on);
-  try { await apiGet('toggleAuto', { value: on }); }
-  catch(_) { setAutoUI(!on); }
+  setTogLabel('autoLbl', on);
+  try {
+    await gasGet({ action: 'toggleConfig', key: 'autoApprove', value: on ? 'true' : 'false' });
+    toast('อนุมัติอัตโนมัติ' + (on ? 'เปิด' : 'ปิด') + 'แล้ว', true);
+  } catch(e) {
+    document.getElementById('autoTog').checked = !on;
+    setTogLabel('autoLbl', !on);
+    toast('เกิดข้อผิดพลาด', false);
+  }
 }
 
+async function toggleLoop() {
+  const on = document.getElementById('loopTog').checked;
+  setTogLabel('loopLbl', on);
+  try {
+    await gasGet({ action: 'toggleConfig', key: 'loopEnabled', value: on ? 'true' : 'false' });
+    toast('Loop ' + (on ? 'เปิด' : 'ปิด') + 'แล้ว', true);
+  } catch(e) {
+    document.getElementById('loopTog').checked = !on;
+    setTogLabel('loopLbl', !on);
+    toast('เกิดข้อผิดพลาด', false);
+  }
+}
+
+async function saveDuration() {
+  const val = parseInt(document.getElementById('durInput').value) || 10;
+  document.getElementById('durInput').value = Math.max(3, Math.min(60, val));
+  try {
+    await gasGet({ action: 'toggleConfig', key: 'displayDuration', value: String(document.getElementById('durInput').value) });
+    toast('บันทึกเวลาแล้ว', true);
+  } catch(e) { toast('เกิดข้อผิดพลาด', false); }
+}
+
+/* ── FILTER ─────────────────────────── */
 function setF(f) {
   curF = f;
   document.querySelectorAll('.ft').forEach(el => el.classList.toggle('on', el.dataset.f === f));
   render();
 }
 
-/* ── RENDER ─────────────────────────────────── */
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+/* ── RENDER ─────────────────────────── */
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 
 function render() {
   const data = curF === 'all' ? all : all.filter(d => d['Status'] === curF);
-  if (!data.length) { grid('<div class="empty"><span>🖼️</span><p>ไม่มีรูปในหมวดนี้</p></div>'); return; }
+  if (!data.length) { setGrid('<div class="empty"><span>🖼️</span><p>ไม่มีรูปในหมวดนี้</p></div>'); return; }
 
-  grid(data.map(item => {
+  setGrid(data.map(item => {
     const s      = item['Status'] || '';
     const id     = item['ID']     || '';
-    const imgUrl = item['Image URL'] || '';
-    const picUrl = item['Profile Pic URL'] || '';
+    const imgUrl = esc(item['Image URL'] || '');
+    const picUrl = esc(item['Profile Pic URL'] || '');
     const t      = item['Timestamp'] ? new Date(item['Timestamp']).toLocaleString('th-TH') : '';
 
-    const badge  = s==='approved' ? '<span class="badge ba">✅ อนุมัติแล้ว</span>'
-                 : s==='rejected' ? '<span class="badge br">❌ ปฏิเสธ</span>'
-                                  : '<span class="badge bp">⏳ รอการอนุมัติ</span>';
+    const badge = s==='approved' ? '<span class="badge ba">✅ อนุมัติแล้ว</span>'
+                : s==='rejected' ? '<span class="badge br">❌ ปฏิเสธ</span>'
+                                 : '<span class="badge bp">⏳ รอการอนุมัติ</span>';
 
     const soc = [
       item['Facebook']  ? '<span class="stag">📘 '+esc(item['Facebook'])+'</span>' : '',
@@ -217,23 +342,21 @@ function render() {
     ].filter(Boolean).join('');
 
     const msg  = item['Message'] ? '<div class="cmsg">'+esc(item['Message'])+'</div>' : '';
-    const avHtml = picUrl ? '<img src="'+esc(picUrl)+'" onerror="this.style.display=\'none\'">' : '👤';
+    const avHtml = picUrl ? '<img src="'+picUrl+'" onerror="this.style.display=\'none\'">' : '👤';
+    const eid  = esc(id);
 
     let btns = '';
-    if (s==='pending') {
-      btns = `<button class="cbtn bap" onclick="doApprove('${esc(id)}',this)">✅ อนุมัติ</button>
-              <button class="cbtn brj" onclick="doReject('${esc(id)}',this)">❌ ปฏิเสธ</button>`;
-    } else if (s==='approved') {
-      btns = `<button class="cbtn brj" style="flex:1" onclick="doReject('${esc(id)}',this)">❌ ยกเลิก</button>`;
+    if (s === 'pending') {
+      btns = `<button class="cbtn bap" onclick="doApprove('${eid}',this)">✅ อนุมัติ</button>
+              <button class="cbtn brj" onclick="doReject('${eid}',this)">❌ ปฏิเสธ</button>`;
+    } else if (s === 'approved') {
+      btns = `<button class="cbtn brj" style="flex:1" onclick="doReject('${eid}',this)">❌ ยกเลิก</button>`;
     } else {
-      btns = `<button class="cbtn bap" style="flex:1" onclick="doApprove('${esc(id)}',this)">✅ อนุมัติ</button>`;
+      btns = `<button class="cbtn bap" style="flex:1" onclick="doApprove('${eid}',this)">✅ อนุมัติ</button>`;
     }
 
-    // ใช้ onclick เปิด modal แทน href เพื่อหลีกเลี่ยงปัญหา Drive redirect
-    return `<div class="card">
-      <div class="ci" style="background-image:url('${esc(imgUrl)}')" onclick="openMod('${esc(imgUrl)}')">
-        <div class="ci-err" id="err_${esc(id)}">🖼️</div>
-      </div>
+    return `<div class="card" data-id="${eid}">
+      <div class="ci" style="background-image:url('${imgUrl}')" onclick="openMod('${imgUrl}')"></div>
       <div class="cb">
         <div class="cu">
           <div class="cav">${avHtml}</div>
@@ -248,36 +371,62 @@ function render() {
   }).join(''));
 }
 
-/* ── ACTIONS ────────────────────────────────── */
+/* ── ACTIONS ────────────────────────── */
 async function doApprove(id, btn) {
   btn.disabled = true; btn.textContent = '...';
   try {
-    await apiGet('approve', { id });
-    const item = all.find(d => d['ID']===id); if (item) item['Status']='approved';
-    updateStats(); render();
-  } catch(_) { btn.disabled=false; btn.textContent='✅ อนุมัติ'; }
+    // ส่ง id ตรงๆ ใน query string
+    const res = await gasGet({ action: 'approve', id: id });
+    if (res.success) {
+      const item = all.find(d => d['ID'] === id);
+      if (item) item['Status'] = 'approved';
+      updateStats(); render();
+      toast('อนุมัติแล้ว ✅', true);
+    } else {
+      toast('❗ ' + (res.error || 'เกิดข้อผิดพลาด'), false);
+      btn.disabled = false; btn.textContent = '✅ อนุมัติ';
+    }
+  } catch(e) {
+    toast('❗ ' + e.message, false);
+    btn.disabled = false; btn.textContent = '✅ อนุมัติ';
+  }
 }
 
 async function doReject(id, btn) {
   btn.disabled = true; btn.textContent = '...';
   try {
-    await apiGet('reject', { id });
-    const item = all.find(d => d['ID']===id); if (item) item['Status']='rejected';
-    updateStats(); render();
-  } catch(_) { btn.disabled=false; btn.textContent='❌ ปฏิเสธ'; }
+    const res = await gasGet({ action: 'reject', id: id });
+    if (res.success) {
+      const item = all.find(d => d['ID'] === id);
+      if (item) item['Status'] = 'rejected';
+      updateStats(); render();
+      toast('ปฏิเสธแล้ว ❌', true);
+    } else {
+      toast('❗ ' + (res.error || 'เกิดข้อผิดพลาด'), false);
+      btn.disabled = false; btn.textContent = '❌ ปฏิเสธ';
+    }
+  } catch(e) {
+    toast('❗ ' + e.message, false);
+    btn.disabled = false; btn.textContent = '❌ ปฏิเสธ';
+  }
 }
 
-/* ── MODAL ──────────────────────────────────── */
-function openMod(url) {
-  document.getElementById('mImg').src = url;
-  document.getElementById('modal').classList.add('open');
-}
-function closeMod() {
-  document.getElementById('modal').classList.remove('open');
-  document.getElementById('mImg').src = '';
+/* ── MODAL ──────────────────────────── */
+function openMod(url) { document.getElementById('mImg').src=url; document.getElementById('modal').classList.add('open'); }
+function closeMod()   { document.getElementById('modal').classList.remove('open'); document.getElementById('mImg').src=''; }
+
+/* ── UTILS ──────────────────────────── */
+function setGrid(html) { document.getElementById('grid').innerHTML = html; }
+
+function toast(msg, ok=true) {
+  const el = document.getElementById('toast');
+  document.getElementById('tIco').textContent = ok ? '✅' : '❌';
+  document.getElementById('tTxt').textContent = msg;
+  el.className = 'toast show ' + (ok ? 'ok' : 'err');
+  clearTimeout(ttTimer);
+  ttTimer = setTimeout(() => el.classList.remove('show'), 2800);
 }
 
-/* ── BOOT ───────────────────────────────────── */
 setInterval(load, 30000);
 load();
 </script>
