@@ -90,7 +90,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   backdrop-filter:blur(8px);
 }
 
-/* ข้อความ */
+/* ข้อความ — กว้างแค่พอ fit content */
 .msg-box{
   background:rgba(6,6,14,.75);
   backdrop-filter:blur(20px);
@@ -99,6 +99,9 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   padding:28px 36px;
   position:relative;
   overflow:hidden;
+  display:inline-block;  /* หดให้พอดีข้อความ */
+  max-width:100%;        /* ไม่เกินความกว้าง parent */
+  align-self:flex-start; /* ชิดซ้าย ไม่ยืดเต็ม */
 }
 
 .msg-box::before{
