@@ -142,7 +142,16 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .msg-text::before{content:'\201C';color:rgba(167,139,250,.8);font-size:56px;font-weight:900;margin-right:4px;line-height:0;vertical-align:-.2em}
 .msg-text::after {content:'\201D';color:rgba(167,139,250,.8);font-size:56px;font-weight:900;margin-left:4px; line-height:0;vertical-align:-.2em}
 
-/* ══ Progress bar ══ */
+/* ══ Overlay background ══ */
+.overlay-bg{
+  position:fixed;inset:0;
+  background:#000;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .5s;
+  z-index:-1;
+}
+
 .prog{
   position:fixed;bottom:0;left:0;right:0;
   height:4px;background:rgba(255,255,255,.06);
@@ -155,6 +164,8 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 </style>
 </head>
 <body>
+
+<div class="overlay-bg" id="overlayBg"></div>
 
 <div class="stage" id="stage" style="display:none">
   <!-- รูป ซ้าย -->
@@ -313,6 +324,14 @@ async function poll() {
     const cfg = await xhrGet({ action: 'getConfig' });
     loopOn  = cfg.loopEnabled !== 'false';
     showMs  = Math.max(3000, parseInt(cfg.displayDuration || '12') * 1000);
+
+    // พื้นหลังสีดำ
+    const bgEl = document.getElementById('overlayBg');
+    if (cfg.bgEnabled === 'true') {
+      bgEl.style.opacity = (parseInt(cfg.bgOpacity || '60') / 100).toFixed(2);
+    } else {
+      bgEl.style.opacity = '0';
+    }
 
     // โลโก้มุมขวาบน
     const logoEl = document.getElementById('logoCorner');
