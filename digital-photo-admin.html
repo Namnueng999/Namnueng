@@ -196,6 +196,46 @@ body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx
       <button class="rbtn" id="logoUploadBtn" onclick="uploadLogo()" disabled>⬆️ อัปโหลด</button>
       <button class="rbtn" onclick="removeLogo()" style="color:var(--red);border-color:rgba(239,68,68,.3)">🗑️ ลบ</button>
     </div>
+
+    <div class="sep"></div>
+
+    <!-- Overlay background -->
+    <div>
+      <div class="ctrl-title">🌑 พื้นหลัง Overlay</div>
+      <div class="ctrl-desc">สีดำทับ OBS scene</div>
+    </div>
+    <div class="ctrl-group">
+      <label class="tog">
+        <input type="checkbox" id="bgTog" onchange="toggleBg()">
+        <div class="tog-t"></div><div class="tog-th"></div>
+      </label>
+      <span class="tl off" id="bgLbl">ปิด</span>
+      <input type="range" id="bgOpacity" min="10" max="90" value="60" step="5"
+             oninput="updateOpacity()" style="width:90px;accent-color:var(--pur);display:none">
+      <span class="dur-label" id="bgPct" style="display:none">60%</span>
+    </div>
+  </div>
+
+  <!-- Clear data -->
+  <div class="ctrl" style="border-color:rgba(239,68,68,.25)">
+    <div>
+      <div class="ctrl-title" style="color:var(--red)">🗑️ เคลียร์ข้อมูล</div>
+      <div class="ctrl-desc">ลบรูปออกจาก Sheet และ Overlay</div>
+    </div>
+    <div class="ctrl-group" style="gap:8px;flex-wrap:wrap">
+      <button class="rbtn" onclick="clearByStatus('rejected')"
+              style="color:var(--red);border-color:rgba(239,68,68,.3)">
+        ❌ ลบรูปที่ปฏิเสธ
+      </button>
+      <button class="rbtn" onclick="clearByStatus('approved')"
+              style="color:var(--yel);border-color:rgba(245,158,11,.3)">
+        ✅ ลบรูปที่อนุมัติแล้ว
+      </button>
+      <button class="rbtn" onclick="clearAll()"
+              style="color:var(--red);border-color:rgba(239,68,68,.4);font-weight:700">
+        ⚠️ ลบทั้งหมด
+      </button>
+    </div>
   </div>
 
   <!-- Filters -->
@@ -294,6 +334,17 @@ function applyConfig(cfg) {
     document.getElementById('logoPreviewImg').style.display = 'none';
     document.getElementById('logoPlaceholder').style.display = 'block';
   }
+  // overlay background
+  const bgOn = cfg.bgEnabled === 'true';
+  document.getElementById('bgTog').checked = bgOn;
+  setTogLabel('bgLbl', bgOn);
+  if (bgOn) {
+    const opacity = cfg.bgOpacity || '60';
+    document.getElementById('bgOpacity').value = opacity;
+    document.getElementById('bgPct').textContent = opacity + '%';
+    document.getElementById('bgOpacity').style.display = 'block';
+    document.getElementById('bgPct').style.display = 'inline';
+  }
 }
 
 /* ── STATS ─────────────────────────── */
@@ -353,7 +404,51 @@ async function saveDuration() {
   } catch(e) { toast('เกิดข้อผิดพลาด', false); }
 }
 
-/* ── LOGO UPLOAD ─────────────────────── */
+/* ── OVERLAY BACKGROUND ─────────────── */
+function toggleBg() {
+  const on      = document.getElementById('bgTog').checked;
+  const slider  = document.getElementById('bgOpacity');
+  const pctEl   = document.getElementById('bgPct');
+  setTogLabel('bgLbl', on);
+  slider.style.display = on ? 'block' : 'none';
+  pctEl.style.display  = on ? 'inline' : 'none';
+  const val = on ? (slider.value + '%') : '0';
+  gasGet({ action: 'toggleConfig', key: 'bgEnabled',  value: on ? 'true' : 'false' });
+  gasGet({ action: 'toggleConfig', key: 'bgOpacity',  value: slider.value });
+}
+
+function updateOpacity() {
+  const val = document.getElementById('bgOpacity').value;
+  document.getElementById('bgPct').textContent = val + '%';
+  gasGet({ action: 'toggleConfig', key: 'bgOpacity', value: val });
+}
+
+/* ── CLEAR DATA ─────────────────────── */
+async function clearByStatus(status) {
+  const label = status === 'rejected' ? 'ที่ปฏิเสธ' : 'ที่อนุมัติแล้ว';
+  if (!confirm('ยืนยันการลบรูป' + label + 'ทั้งหมด?\nไม่สามารถกู้คืนได้')) return;
+  try {
+    const res = await gasGet({ action: 'clearRows', status });
+    if (res.success) {
+      toast('ลบ ' + (res.count||0) + ' รายการแล้ว', true);
+      load();
+    } else toast('❗ ' + (res.error||'เกิดข้อผิดพลาด'), false);
+  } catch(e) { toast('❗ ' + e.message, false); }
+}
+
+async function clearAll() {
+  if (!confirm('⚠️ ลบรูปทั้งหมดใน Sheet?\nรูปใน Drive จะยังอยู่ แต่ข้อมูลใน Sheet และ Overlay จะหายหมด\nไม่สามารถกู้คืนได้')) return;
+  if (!confirm('กดยืนยันอีกครั้งเพื่อลบทั้งหมด')) return;
+  try {
+    const res = await gasGet({ action: 'clearRows', status: 'all' });
+    if (res.success) {
+      toast('ลบทั้งหมด ' + (res.count||0) + ' รายการแล้ว', true);
+      load();
+    } else toast('❗ ' + (res.error||'เกิดข้อผิดพลาด'), false);
+  } catch(e) { toast('❗ ' + e.message, false); }
+}
+
+
 let logoB64 = null;
 const LOGO_MAX_PX = 400; // โลโก้ไม่ต้องใหญ่
 
